@@ -768,7 +768,8 @@ const callbackUrl = () => win.location.origin +
 
   /* تحويل إلى صفحة الدخول (reason: expired | out) */
   function goLogin(reason) {
-    win.location.replace('/account/' + (reason ? '?reason=' + encodeURIComponent(reason) : ''));
+const base = doc.documentElement.getAttribute('data-base-path') || '';
+win.location.replace(base + '/account/' + (reason ? '?reason=' + encodeURIComponent(reason) : ''));
   }
 
   const session = Object.freeze({
