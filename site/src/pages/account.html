@@ -1,5 +1,6 @@
+
 <!--page: slug=account; title=التسجيل / الدخول | م. أحمد الديب; desc=أنشئ حسابك أو سجّل الدخول إلى لوحة المتدرب لمتابعة دوراتك وملفاتها وفيديوهاتها وأسئلتها المحاكية.; nav=none-->
-<link rel="stylesheet" href="/assets/css/platform.css">
+<link rel="stylesheet" href="{{root}}/assets/css/platform.css">
 <meta name="robots" content="noindex">
 <main class="page on" id="main" data-sb-url="{{site.supabase.url}}" data-sb-key="{{site.supabase.key}}" data-wa="{{site.whatsapp}}">
   <div class="phead pf-head">
@@ -21,7 +22,7 @@
           </div>
 
           <div id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
-            <form id="f-register" class="pf-form" method="post" action="/account/" novalidate>
+            <form id="f-register" class="pf-form" method="post" action="{{root}}/account/" novalidate>
               <div id="reg-msg" class="pf-msg" hidden></div>
               <div class="pf-field">
                 <label for="reg-name">الاسم الكامل<span class="pf-req" aria-hidden="true">*</span></label>
@@ -58,7 +59,7 @@
               <div class="pf-field">
                 <label class="pf-check" for="reg-consent">
                   <input type="checkbox" id="reg-consent" name="consent" required aria-describedby="reg-consent-err">
-                  <span>أوافق على <a href="/privacy/" target="_blank" rel="noopener">سياسة الخصوصية</a> و<a href="/terms/" target="_blank" rel="noopener">شروط الاستخدام</a>.</span>
+                  <span>أوافق على <a href="{{root}}/privacy/" target="_blank" rel="noopener">سياسة الخصوصية</a> و<a href="{{root}}/terms/" target="_blank" rel="noopener">شروط الاستخدام</a>.</span>
                 </label>
                 <p class="pf-ferr" id="reg-consent-err" hidden></p>
               </div>
@@ -72,7 +73,7 @@
           </div>
 
           <div id="panel-login" role="tabpanel" aria-labelledby="tab-login">
-            <form id="f-login" class="pf-form" method="post" action="/account/" novalidate>
+            <form id="f-login" class="pf-form" method="post" action="{{root}}/account/" novalidate>
               <div id="log-msg" class="pf-msg" hidden></div>
               <div class="pf-field">
                 <label for="log-email">البريد الإلكتروني</label>
@@ -96,7 +97,7 @@
           </div>
 
           <div id="panel-forgot" role="tabpanel" aria-labelledby="tab-forgot" hidden>
-            <form id="f-forgot" class="pf-form" method="post" action="/account/" novalidate>
+            <form id="f-forgot" class="pf-form" method="post" action="{{root}}/account/" novalidate>
               <p class="pf-note">اكتب بريدك الإلكتروني وسنرسل إليه رابطًا لاختيار كلمة مرور جديدة.</p>
               <div id="for-msg" class="pf-msg" hidden></div>
               <div class="pf-field">
@@ -112,7 +113,7 @@
           <div id="panel-reset" aria-labelledby="reset-h" hidden>
             <h2 id="reset-h" tabindex="-1">كلمة مرور جديدة</h2>
             <p class="pf-note">للحساب: <span class="pf-who" id="reset-who"></span></p>
-            <form id="f-reset" class="pf-form" method="post" action="/account/" novalidate>
+            <form id="f-reset" class="pf-form" method="post" action="{{root}}/account/" novalidate>
               <div id="res-msg" class="pf-msg" hidden></div>
               <div class="pf-field">
                 <label for="res-pass">كلمة المرور الجديدة</label>
@@ -148,6 +149,6 @@
       </div>
     </div>
   </section>
-  <script src="/assets/js/platform-api.js" defer></script>
-  <script src="/assets/js/account.js" defer></script>
+  <script src="{{root}}/assets/js/platform-api.js" defer></script>
+  <script src="{{root}}/assets/js/account.js" defer></script>
 </main>
