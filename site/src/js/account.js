@@ -21,6 +21,7 @@
   'use strict';
 
   const P = window.Platform;
+   const BASE = document.documentElement.getAttribute('data-base-path') || '';
   const $ = function (id) { return document.getElementById(id); };
   const notice = $('acc-notice');
 
