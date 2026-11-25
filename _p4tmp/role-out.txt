@@ -1,0 +1,6 @@
+READY-FOR-SQL
+PASS  role revoked mid-session: next admin call is forbidden, panel wipes itself and redirects to /dashboard/  [/dashboard/]
+PASS  dashboard no longer offers the admin link
+PASS  re-opening /admin/ as the demoted user redirects again
+
+== 3 passed, 0 failed ==

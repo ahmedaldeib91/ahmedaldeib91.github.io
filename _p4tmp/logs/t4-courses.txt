@@ -1,0 +1,46 @@
+PASS  courses list shows the 6 courses
+PASS  pmp card shows counts (1 file, 1 video, 3 questions, 1 subscriber)  [دورة محترف إدارة المشاريع PMP®Project Management Professional (PMP)® Courseمنشورةمتاحة الآنالملفات 1الفيديوهات 1الأسئلة 3 (2 منشور)مشتركون 1إدارة الدورة]
+PASS  pmp files tab lists the external-URL file  [["دليل PMP الخارجي (اختبار)"]]
+PASS  pmp videos tab lists the YouTube video
+PASS  video preview embeds youtube-nocookie only  [https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0]
+PASS  video preview iframe is sandboxed
+PASS  pmp questions tab lists 3 questions (1 draft)
+PASS  preview as trainee shows only the 2 published questions
+PASS  preview grades locally (2/2) and says it is not saved
+PASS  course settings saved (title_en edited)
+PASS  course settings reverted
+PASS  empty Arabic title is rejected with a field error  [["اكتب عنوان الدورة بالعربية (حتى ٣٠٠ حرف)."]]
+PASS  cancelling the unpublish dialog keeps the course published
+PASS  trainee A still sees CAPM (cancelled unpublish)  [["دورة مساعد معتمد في إدارة المشاريع CAPM®"]]
+PASS  course unpublished (badge مسودة)
+PASS  trainee A no longer sees the unpublished CAPM  [[]]
+PASS  republished: trainee A sees CAPM again  [["دورة مساعد معتمد في إدارة المشاريع CAPM®"]]
+PASS  http:// video URL rejected  [["اكتب رابطًا صحيحًا يبدأ بـ https://"]]
+PASS  javascript: video URL rejected
+PASS  detect hint says it will be embedded from YouTube
+PASS  YouTube video added  [تمت إضافة الفيديو إلى الدورة.]
+PASS  detect hint warns that unknown host is a plain link
+PASS  trainee sees both videos  [["فيديو اختبار P4","فيديو رابط خارجي P4"]]
+PASS  trainee embeds ONLY the YouTube one (youtube-nocookie)  [["https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0"]]
+PASS  trainee gets plain https link for the unknown host  [["https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://example.com/video-page"]]
+PASS  file chooser rejects bad.exe (غير مسموح)  [["نوع الملف غير مسموح. المسموح: PDF، ZIP، DOCX، PPTX، XLSX، PNG، JPG، JPEG."]]
+PASS  file chooser rejects big.pdf (أكبر من الحد)  [["حجم الملف (50.0 MB) أكبر من الحد المسموح (٥٠ ميغابايت)."]]
+PASS  file chooser rejects empty.pdf (فارغ)  [["الملف فارغ."]]
+PASS  valid PDF accepted by the chooser (hint shows name and size)
+PASS  PDF uploaded to course-files and listed  [تمت إضافة الملف إلى الدورة.]
+PASS  stored file name is sanitised (ASCII, uuid-prefixed on the server path)  [منشورd37f4e8d-fb1c-4dfa-9cb1-da7a24937837-p4-test-1.pdfالترتيب 1]
+PASS  3 uploaded files listed  [["ملف PDF مرفوع P4","ملف عربي الاسم P4","صورة PNG P4"]]
+PASS  trainee sees the 4 files  [["ملف PDF مرفوع P4","ملف عربي الاسم P4","صورة PNG P4","ملف رابط خارجي P4"]]
+[{"path":"capm/d37f4e8d-fb1c-4dfa-9cb1-da7a24937837-p4-test-1.pdf","status":200,"type":"application/pdf","size":193},{"path":"capm/8f452dcc-1ba0-4dc5-96d2-36ae1d46011e-file.pdf","status":200,"type":"application/pdf","size":193},{"path":"capm/29691b1f-c9c7-4818-bae1-19cc8474d384-p4-test.png","status":200,"type":"image/png","size":70}]
+PASS  trainee gets working signed URLs for the 3 uploaded files (200)  [["200 application/pdf 193","200 application/pdf 193","200 image/png 70"]]
+PASS  stored object paths start with "capm/<uuid>-" and sanitised names  [["capm/d37f4e8d-fb1c-4dfa-9cb1-da7a24937837-p4-test-1.pdf","capm/8f452dcc-1ba0-4dc5-96d2-36ae1d46011e-file.pdf","capm/29691b1f-c9c7-4818-bae1-19cc8474d384-p4-test.png"]]
+PASS  unpublished file is hidden from the trainee  [["ملف PDF مرفوع P4","ملف عربي الاسم P4","ملف رابط خارجي P4"]]
+PASS  move up changes the order (last item moved up)  [["ملف PDF مرفوع P4","ملف عربي الاسم P4","صورة PNG P4","ملف رابط خارجي P4"] -> ["ملف PDF مرفوع P4","ملف عربي الاسم P4","ملف رابط خارجي P4","صورة PNG P4"]]
+PASS  trainee list follows the new order  [["ملف PDF مرفوع P4","ملف عربي الاسم P4","ملف رابط خارجي P4","صورة PNG P4"]]
+PASS  edit title saved  [["ملف PDF مرفوع P4","ملف عربي بعد التعديل P4","ملف رابط خارجي P4","صورة PNG P4"]]
+trainee errors: []
+PASS  trainee browser: no console errors  [[]]
+admin errors: []
+PASS  admin browser: no console errors  [[]]
+
+== 41 passed, 0 failed ==

@@ -1,0 +1,29 @@
+PASS  add card lists the 4 latest trainees
+PASS  submit is disabled until someone is selected
+PASS  trainee already in capm (A) is disabled + badge
+PASS  revoked enrollment is reactivated (summary says so)  [الدورة «دورة مساعد معتمد في إدارة المشاريع CAPM®»: أُعيد تفعيل 1.]
+PASS  trainee B now sees CAPM + PMP  [["دورة مساعد معتمد في إدارة المشاريع CAPM®","دورة محترف إدارة المشاريع PMP®"]]
+PASS  "select all" selects the 4 trainees
+PASS  bulk enroll: 4 trainees added in one go  [الدورة «دورة محترف الممارسات الرشيقة PMI-ACP®»: أُضيف 4.]
+PASS  after bulk, all 4 are disabled for pmi-acp
+PASS  active list filtered by course shows 4 rows
+PASS  name/e-mail filter in the active list -> 1 row
+PASS  revoke from the list (after confirm): 3 rows remain for pmi-acp  [تم إلغاء الاشتراك.]
+PASS  inbox shows 3 messages
+PASS  nav badge shows 3 unread  [3]
+PASS  filter chips show counts (all 3 / new 3)
+PASS  XSS message: payload shown as text, no <img>/<script> elements created
+PASS  selecting a message updates the URL hash (#messages/<id>)
+PASS  reply link is mailto:<valid email>?subject=…  [["mailto:visitor-p4@example.com?subject=%D8%B1%D8%AF%3A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AF%D9%88%D8%B1%D8%A9%20PMP","https://wa.me/966501234567"]]
+PASS  wa.me link uses digits only (966501234567)  [["mailto:visitor-p4@example.com?subject=%D8%B1%D8%AF%3A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AF%D9%88%D8%B1%D8%A9%20PMP","https://wa.me/966501234567"]]
+PASS  wa.me link opens with rel=noopener noreferrer in a new tab
+PASS  mark read: status becomes مقروءة and badge drops to 2  [2]
+PASS  archive works (button flips to إلغاء الأرشفة)
+PASS  archived filter lists exactly the archived one
+PASS  search in messages -> 1 result
+PASS  local phone number (0501234567) does NOT produce a wa.me link
+PASS  delete message (after confirm): 2 remain  [تم حذف الرسالة.]
+PASS  trainee browser: no console errors  [[]]
+PASS  admin browser: no console errors  [[]]
+
+== 27 passed, 0 failed ==

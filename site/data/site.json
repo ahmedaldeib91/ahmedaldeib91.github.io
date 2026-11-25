@@ -1,0 +1,21 @@
+{
+  "_readme": "الروابط والنصوص المشتركة في الموقع كله. غيّر القيمة بين علامتي الاقتباس فقط ثم شغّل build.bat. تنبيه مهم: قيمة domain الحالية مؤقتة (example.com)، ويجب استبدالها بنطاق الموقع الحقيقي قبل النشر وإلا ستشير الروابط الأساسية (canonical) وخريطة الموقع إلى نطاق غير صحيح. أما atpBadge فهو اسم ملف شارة ATP داخل assets/badges ويتغير عند تجديدها كل سنة.",
+  "name": "Ahmed Aldeib",
+  "arabicName": "م. أحمد الديب",
+  "whatsapp": "https://wa.me/message/WFY6JB3E3WVLL1",
+  "login": "https://potp-pm.moodiy.com/login/index.php",
+  "socials": {
+    "linkedin": "https://www.linkedin.com/in/ahmed-aldeib",
+    "facebook": "https://www.facebook.com/share/1BmbRpiUu9/",
+    "instagram": "https://www.instagram.com/ahmedaldeibpmp",
+    "tiktok": "https://www.tiktok.com/@ahmed.aldeib",
+    "youtube": "https://youtube.com/@ahmedaldeibpmp"
+  },
+  "domain": "https://example.com",
+  "year": 2026,
+  "atpBadge": "atp-2026.png",
+  "supabase": {
+    "url": "https://rlfwkdvecypdjnijhojz.supabase.co",
+    "key": "sb_publishable_kl-qGZ622MNA7t-QOvCnUg_tGrUmvia"
+  }
+}

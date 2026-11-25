@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مفاهيم غير تقليدية — م. أحمد الديب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#161616;color:#eee;padding:24px 16px 80px}
+  h1{font-family:Cairo;font-size:22px;text-align:center;margin-bottom:6px}
+  .note{text-align:center;color:#999;font-size:14px;margin-bottom:28px}
+  .dir{max-width:1100px;margin:0 auto 40px;border-radius:18px;overflow:hidden;position:relative;padding:34px}
+  .tag{display:inline-block;font:700 13px Cairo;padding:4px 12px;border-radius:99px;margin-bottom:14px}
+  h2{font-family:Cairo;font-weight:900;line-height:1.2;font-size:clamp(26px,4.4vw,44px)}
+  .sub{margin-top:10px;max-width:520px;font-size:15px;opacity:.85}
+  .desc{margin-top:16px;font-size:13px;opacity:.65;max-width:560px}
+  .btn{display:inline-block;padding:11px 22px;border-radius:99px;font:700 14px Cairo;text-decoration:none;transition:transform .25s}
+  .btn:hover{transform:translateY(-3px) scale(1.04)}
+
+  /* ---------- G: Building scroll ---------- */
+  #G{background:#26282c;color:#fff}
+  #G .tag{background:#FFC400;color:#111}
+  #G .btn{background:#FFC400;color:#111}
+  .gwrap{display:grid;grid-template-columns:230px 1fr;gap:22px;margin-top:24px}
+  .tower{position:relative;background:#1b1c1f;border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center}
+  .tower svg{width:100%;max-width:170px}
+  .fl{fill:#33363b;stroke:#555;stroke-width:1.5;transition:fill .5s,transform .5s;transform-origin:center bottom}
+  .fl.on{fill:#FFC400}
+  .elev{display:flex;flex-direction:column-reverse;gap:6px;margin-top:10px;width:100%}
+  .elev button{font:600 12px 'IBM Plex Sans Arabic';background:#2f3237;color:#ddd;border:0;border-radius:8px;padding:7px;cursor:pointer;transition:background .2s}
+  .elev button.on{background:#FFC400;color:#111}
+  .scroller{height:430px;overflow-y:auto;border-radius:14px;background:#1b1c1f;scroll-behavior:smooth}
+  .scroller::-webkit-scrollbar{width:6px}.scroller::-webkit-scrollbar-thumb{background:#FFC400;border-radius:9px}
+  .floor{height:430px;padding:34px;display:flex;flex-direction:column;justify-content:center;border-bottom:2px dashed #444;position:relative}
+  .floor .n{font:900 110px Cairo;color:#ffffff10;position:absolute;left:20px;top:10px;line-height:1}
+  .floor h3{font:900 30px Cairo;color:#FFC400;position:relative}
+  .floor p{margin-top:8px;opacity:.8;max-width:380px;position:relative}
+
+  /* ---------- H: Iron triangle ---------- */
+  #H{background:#FFF4E0;color:#111}
+  #H .tag{background:#2D4BFF;color:#fff}
+  #H .btn{background:#2D4BFF;color:#fff}
+  .hwrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:22px;align-items:center}
+  .hwrap svg{width:100%;max-width:340px;touch-action:none;display:block;margin:auto}
+  .tri{fill:#fff;stroke:#111;stroke-width:4;stroke-linejoin:round}
+  .dot{fill:#2D4BFF;stroke:#111;stroke-width:4;cursor:grab}
+  .vl{font:900 15px Cairo;fill:#111}
+  .panel{background:#fff;border:3px solid #111;border-radius:16px;padding:18px;box-shadow:6px 6px 0 #111}
+  .bars div{display:flex;align-items:center;gap:8px;font:600 13px Cairo;margin-bottom:6px}
+  .bars span.b{flex:1;height:10px;background:#eee;border:2px solid #111;border-radius:6px;overflow:hidden}
+  .bars span.b i{display:block;height:100%;background:#2D4BFF;width:0;transition:width .15s}
+  .rec{margin-top:14px;padding:12px;border-radius:12px;background:#FFE14D;border:3px solid #111}
+  .rec small{display:block;font-size:12px;opacity:.7}
+  .rec b{font:900 24px Cairo;display:block}
+  .ctrl{display:flex;gap:10px;align-items:center;margin-top:12px;font:600 13px Cairo;flex-wrap:wrap}
+  .ctrl input{accent-color:#2D4BFF;flex:1;min-width:120px}
+  .ctrl button{font:700 12px Cairo;border:3px solid #111;background:#fff;border-radius:10px;padding:5px 10px;cursor:pointer}
+  .ctrl button.on{background:#2D4BFF;color:#fff}
+
+  /* ---------- I: WBS spotlight ---------- */
+  #I{background:#07070a;color:#fff;padding:0}
+  .iwrap{position:relative;height:540px;overflow:hidden;cursor:none}
+  .head{position:absolute;top:26px;right:30px;z-index:3;pointer-events:none}
+  .head .tag{background:#FF3D81;color:#fff}
+  .head h2{font-size:clamp(22px,3.4vw,34px)}
+  .tree{position:absolute;inset:0}
+  .tree svg{position:absolute;inset:0;width:100%;height:100%}
+  .tree line{stroke:#FF3D81;stroke-width:2;vector-effect:non-scaling-stroke;opacity:.7}
+  .nd{position:absolute;transform:translate(-50%,-50%);padding:9px 16px;border-radius:12px;border:2px solid #fff;background:#111;font:700 14px Cairo;white-space:nowrap;transition:background .2s,color .2s,transform .2s}
+  .nd.root{background:#FF3D81;border-color:#FF3D81;font-size:17px}
+  .nd:hover,.nd.sel{background:#fff;color:#000;transform:translate(-50%,-50%) scale(1.12)}
+  .iwrap .dark{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle 150px at var(--x,50%) var(--y,50%),transparent 0,rgba(7,7,10,.78) 70%,rgba(7,7,10,.96) 100%);z-index:2}
+  .cur{position:absolute;width:14px;height:14px;border:2px solid #FF3D81;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:4}
+  .info{position:absolute;bottom:20px;right:30px;left:30px;z-index:3;font-size:14px;min-height:44px;pointer-events:none}
+  .info b{color:#FF3D81;font-family:Cairo;font-size:16px}
+  .dwrap{padding:0 34px 30px}
+
+  @media(max-width:760px){.gwrap,.hwrap{grid-template-columns:1fr}.dir{padding:22px 16px}.dwrap{padding:0 16px 24px}.nd{font-size:11px;padding:6px 9px}}
+</style>
+</head>
+<body>
+<h1>مفاهيم غير تقليدية — التفاعل هو الفكرة</h1>
+<p class="note">هنا الموقع لا «يُقرأ» فقط، بل تتفاعل معه. جرّب كل واحد.</p>
+
+<!-- G -->
+<section class="dir" id="G">
+  <span class="tag">G · الموقع بناء يرتفع</span>
+  <h2>كل صفحة طابق<br>تصعد إليه</h2>
+  <p class="sub">مرّر داخل الصندوق: الطوابق تُبنى بالأصفر أثناء تقدّمك. أو استخدم «المصعد» للقفز إلى أي صفحة.</p>
+  <div class="gwrap">
+    <div class="tower">
+      <svg viewBox="0 0 160 230" id="tw"></svg>
+      <div class="elev" id="elev"></div>
+    </div>
+    <div class="scroller" id="sc"></div>
+  </div>
+  <p class="desc">الفكرة: الموقع كله «بناء» من ستة طوابق هي صفحاتك (عن الموقع، معهد PMI، المدرب، الدورات، المدونة، تواصل). تصعد بالتمرير، ومؤشر الارتفاع دائمًا أمامك. مناسب جدًا لخلفيتك الإنشائية، وغير مألوف تمامًا.</p>
+</section>
+
+<!-- H -->
+<section class="dir" id="H">
+  <span class="tag">H · المثلث الحديدي</span>
+  <h2>جرّب مشروعك أولًا<br>ثم تعرّف على الدورة</h2>
+  <p class="sub">اسحب النقطة داخل المثلث (النطاق · الوقت · التكلفة) وحرّك مستوى عدم اليقين، فتقترح عليك الصفحة دورة مناسبة.</p>
+  <div class="hwrap">
+    <svg viewBox="0 0 300 270" id="tri">
+      <polygon class="tri" points="150,24 30,236 270,236"/>
+      <text class="vl" x="150" y="14" text-anchor="middle">النطاق</text>
+      <text class="vl" x="30" y="258" text-anchor="middle">الوقت</text>
+      <text class="vl" x="270" y="258" text-anchor="middle">التكلفة</text>
+      <circle class="dot" id="dot" r="14" cx="150" cy="165"/>
+    </svg>
+    <div class="panel">
+      <div class="bars" id="bars"></div>
+      <div class="ctrl"><span>عدم اليقين</span><input type="range" id="unc" min="0" max="100" value="20"><button id="beg">أنا مبتدئ</button></div>
+      <div class="rec"><small>اقتراح أولي</small><b id="recn">PMP®</b><span id="recd" style="font-size:13px"></span></div>
+      <a class="btn" style="margin-top:14px" href="https://wa.me/message/WFY6JB3E3WVLL1">اسأل عنها عبر واتساب</a>
+    </div>
+  </div>
+  <p class="desc">الفكرة: الزائر يتفاعل أولًا فيفهم حاجته، وبعدها تأتي الدورات. تحوّل «قائمة دورات» إلى تجربة، وتنتهي بزر واتساب بنفس السياق. (الربط بين الأوزان والدورات اقتراحي وتعدّله أنت.)</p>
+</section>
+
+<!-- I -->
+<section class="dir" id="I">
+  <div class="iwrap" id="iw">
+    <div class="head"><span class="tag">I · شجرة العمل والكشّاف</span><h2>تنقّل في الموقع<br>بمصباح</h2></div>
+    <div class="tree" id="tree"></div>
+    <div class="dark"></div>
+    <div class="cur" id="cur"></div>
+    <div class="info" id="info"><b>حرّك المصباح</b> فوق الشجرة، وانقر أي عقدة لتعرف ما بداخلها.</div>
+  </div>
+  <div class="dwrap"><p class="desc">الفكرة: قائمة الموقع كلها «هيكل تجزئة العمل» (WBS) مظلم، ومصباح الفأرة يكشف العقد. النقر على عقدة يفتح الصفحة. مظلم ودرامي، ويعتمد على الفأرة (على الجوال يصبح اللمس هو المصباح).</p></div>
+</section>
+
+<script>
+/* ---------- G ---------- */
+(function(){
+  var pages=[['عن الموقع','لماذا هذا الموقع، وماذا تجد فيه.'],['معهد PMI','تعرّف على PMI ومنظومة ATP.'],['المدرب','م. أحمد الديب: الرقابة والمخاطر والحوكمة.'],['الدورات','ست دورات في خمسة مجالات.'],['المدونة','مقالات في إدارة المشاريع والرقابة.'],['تواصل معنا','احجز مقعدك مباشرة عبر واتساب.']];
+  var sc=document.getElementById('sc'),tw=document.getElementById('tw'),el=document.getElementById('elev'),FH=430;
+  pages.forEach(function(p,i){
+    sc.insertAdjacentHTML('beforeend','<div class="floor"><div class="n">'+(i+1)+'</div><h3>'+p[0]+'</h3><p>'+p[1]+'</p></div>');
+    var y=200-i*30;
+    tw.insertAdjacentHTML('beforeend','<rect class="fl" id="f'+i+'" x="30" y="'+y+'" width="100" height="26" rx="3"/>');
+    var b=document.createElement('button');b.textContent=(i+1)+' · '+p[0];b.onclick=function(){sc.scrollTop=i*FH};b.id='e'+i;el.appendChild(b);
+  });
+  tw.insertAdjacentHTML('beforeend','<line x1="80" y1="14" x2="80" y2="0" stroke="#FFC400" stroke-width="2"/><line x1="30" y1="14" x2="130" y2="14" stroke="#FFC400" stroke-width="3"/>');
+  function upd(){var idx=Math.min(5,Math.round(sc.scrollTop/FH));
+    pages.forEach(function(_,i){document.getElementById('f'+i).classList.toggle('on',i<=idx);document.getElementById('e'+i).classList.toggle('on',i===idx)})}
+  sc.addEventListener('scroll',upd);upd();
+})();
+
+/* ---------- H ---------- */
+(function(){
+  var svg=document.getElementById('tri'),dot=document.getElementById('dot');
+  var V=[[150,24],[30,236],[270,236]],names=['النطاق','الوقت','التكلفة'];
+  var w=[1/3,1/3,1/3],drag=false,beg=false;
+  var bars=document.getElementById('bars');
+  names.forEach(function(n,i){bars.insertAdjacentHTML('beforeend','<div>'+n+'<span class="b"><i id="bb'+i+'"></i></span><span id="bp'+i+'">0%</span></div>')});
+  function bary(x,y){var d=(V[1][1]-V[2][1])*(V[0][0]-V[2][0])+(V[2][0]-V[1][0])*(V[0][1]-V[2][1]);
+    var a=((V[1][1]-V[2][1])*(x-V[2][0])+(V[2][0]-V[1][0])*(y-V[2][1]))/d;
+    var b=((V[2][1]-V[0][1])*(x-V[2][0])+(V[0][0]-V[2][0])*(y-V[2][1]))/d;return [a,b,1-a-b]}
+  function set(x,y){var l=bary(x,y).map(function(v){return Math.max(0,v)});var s=l[0]+l[1]+l[2];w=l.map(function(v){return v/s});render()}
+  function render(){
+    var x=0,y=0;w.forEach(function(v,i){x+=v*V[i][0];y+=v*V[i][1]});dot.setAttribute('cx',x);dot.setAttribute('cy',y);
+    w.forEach(function(v,i){document.getElementById('bb'+i).style.width=(v*100)+'%';document.getElementById('bp'+i).textContent=Math.round(v*100)+'%'});
+    var u=+document.getElementById('unc').value,r,d;
+    if(beg){r='CAPM®';d='نقطة بداية مناسبة لمن يدخل المجال.'}
+    else if(u>70){r='PMI-RMP®';d='عدم اليقين العالي يعني إدارة مخاطر.'}
+    else{var m=Math.max.apply(null,w),i=w.indexOf(m);
+      if(m<0.45){r='PMI-PMOCP™';d='توازن بين القيود يشير إلى مكتب إدارة مشاريع.'}
+      else if(i===0){r='PMP®';d='ضبط النطاق هو أساس إدارة المشاريع.'}
+      else if(i===1){r='PMI-ACP®';d='ضغط الوقت يدفع إلى المنهجيات الرشيقة.'}
+      else{r='PMI-CP™';d='ضبط التكلفة في مشاريع البناء.'}}
+    document.getElementById('recn').textContent=r;document.getElementById('recd').textContent=d}
+  function pt(e){var p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+  svg.addEventListener('pointerdown',function(e){drag=true;svg.setPointerCapture(e.pointerId);var p=pt(e);set(p.x,p.y)});
+  svg.addEventListener('pointermove',function(e){if(drag){var p=pt(e);set(p.x,p.y)}});
+  svg.addEventListener('pointerup',function(){drag=false});
+  document.getElementById('unc').addEventListener('input',render);
+  document.getElementById('beg').onclick=function(){beg=!beg;this.classList.toggle('on',beg);render()};
+  render();
+})();
+
+/* ---------- I ---------- */
+(function(){
+  var iw=document.getElementById('iw'),tree=document.getElementById('tree'),cur=document.getElementById('cur'),info=document.getElementById('info');
+  var data=[['عن الموقع','فكرة الموقع ومن يخدم.'],['معهد PMI','ما هو PMI وما معنى ATP.'],['المدرب','م. أحمد الديب وتخصصاته.'],['الدورات','PMP · CAPM · PMI-RMP · PMI-ACP · PMI-CP · PMI-PMOCP'],['المدونة','مقالات متخصصة.'],['تواصل معنا','واتساب مباشرة.']];
+  var svg='<svg viewBox="0 0 100 100" preserveAspectRatio="none">',html='';
+  var rx=33,ry=30,cx=50,cy=54;
+  data.forEach(function(d,i){var a=-Math.PI/2+i*(2*Math.PI/6),x=cx+rx*Math.cos(a)*1.15,y=cy+ry*Math.sin(a);
+    svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x+'" y2="'+y+'"/>';
+    html+='<div class="nd" data-i="'+i+'" style="left:'+x+'%;top:'+y+'%">'+d[0]+'</div>'});
+  svg+='</svg>';
+  tree.innerHTML=svg+html+'<div class="nd root" style="left:'+cx+'%;top:'+cy+'%">أحمد الديب</div>';
+  function mv(cx_,cy_){var r=iw.getBoundingClientRect(),x=cx_-r.left,y=cy_-r.top;iw.style.setProperty('--x',x+'px');iw.style.setProperty('--y',y+'px');cur.style.left=x+'px';cur.style.top=y+'px'}
+  iw.addEventListener('mousemove',function(e){mv(e.clientX,e.clientY)});
+  iw.addEventListener('touchmove',function(e){var t=e.touches[0];mv(t.clientX,t.clientY)},{passive:true});
+  tree.querySelectorAll('.nd[data-i]').forEach(function(n){
+    n.addEventListener('click',function(){tree.querySelectorAll('.nd').forEach(function(o){o.classList.remove('sel')});n.classList.add('sel');var d=data[n.dataset.i];info.innerHTML='<b>'+d[0]+'</b> — '+d[1]});
+  });
+})();
+</script>
+</body>
+</html>

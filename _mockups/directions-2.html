@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اتجاهات إضافية — م. أحمد الديب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Reem+Kufi:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#1a1a1a;color:#eee;padding:24px 16px 80px}
+  h1{font-family:Cairo;font-size:22px;text-align:center;margin-bottom:6px}
+  .note{text-align:center;color:#999;font-size:14px;margin-bottom:28px}
+  .dir{max-width:1100px;margin:0 auto 36px;border-radius:18px;overflow:hidden;position:relative;min-height:470px;padding:40px}
+  .tag{position:absolute;top:14px;left:14px;font:700 13px Cairo;padding:4px 12px;border-radius:99px;z-index:6}
+  .dir h2{font-family:Cairo;font-weight:900;line-height:1.2;position:relative;z-index:3;font-size:clamp(30px,5vw,56px)}
+  .sub{margin-top:12px;max-width:460px;font-size:15px;opacity:.8;position:relative;z-index:3}
+  .btn{display:inline-block;margin-top:20px;padding:12px 26px;border-radius:99px;font:700 15px Cairo;text-decoration:none;position:relative;z-index:3;transition:transform .25s}
+  .btn:hover{transform:translateY(-3px) scale(1.05)}
+  .desc{margin-top:14px;font-size:13px;opacity:.65;position:relative;z-index:3;max-width:520px}
+
+  /* ---------- D: Editorial ---------- */
+  #D{background:#F2EDE4;color:#111;padding-bottom:110px}
+  #D .tag{background:#111;color:#F2EDE4}
+  #D h2{font-family:'Reem Kufi',Cairo;font-size:clamp(40px,8vw,104px);line-height:1.05}
+  #D h2 .w{display:inline-block;transition:transform .35s cubic-bezier(.2,.9,.3,1.4),color .2s;cursor:default}
+  #D h2 .w:hover{transform:translateY(-12px) rotate(-4deg);color:#E63B2E}
+  #D .btn{background:#E63B2E;color:#fff}
+  #D .sub{color:#111}
+  .seal{position:absolute;left:36px;top:70px;width:170px;height:170px;z-index:2}
+  .seal svg{width:100%;height:100%;animation:spin 18s linear infinite}
+  .seal b{position:absolute;inset:0;display:grid;place-items:center;font:900 22px Cairo;color:#E63B2E}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .rule{position:absolute;right:0;left:0;bottom:0;height:70px;background:#111;overflow:hidden;direction:ltr;display:flex;align-items:center}
+  .rule div{white-space:nowrap;font:700 22px 'Reem Kufi';color:#F2EDE4;animation:mq 22s linear infinite;display:inline-block}
+  .rule i{color:#E63B2E;font-style:normal;margin:0 18px}
+  @keyframes mq{to{transform:translateX(-50%)}}
+
+  /* ---------- E: Aurora + 3D cards ---------- */
+  #E{background:#070B14;color:#fff;perspective:1200px}
+  #E .tag{background:linear-gradient(90deg,#7C5CFF,#19D3C5);color:#fff}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 14s ease-in-out infinite alternate}
+  .b1{width:360px;height:360px;background:#7C5CFF;top:-80px;right:-60px}
+  .b2{width:320px;height:320px;background:#19D3C5;bottom:-80px;left:10%;animation-delay:-5s}
+  .b3{width:240px;height:240px;background:#ff5fa2;top:30%;left:-60px;animation-delay:-9s}
+  @keyframes drift{to{transform:translate(60px,-40px) scale(1.25)}}
+  #E h2 span{background:linear-gradient(90deg,#B7A6FF,#19D3C5);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #E .btn{background:#fff;color:#070B14}
+  .cards3d{position:relative;z-index:3;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}
+  .c3{padding:18px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff25;backdrop-filter:blur(10px);transition:transform .15s;transform-style:preserve-3d;will-change:transform}
+  .c3 small{opacity:.6;font-size:11px;direction:ltr;display:block;text-align:right}
+  .c3 b{font:700 17px Cairo;display:block;margin-top:6px;transform:translateZ(30px)}
+  .c3 em{font-style:normal;display:inline-block;margin-top:10px;font-size:12px;color:#19D3C5;transform:translateZ(20px)}
+
+  /* ---------- F: Network diagram ---------- */
+  #F{background:#F6F8F2;color:#10241B;padding:0;min-height:520px}
+  #F .tag{background:#10241B;color:#fff}
+  #F canvas{position:absolute;inset:0;width:100%;height:100%}
+  #F .txt{position:relative;z-index:3;padding:40px;pointer-events:none;max-width:520px;margin-right:0}
+  #F .txt *{pointer-events:auto}
+  #F h2 em{font-style:normal;color:#00A862}
+  #F .btn{background:#00A862;color:#fff}
+
+  @media(max-width:700px){.dir{padding:28px 18px}.cards3d{grid-template-columns:1fr}.seal{width:110px;height:110px;top:56px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<h1>اتجاهات إضافية — الحركة تعمل مباشرة</h1>
+<p class="note">حرّك الفأرة فوق العناوين والبطاقات والعُقد، ففيها تفاعل.</p>
+
+<!-- D -->
+<section class="dir" id="D">
+  <div class="tag">D · صحيفة جريئة</div>
+  <div class="seal">
+    <svg viewBox="0 0 200 200"><defs><path id="c" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+      <text font-family="Cairo" font-weight="700" font-size="17" fill="#111" letter-spacing="3"><textPath href="#c">PMI AUTHORIZED TRAINING PARTNER ✦ PMI AUTHORIZED TRAINING PARTNER ✦</textPath></text></svg>
+    <b>ATP</b>
+  </div>
+  <h2><span class="w">الرقابة</span> <span class="w">تصنع</span><br><span class="w">مشاريع</span> <span class="w">تنجح</span></h2>
+  <p class="sub">حروف كوفية ضخمة على ورق دافئ، وختم دوّار، وكلمات تقفز عند لمسها. فخم وصريح كغلاف مجلة.</p>
+  <a class="btn" href="https://wa.me/message/WFY6JB3E3WVLL1">احجز عبر واتساب</a>
+  <p class="desc">الفكرة: السلطة المهنية بصوت عالٍ. ألوان قليلة (أسود وورقي وأحمر)، وتركيز كامل على الخط. أنظف من الثلاثة الأولى وأقل «تقنية»، ويحتاج نصوصًا قوية.</p>
+  <div class="rule"><div>PMP<i>✦</i>CAPM<i>✦</i>PMI-RMP<i>✦</i>PMI-ACP<i>✦</i>PMI-CP<i>✦</i>PMI-PMOCP<i>✦</i>PMP<i>✦</i>CAPM<i>✦</i>PMI-RMP<i>✦</i>PMI-ACP<i>✦</i>PMI-CP<i>✦</i>PMI-PMOCP<i>✦</i></div></div>
+</section>
+
+<!-- E -->
+<section class="dir" id="E">
+  <div class="tag">E · شفق وزجاج</div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <h2>ارتقِ بمسارك المهني<br>إلى <span>مستوى دولي</span></h2>
+  <p class="sub">خلفية متحركة بألوان الشفق، وبطاقات زجاجية تميل ثلاثية الأبعاد مع حركة الفأرة. هو أشبه بمنصات التعليم العالمية.</p>
+  <div class="cards3d">
+    <div class="c3"><small>Project Management</small><b>PMP®</b><em>التفاصيل عبر واتساب ←</em></div>
+    <div class="c3"><small>Risk Management</small><b>PMI-RMP®</b><em>التفاصيل عبر واتساب ←</em></div>
+    <div class="c3"><small>PMO</small><b>PMI-PMOCP™</b><em>التفاصيل عبر واتساب ←</em></div>
+  </div>
+  <a class="btn" href="https://wa.me/message/WFY6JB3E3WVLL1">ابدأ الآن</a>
+  <p class="desc">الفكرة: «ريادة تعليمية عالمية» بمظهر عصري. الأكثر شبهًا بالمنصات التي ذكرتها، وأسلمها للجوال، وحركته ناعمة لا صاخبة.</p>
+</section>
+
+<!-- F -->
+<section class="dir" id="F">
+  <div class="tag">F · مخطط الشبكة</div>
+  <canvas id="net"></canvas>
+  <div class="txt">
+    <h2>كل دورة <em>عقدة</em><br>في شبكة مشروعك</h2>
+    <p class="sub">الدورات عُقد في مخطط شبكي (PERT) حيّ. حرّك الفأرة فتتجاذب العُقد، وتمرّ عليها فتنير الروابط.</p>
+    <a class="btn" href="https://wa.me/message/WFY6JB3E3WVLL1">احجز عبر واتساب</a>
+    <p class="desc">الفكرة: الصفحة الرئيسية رسم تفاعلي لمخطط شبكي، والزائر يلعب به. هو الأكثر تفرّدًا وارتباطًا بإدارة المشاريع، وأثقلها تنفيذًا.</p>
+  </div>
+</section>
+
+<script>
+  // E: tilt
+  document.querySelectorAll('.c3').forEach(function(c){
+    c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      c.style.transform='rotateY('+(x*-22)+'deg) rotateX('+(y*18)+'deg) translateZ(10px)'});
+    c.addEventListener('mouseleave',function(){c.style.transform=''});
+  });
+  // F: network
+  (function(){
+    var cv=document.getElementById('net'),ctx=cv.getContext('2d'),sec=document.getElementById('F');
+    var names=['PMP','CAPM','PMI-RMP','PMI-ACP','PMI-CP','PMI-PMOCP'];
+    var edges=[[1,0],[0,2],[0,3],[0,4],[0,5],[2,5],[4,5]];
+    var W,H,N=[],m={x:-999,y:-999},dpr=window.devicePixelRatio||1;
+    function size(){var r=sec.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+      if(!N.length){names.forEach(function(n,i){N.push({n:n,x:W*0.18+Math.random()*W*0.3,y:H*(0.15+0.14*i)+10,vx:0,vy:0,hx:0,hy:0})})}
+      N.forEach(function(o,i){o.hx=W*(0.12+0.26*((i%3)/2+(i>2?0.1:0)));o.hy=H*(0.3+0.4*(i>2?1:0)+0.08*(i%3))})}
+    size();addEventListener('resize',size);
+    sec.addEventListener('mousemove',function(e){var r=sec.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top});
+    sec.addEventListener('mouseleave',function(){m.x=m.y=-999});
+    function step(){
+      ctx.clearRect(0,0,W,H);
+      N.forEach(function(o){
+        o.vx+=(o.hx-o.x)*0.012;o.vy+=(o.hy-o.y)*0.012;
+        var dx=m.x-o.x,dy=m.y-o.y,d=Math.hypot(dx,dy);
+        if(d<220){o.vx+=dx*0.004;o.vy+=dy*0.004}
+        o.vx*=0.88;o.vy*=0.88;o.x+=o.vx;o.y+=o.vy;
+        o.hot=d<90;
+      });
+      edges.forEach(function(e){var a=N[e[0]],b=N[e[1]];
+        ctx.strokeStyle=(a.hot||b.hot)?'#00A862':'#10241B33';ctx.lineWidth=(a.hot||b.hot)?2.5:1.5;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()});
+      N.forEach(function(o){
+        ctx.fillStyle=o.hot?'#00A862':'#fff';ctx.strokeStyle='#10241B';ctx.lineWidth=2;
+        var w=o.n.length*9+30;
+        ctx.beginPath();ctx.roundRect(o.x-w/2,o.y-16,w,32,10);ctx.fill();ctx.stroke();
+        ctx.fillStyle=o.hot?'#fff':'#10241B';ctx.font='700 13px Cairo';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.n,o.x,o.y+1)});
+      requestAnimationFrame(step)}
+    step();
+  })();
+</script>
+</body>
+</html>

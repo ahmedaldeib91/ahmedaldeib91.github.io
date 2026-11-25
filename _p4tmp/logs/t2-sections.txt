@@ -1,0 +1,12 @@
+PASS  dashboard shows admin link for admin
+PASS  section stats renders  [{"title":"الإحصاءات","len":1214,"loading":false,"fail":false,"cur":"الإحصاءات"}]
+PASS  section trainees renders  [{"title":"المتدربون","len":584,"loading":false,"fail":false,"cur":"المتدربون"}]
+PASS  section enrollments renders  [{"title":"الاشتراكات","len":1249,"loading":false,"fail":false,"cur":"الاشتراكات"}]
+PASS  section courses renders  [{"title":"الدورات","len":1154,"loading":false,"fail":false,"cur":"الدورات"}]
+PASS  section messages renders  [{"title":"الرسائل","len":390,"loading":false,"fail":false,"cur":"الرسائل33 رسائل جديدة"}]
+PASS  section blog renders  [{"title":"المدونة","len":400,"loading":false,"fail":false,"cur":"المدونة"}]
+PASS  section settings renders  [{"title":"الإعدادات","len":522,"loading":false,"fail":false,"cur":"الإعدادات"}]
+errors: []
+PASS  no console errors  [[]]
+
+== 9 passed, 0 failed ==

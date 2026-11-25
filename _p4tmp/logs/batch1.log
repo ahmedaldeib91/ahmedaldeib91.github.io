@@ -1,0 +1,15 @@
+== running t2-sections ==
+== 9 passed, 0 failed ==
+== running t3-trainees ==
+== 31 passed, 1 failed ==
+== running t4-courses ==
+== 41 passed, 0 failed ==
+== running t4b-courses ==
+== 10 passed, 0 failed ==
+== running t4c-courses ==
+== 14 passed, 0 failed ==
+== running t5-enroll-msg ==
+== 27 passed, 0 failed ==
+== running t6-settings-blog ==
+== 37 passed, 2 failed ==
+BATCH1 DONE

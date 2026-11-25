@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اتجاهات التصميم — م. أحمد الديب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#1a1a1a;color:#eee;padding:24px 16px 80px}
+  h1{font-family:Cairo;font-size:22px;text-align:center;margin-bottom:6px}
+  .note{text-align:center;color:#999;font-size:14px;margin-bottom:28px}
+  .dir{max-width:1100px;margin:0 auto 36px;border-radius:18px;overflow:hidden;position:relative;min-height:440px;padding:36px 40px}
+  .tag{position:absolute;top:14px;left:14px;font:700 13px Cairo;padding:4px 12px;border-radius:99px;z-index:5}
+  .dir h2{font-family:Cairo;font-weight:900;line-height:1.15;position:relative;z-index:3}
+  .dir p.sub{margin-top:10px;max-width:460px;font-size:15px;opacity:.8;position:relative;z-index:3}
+  .btn{display:inline-block;margin-top:20px;padding:12px 24px;border-radius:99px;font:700 15px Cairo;text-decoration:none;position:relative;z-index:3;transition:transform .25s}
+  .btn:hover{transform:translateY(-3px) scale(1.04)}
+  .desc{margin-top:14px;font-size:13px;opacity:.65;position:relative;z-index:3;max-width:520px}
+
+  /* ---------- A: Gantt ---------- */
+  #A{background:#0B1020;color:#F4F1EA;padding-bottom:280px}
+  #A .tag{background:#FF6B2C;color:#0B1020}
+  #A h2{font-size:clamp(30px,5vw,54px)} #A h2 em{font-style:normal;color:#FF6B2C}
+  #A .btn{background:#FF6B2C;color:#0B1020}
+  .gantt{position:absolute;inset:auto 0 0 0;height:230px;padding:0 40px 24px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;opacity:.95}
+  .row{display:flex;align-items:center;gap:10px;font:600 12px 'IBM Plex Sans Arabic'}
+  .row span{width:84px;color:#9aa3bd;text-align:left;direction:ltr;flex:none}
+  .track{flex:1;height:14px;position:relative;background:repeating-linear-gradient(90deg,#ffffff0d 0 1px,transparent 1px 10%)}
+  .bar{position:absolute;top:0;bottom:0;border-radius:4px;background:#2a3a6b;transform-origin:right;transform:scaleX(0);animation:grow 1.2s cubic-bezier(.2,.8,.2,1) forwards}
+  .bar.crit{background:#FF6B2C}
+  @keyframes grow{to{transform:scaleX(1)}}
+  .scan{position:absolute;top:0;bottom:0;width:2px;background:#FF6B2C;box-shadow:0 0 18px #FF6B2C;animation:scan 7s linear infinite;z-index:2}
+  @keyframes scan{from{right:40px}to{right:calc(100% - 40px)}}
+
+  /* ---------- B: Control room ---------- */
+  #B{background:#0A0A0A;color:#fff}
+  #B .tag{background:#C6FF3D;color:#000}
+  #B h2{font-size:clamp(30px,5vw,54px)} #B h2 em{font-style:normal;background:#C6FF3D;color:#000;padding:0 10px;display:inline-block;transform:rotate(-2deg)}
+  #B .btn{background:#C6FF3D;color:#000}
+  .marquee{position:absolute;bottom:0;left:0;right:0;overflow:hidden;border-top:1px solid #333;padding:10px 0;direction:ltr;background:#111}
+  .marquee div{display:inline-block;white-space:nowrap;font:900 28px Cairo;color:transparent;-webkit-text-stroke:1px #C6FF3D;animation:mq 18s linear infinite}
+  @keyframes mq{to{transform:translateX(-50%)}}
+  .heat{position:absolute;top:60px;left:40px;display:grid;grid-template-columns:repeat(5,34px);gap:5px}
+  .heat i{width:34px;height:34px;border-radius:6px;background:#1c1c1c;animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{background:#1c1c1c}50%{background:var(--c,#C6FF3D)}}
+  .kpis{display:flex;gap:28px;margin-top:26px;position:relative;z-index:3}
+  .kpi b{font:900 44px Cairo;color:#C6FF3D;display:block;line-height:1}
+  .kpi small{font-size:12px;opacity:.7}
+
+  /* ---------- C: Blueprint ---------- */
+  #C{background:#0E3B6B;color:#fff;background-image:linear-gradient(#ffffff14 1px,transparent 1px),linear-gradient(90deg,#ffffff14 1px,transparent 1px);background-size:36px 36px}
+  #C .tag{background:#FFD23F;color:#0E3B6B}
+  #C h2{font-size:clamp(30px,5vw,54px)} #C h2 em{font-style:normal;color:#FFD23F}
+  #C .btn{background:#FFD23F;color:#0E3B6B}
+  .bp{position:absolute;left:30px;bottom:0;width:min(46%,430px);height:92%}
+  .bp path,.bp line,.bp rect{fill:none;stroke:#fff;stroke-width:2;stroke-dasharray:600;stroke-dashoffset:600;animation:draw 3.5s ease forwards}
+  .bp .y{stroke:#FFD23F}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .arm{transform-origin:300px 70px;animation:sway 6s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+
+  @media(max-width:700px){.dir{padding:28px 20px}.heat,.bp{opacity:.25}.gantt{padding:0 20px 16px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}.bar{transform:none}.bp *{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<h1>ثلاثة اتجاهات للموقع — الحركة تعمل مباشرة</h1>
+<p class="note">هذه نماذج للروح العامة والحركة فقط، وليست الموقع نفسه. مرّر وراقب ثم أخبرني أيها يشبهك.</p>
+
+<!-- A -->
+<section class="dir" id="A">
+  <div class="tag">A · مخطط المشروع</div>
+  <h2>مشاريع أكثر <em>انضباطًا</em><br>وقرارات أكثر استنادًا للتحليل</h2>
+  <p class="sub">مسارك التدريبي يُرسم أمامك كجدول جانت حقيقي، والدورات هي مهامه.</p>
+  <a class="btn" href="https://wa.me/message/WFY6JB3E3WVLL1">احجز مقعدك عبر واتساب</a>
+  <p class="desc">الفكرة: الصفحة الرئيسية كلها شريط زمني لمشروع. المسار الحرج بالبرتقالي، وخط التقدّم يمسح الصفحة. مناسب جدًا لمجالك لأن الزائر يرى «إدارة المشاريع» ولا يقرأ عنها فقط.</p>
+  <div class="scan"></div>
+  <div class="gantt">
+    <div class="row"><span>CAPM</span><div class="track"><div class="bar" style="right:0;width:30%;animation-delay:.2s"></div></div></div>
+    <div class="row"><span>PMP</span><div class="track"><div class="bar crit" style="right:12%;width:42%;animation-delay:.5s"></div></div></div>
+    <div class="row"><span>PMI-RMP</span><div class="track"><div class="bar crit" style="right:40%;width:28%;animation-delay:.8s"></div></div></div>
+    <div class="row"><span>PMI-ACP</span><div class="track"><div class="bar" style="right:35%;width:30%;animation-delay:1.1s"></div></div></div>
+    <div class="row"><span>PMI-CP</span><div class="track"><div class="bar" style="right:55%;width:30%;animation-delay:1.4s"></div></div></div>
+    <div class="row"><span>PMI-PMOCP</span><div class="track"><div class="bar crit" style="right:66%;width:32%;animation-delay:1.7s"></div></div></div>
+  </div>
+</section>
+
+<!-- B -->
+<section class="dir" id="B">
+  <div class="tag">B · غرفة التحكم</div>
+  <div class="heat" id="heat"></div>
+  <h2>أدِر المخاطر<br>قبل أن <em>تُديرك</em></h2>
+  <p class="sub">حروف عملاقة، ألوان صادمة، ومؤشرات حية. جريء وحاد كلوحة قيادة.</p>
+  <div class="kpis">
+    <div class="kpi"><b data-n="6">0</b><small>دورات</small></div>
+    <div class="kpi"><b data-n="5">0</b><small>مجالات</small></div>
+    <div class="kpi"><b>ATP</b><small>PMI Authorized</small></div>
+  </div>
+  <a class="btn" href="https://wa.me/message/WFY6JB3E3WVLL1">ابدأ عبر واتساب</a>
+  <p class="desc">الفكرة: خلفية سوداء ولون ليموني ساطع، مصفوفة مخاطر نابضة، شريط نصي لا يتوقف. أجرأ الثلاثة وأكثرها «غير تقليدي»، وأخطرها لو لم نضبط التباين.</p>
+  <div class="marquee"><div>PMP ✦ CAPM ✦ PMI-RMP ✦ PMI-ACP ✦ PMI-CP ✦ PMI-PMOCP ✦ PMP ✦ CAPM ✦ PMI-RMP ✦ PMI-ACP ✦ PMI-CP ✦ PMI-PMOCP ✦&nbsp;</div></div>
+</section>
+
+<!-- C -->
+<section class="dir" id="C">
+  <div class="tag">C · المخطط الهندسي</div>
+  <svg class="bp" viewBox="0 0 400 420" aria-hidden="true">
+    <line x1="20" y1="400" x2="380" y2="400"/>
+    <rect x="60" y="250" width="110" height="150"/><line x1="60" y1="300" x2="170" y2="300"/><line x1="60" y1="350" x2="170" y2="350"/><line x1="115" y1="250" x2="115" y2="400"/>
+    <rect x="200" y="160" width="110" height="240"/><line x1="200" y1="220" x2="310" y2="220"/><line x1="200" y1="280" x2="310" y2="280"/><line x1="200" y1="340" x2="310" y2="340"/>
+    <line class="y" x1="340" y1="400" x2="340" y2="40"/>
+    <g class="arm"><line class="y" x1="340" y1="70" x2="150" y2="70"/><line class="y" x1="340" y1="70" x2="385" y2="70"/><line class="y" x1="160" y1="70" x2="160" y2="120"/></g>
+  </svg>
+  <div style="margin-right:0;max-width:520px;margin-left:auto;position:relative;z-index:3">
+    <h2>من <em>الهندسة</em> إلى الحوكمة<br>بمنهجية دولية</h2>
+    <p class="sub">خطوط تُرسم أمامك وكأنها مخطط، مع رافعة تتحرك. لغة مهندس مدني تبني مشروعًا.</p>
+    <a class="btn" href="https://wa.me/message/WFY6JB3E3WVLL1">تواصل عبر واتساب</a>
+    <p class="desc">الفكرة: خلفية زرقاء بشبكة هندسية ورسوم تُرسم بالخط. أقرب لهويتك كمهندس، وأهدأ من B وأكثر حميمية من A. الحركة أخف، وتناسب جمهورًا رسميًا.</p>
+  </div>
+</section>
+
+<script>
+  // heat matrix
+  var h=document.getElementById('heat'),cols=['#C6FF3D','#ffd23f','#ff4d4d'];
+  for(var i=0;i<25;i++){var c=document.createElement('i');c.style.setProperty('--c',cols[(i%5+Math.floor(i/5))>6?2:(i%5+Math.floor(i/5))>3?1:0]);c.style.animationDelay=(Math.random()*3)+'s';h.appendChild(c)}
+  // counters
+  document.querySelectorAll('[data-n]').forEach(function(el){var n=+el.dataset.n,k=0;var t=setInterval(function(){el.textContent=++k;if(k>=n)clearInterval(t)},160)});
+</script>
+</body>
+</html>

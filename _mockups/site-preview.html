@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>معاينة الموقع الكاملة — نموذج</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A0615;--ink2:#130B28;--vio:#2A1157;--vio2:#5B2D8F;--lav:#B79CF0;
+  --or:#F5622A;--mag:#F0447E;--vi:#9B6BFF;--cy:#18C8E4;--ok:#22C77E;
+  --tx:#F4EFFF;--mut:#BBAED8;--glass:rgba(255,255,255,.05);--bd:rgba(255,255,255,.11);
+  --paper:#F4EFFB;--pink:#1B0E3A;--pmut:#5B4B80;
+  --grad:linear-gradient(110deg,#FF7A3D 0%,#F0447E 50%,#9B6BFF 100%);
+  --btn:linear-gradient(110deg,#E8501C,#D6336C);
+  --fd:'Readex Pro','IBM Plex Sans Arabic',sans-serif;--fb:'IBM Plex Sans Arabic',sans-serif;--fn:'Space Grotesk','Readex Pro',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--ink);color:var(--tx);min-height:100vh;overflow-x:hidden;line-height:1.75;font-size:16px;
+  background-image:radial-gradient(900px 600px at 85% -5%,#3a1a6e66,transparent 60%),radial-gradient(700px 500px at -5% 45%,#F5622A14,transparent 60%),radial-gradient(800px 600px at 60% 100%,#18C8E414,transparent 60%);background-attachment:fixed}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
+img{max-width:100%}
+h1,h2,h3,h4{font-family:var(--fd);text-wrap:balance}
+.spot{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(520px circle at var(--mx,70%) var(--my,20%),rgba(155,107,255,.16),transparent 60%)}
+.prog{position:fixed;top:0;left:0;height:3px;width:0;z-index:200;background:var(--grad)}
+.note{background:#F5622A22;border-bottom:1px solid #F5622A55;padding:6px 16px;font-size:12.5px;text-align:center}
+/* strip + nav */
+.strip{max-width:1240px;margin:0 auto;padding:10px 20px 0;display:flex;align-items:center;gap:16px;font-size:13px;color:var(--mut);flex-wrap:wrap}
+.strip .soc{display:flex;gap:6px;margin-inline-start:auto}
+.strip .soc a{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--bd);transition:.25s}
+.strip .soc a .si{width:17px;height:17px}
+.strip .soc a:hover{background:var(--bc,var(--vi));border-color:transparent;color:#fff;transform:translateY(-3px)}
+header.nav{position:sticky;top:12px;z-index:60;max-width:1240px;margin:12px auto 0;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:22px;
+  background:rgba(14,8,30,.72);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--bd);box-shadow:0 18px 50px #0007;width:calc(100% - 40px)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:50px;display:block;transition:transform .6s}.brand:hover img{transform:rotate(360deg)}
+.brand img.lp{width:50px;height:50px;border-radius:50%;object-fit:cover;object-position:50% 14%;box-shadow:0 0 0 2px #0A0615,0 0 0 4px #F0447E}
+.wm{font-family:'Unbounded',sans-serif;font-weight:800;font-size:17px;line-height:1.08;letter-spacing:.06em;direction:ltr;text-align:start;text-transform:uppercase}
+.wm span{display:block}.wm .l2{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600;letter-spacing:.18em;font-size:14px}
+.si{width:18px;height:18px;fill:currentColor;flex:none}
+.fgrid a .si{display:inline-block;vertical-align:middle;margin-inline-end:8px}
+nav{display:grid;grid-template-columns:repeat(4,auto);gap:2px 4px;margin-inline-start:10px}
+nav a{text-align:center;white-space:nowrap}
+nav a{position:relative;padding:10px 15px;font-size:15px;font-weight:500;color:var(--mut);border-radius:14px;transition:.25s;font-family:var(--fd)}
+nav a:hover{color:#fff;background:var(--glass)}
+nav a.on{color:#fff;background:linear-gradient(135deg,#5B2D8F,#3a1a6e);box-shadow:inset 0 0 0 1px #ffffff22}
+nav a.on:after{content:"";position:absolute;inset-inline:30%;bottom:3px;height:2px;border-radius:2px;background:var(--grad)}
+.lang{margin-inline-start:auto;min-width:56px;padding:9px 14px;border-radius:99px;border:1px solid var(--lav);background:var(--glass);font:700 14px var(--fn);letter-spacing:.04em;transition:.25s}
+.lang:hover{background:var(--grad);border-color:transparent;transform:translateY(-2px)}
+html[lang=en] h1 .en{display:none}
+html[lang=en] .brand img{transform:none}
+.lang~.lg{margin-inline-start:0}
+.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--lav);background:var(--glass);display:grid;place-items:center;transition:.25s}
+.theme:hover{background:var(--grad);border-color:transparent;transform:translateY(-2px) rotate(20deg)}
+.theme svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.theme .sun{display:block}.theme .moon{display:none}
+html[data-theme=light] .theme .sun{display:none}html[data-theme=light] .theme .moon{display:block}
+.lg{margin-inline-start:auto;padding:9px 18px;border-radius:99px;border:1px solid var(--bd);font-weight:600;font-size:14px;white-space:nowrap;transition:.25s;font-family:var(--fd)}
+.lg:hover{background:var(--glass);border-color:var(--lav);transform:translateY(-2px)}
+.wa{background:var(--btn);color:#fff;padding:10px 20px;border-radius:99px;font-weight:600;font-size:14px;white-space:nowrap;transition:.25s;font-family:var(--fd);box-shadow:0 8px 24px #F5622A44}
+.wa:hover{transform:translateY(-2px);box-shadow:0 12px 30px #F0447E66}
+.fab{position:fixed;inset-inline-start:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;background:var(--ok);display:grid;place-items:center;box-shadow:0 8px 24px #0008;animation:pulse 2.4s infinite}
+.fab svg{width:28px;height:28px;fill:#04210f}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #22C77E88}70%{box-shadow:0 0 0 18px #22C77E00}100%{box-shadow:0 0 0 0 #22C77E00}}
+/* pages */
+.page{display:none;padding:0 20px 60px;max-width:1240px;margin:auto}.page.on{display:block}
+.page.on .rv{animation:up .8s cubic-bezier(.2,.7,.2,1) both}
+.page.on .rv:nth-child(2){animation-delay:.1s}.page.on .rv:nth-child(3){animation-delay:.2s}.page.on .rv:nth-child(4){animation-delay:.3s}
+@keyframes up{from{opacity:0;transform:translateY(40px) rotateX(12deg)}to{opacity:1;transform:none}}
+.reveal{opacity:0;transform:translateY(46px) rotateX(10deg);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}.reveal.show{opacity:1;transform:none}
+/* type + shared */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--cy);font-weight:600;font-size:14px;font-family:var(--fd)}
+.eyebrow:before{content:"";width:22px;height:2px;background:var(--cy);border-radius:2px}
+h1{font-size:clamp(34px,5.4vw,66px);line-height:1.18;font-weight:700;letter-spacing:-.5px}
+h2{font-size:clamp(26px,3.6vw,44px);font-weight:700;line-height:1.25;margin:6px 0 10px}
+h3{font-size:19px;font-weight:600;margin-bottom:6px}
+em.g{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.en{color:var(--mut);font-size:.5em;font-weight:400;direction:ltr;display:block;margin-top:14px;font-family:var(--fn);letter-spacing:.2px;line-height:1.5}
+.sub{color:var(--mut);max-width:680px;font-size:17px}
+section{padding:70px 0}
+.btn{display:inline-block;padding:13px 28px;border-radius:99px;font-weight:600;transition:.25s;font-family:var(--fd)}
+.btn.p{background:var(--btn);color:#fff;box-shadow:0 10px 30px #F5622A44}.btn.s{border:1px solid var(--bd);background:var(--glass)}
+.btn:hover{transform:translateY(-3px)}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.card{position:relative;background:var(--glass);border:1px solid var(--bd);border-radius:24px;padding:26px;transform-style:preserve-3d;transition:transform .2s,border-color .3s,background .3s;will-change:transform}
+.card:hover{border-color:#B79CF088;background:rgba(255,255,255,.08)}
+.card p{color:var(--mut);font-size:15.5px}
+.grid{display:grid;gap:18px}.g3{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.ph-line{color:var(--mut);border:1px dashed var(--bd);border-radius:14px;padding:12px 16px;font-size:14px;margin-top:14px}
+.phead{padding:70px 0 10px}.phead .sub{margin-top:8px}
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:center;padding:50px 0 10px;min-height:640px}
+.hero .lead{color:var(--mut);font-size:19px;margin:22px 0 28px;max-width:540px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:var(--glass);border:1px solid var(--bd);font-size:13.5px;margin-bottom:22px;font-family:var(--fd)}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px #22C77E33}
+.ovis{display:grid;place-items:center;min-height:540px}
+.orbit{position:relative;width:520px;height:520px}
+.orbit .orb-c{position:absolute;left:50%;top:50%;width:230px;margin:-115px;filter:drop-shadow(0 30px 60px #9B6BFF88);animation:float 7s ease-in-out infinite;z-index:2}
+@keyframes float{50%{transform:translateY(-14px) rotate(3deg)}}
+.ring{position:absolute;inset:0;border-radius:50%;animation:rot var(--t) linear infinite}
+.ring.r1{inset:80px;--t:46s;border:1px dashed #ffffff2a}.ring.r2{inset:0;--t:70s;animation-direction:reverse;border:1px dashed #ffffff1a}
+.ring .b{position:absolute;left:50%;top:50%;width:74px;margin:-37px;transform:rotate(var(--a)) translateY(var(--r)) rotate(calc(var(--a)*-1))}
+.ring .b img{width:100%;display:block;border-radius:50%;box-shadow:0 14px 30px #0008;animation:rot var(--t) linear infinite reverse}
+.ring.r2 .b img{animation-direction:normal}
+@keyframes rot{to{transform:rotate(360deg)}}
+.glowball{position:absolute;left:50%;top:50%;width:420px;height:420px;margin:-210px;border-radius:50%;background:radial-gradient(circle,#9B6BFF55,transparent 65%);filter:blur(30px)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
+.fact{padding:22px;border-radius:22px;background:var(--glass);border:1px solid var(--bd);text-align:center}
+.fact b{display:block;font-family:var(--fn);font-size:40px;line-height:1.1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.fact span{color:var(--mut);font-size:14px}
+/* ribbon */
+.ribbon{margin:46px -40px 0;transform:rotate(-1.6deg);background:var(--grad);padding:14px 0;overflow:hidden;box-shadow:0 20px 50px #F0447E33}
+.ribbon div{display:flex;gap:42px;width:max-content;animation:mq 34s linear infinite;font-family:var(--fn);font-weight:700;font-size:22px;color:#1a0a2e;direction:ltr}
+.ribbon span:after{content:"✦";margin-inline-start:42px;opacity:.6}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* carousel */
+.stagebox{position:relative;border-radius:36px;border:1px solid var(--bd);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01));padding:40px 20px 34px;overflow:hidden}
+.stagebox .head{text-align:center;margin-bottom:6px}
+.arc{position:relative;height:380px;perspective:1200px;margin:6px 0;direction:ltr;cursor:grab;touch-action:pan-y;user-select:none;outline:none}
+.arc:active{cursor:grabbing}
+.arc:before{content:"";position:absolute;left:50%;top:48%;width:540px;height:540px;margin:-270px 0 0 -270px;border-radius:50%;background:radial-gradient(circle,var(--g,#9B6BFF) 0%,transparent 65%);opacity:.5;filter:blur(30px);transition:background .6s}
+.arc .stage{position:absolute;inset:0;transform-style:preserve-3d}
+.arc .it{position:absolute;left:50%;top:50%;width:var(--w,210px);margin:calc(var(--w,210px)/-2) 0 0 calc(var(--w,210px)/-2);will-change:transform,opacity}
+.arc img{width:100%;border-radius:50%;display:block;pointer-events:none;-webkit-user-drag:none;box-shadow:0 30px 60px #0008}
+.tg{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);padding:2px 12px;border-radius:99px;background:#0A0615dd;border:1px solid #fff4;font:600 11px var(--fd);white-space:nowrap}
+.tg.ok{background:var(--ok);border-color:var(--ok);color:#04210f}
+.cinfo{text-align:center;min-height:150px}
+.st{display:inline-block;margin-top:8px;padding:2px 14px;border-radius:99px;font-size:12px;font-weight:700;font-family:var(--fd)}
+.st.ok{background:var(--ok);color:#04210f}.st.soon{background:#ffffff22}
+.ctl{display:flex;gap:14px;justify-content:center;align-items:center;margin-top:10px}
+.ar{width:46px;height:46px;border-radius:50%;border:1px solid var(--bd);background:var(--glass);font-size:20px;transition:.25s}.ar:hover{background:var(--grad);border-color:transparent}
+.dots{display:flex;gap:8px}.dot{width:9px;height:9px;border-radius:50%;background:#ffffff44;transition:.3s}.dot.on{background:var(--or);width:28px;border-radius:99px}
+/* bento categories */
+.bento{display:grid;gap:14px;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(150px,auto)}
+.cat{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;border-radius:26px;background:var(--glass);border:1px solid var(--bd);overflow:hidden;transition:.3s}
+.cat b{font-family:var(--fd);font-size:19px}.cat small{color:var(--cy);direction:ltr;display:block;font-family:var(--fn)}
+.cat em{align-self:flex-start;margin-top:10px;font-style:normal;font-size:12px;font-weight:700;padding:3px 12px;border-radius:99px;background:#ffffff22;font-family:var(--fd)}
+.cat em.ok{background:var(--ok);color:#04210f}
+.cat:hover{transform:translateY(-6px);border-color:var(--or)}
+.cat.big{grid-column:span 2;min-height:210px;background:linear-gradient(145deg,#5B2D8F,#2A1157 60%,#1a0a36);border-color:#B79CF055}
+.cat.big.capm{background:linear-gradient(145deg,#0E6F86,#2A1157 65%,#1a0a36)}
+.cat.big b{font-size:28px}.cat.big:before{content:attr(data-wm);position:absolute;top:14px;inset-inline-start:20px;font-family:var(--fn);font-weight:700;font-size:64px;opacity:.1;white-space:nowrap}
+.cat.big .n{color:#d9ccf0}
+.cat .n{position:absolute;top:16px;inset-inline-end:20px;font-family:var(--fn);font-weight:700;font-size:15px;color:var(--mut)}
+/* paper section */
+.paper{background:var(--paper);color:var(--pink);border-radius:44px;padding:70px 44px;margin:30px 0;position:relative;overflow:hidden}
+.paper:before{content:"";position:absolute;top:-120px;inset-inline-end:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,#9B6BFF44,transparent 70%)}
+.paper .eyebrow{color:#C2410C}.paper .eyebrow:before{background:#C2410C}
+.paper .sub{color:var(--pmut)}
+.why{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:30px}
+.wc{background:#fff;border-radius:26px;padding:26px;box-shadow:0 14px 40px #2A115722;transition:transform .2s,box-shadow .3s;position:relative;overflow:hidden}
+.wc:hover{box-shadow:0 24px 60px #2A115740}
+.wc:before{content:"";position:absolute;inset-inline:0;top:0;height:5px;background:var(--grad)}
+.wc .num{font-family:var(--fn);font-weight:700;font-size:54px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;transform:translateZ(30px)}
+.wc h3{margin-top:12px;color:var(--pink)}.wc p{color:var(--pmut);font-size:15.5px}
+/* bento features */
+.feat{display:grid;gap:14px;grid-template-columns:repeat(4,1fr);margin-top:30px}
+.ft{padding:26px;border-radius:26px;background:var(--glass);border:1px solid var(--bd);transition:.3s;position:relative;overflow:hidden}
+.ft:hover{border-color:var(--lav);transform:translateY(-5px)}
+.ft svg{width:34px;height:34px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;margin-bottom:16px;padding:0}
+.ft .ib{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:var(--grad);margin-bottom:16px;box-shadow:0 12px 30px #F0447E44}
+.ft .ib svg{margin:0}
+.ft h3{font-size:20px}.ft p{color:var(--mut);font-size:15px}
+.ft.w2{grid-column:span 2}
+.ft.hl{background:linear-gradient(135deg,#5B2D8F,#2A1157);border-color:#B79CF055;display:flex;align-items:center;gap:20px}
+.ft.hl img{width:110px;flex:none}
+/* trainer teaser */
+.tt{display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:center;padding:38px;border-radius:36px;background:linear-gradient(135deg,rgba(91,45,143,.45),rgba(255,255,255,.03));border:1px solid var(--bd)}
+.avatar{width:170px;height:170px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:70px;box-shadow:0 20px 60px #F0447E44;position:relative}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 12%;border-radius:50%;z-index:1}
+.avatar:after{z-index:2;pointer-events:none;content:"";position:absolute;inset:-10px;border-radius:50%;border:1px dashed #ffffff44;animation:rot 30s linear infinite}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px}
+.tags span{padding:5px 14px;border-radius:99px;background:var(--glass);border:1px solid var(--bd);font-size:13.5px}
+/* cta + footer */
+.cta{position:relative;margin:30px 0 20px;padding:60px 24px;border-radius:40px;text-align:center;overflow:hidden;background:linear-gradient(135deg,#5B2D8F,#2A1157 55%,#130B28);border:1px solid #B79CF044}
+.cta:before{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#F0447E66,transparent 70%);top:-200px;inset-inline-start:-100px}
+.cta>*{position:relative}
+footer{border-top:1px solid var(--bd);padding:44px 20px 26px;color:var(--mut);font-size:14px;margin-top:30px}
+.fgrid{display:grid;gap:30px;grid-template-columns:1.4fr 1fr 1fr;max-width:1240px;margin:0 auto 30px}
+footer h4{color:#fff;margin-bottom:10px;font-size:16px}footer a{display:block;padding:3px 0;transition:.2s}footer a:hover{color:#fff;transform:translateX(-4px)}
+.credit{display:flex;justify-content:center;gap:10px 28px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px dashed var(--bd);color:var(--tx);font-weight:500}
+.credit span+span{color:var(--mut)}
+.copy{text-align:center;border-top:1px solid var(--bd);padding-top:20px;max-width:1240px;margin:auto}
+/* PMI page */
+.founder .ph{width:68px;height:68px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-family:var(--fn);font-weight:700;font-size:22px;margin-bottom:14px;direction:ltr;transform:translateZ(30px)}
+.tl{position:relative;max-width:900px;margin:34px auto 0}
+.tl:before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(var(--or),var(--mag),var(--vi));transform:translateX(-50%)}
+.ev{position:relative;width:calc(50% - 34px);padding:18px 22px;border-radius:20px;background:var(--glass);border:1px solid var(--bd);margin-bottom:22px}
+.ev:nth-child(odd){margin-inline-end:auto}.ev:nth-child(even){margin-inline-start:auto}
+.ev:before{content:"";position:absolute;top:24px;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--or);transition:.4s}
+.ev:nth-child(odd):before{inset-inline-end:-43px}.ev:nth-child(even):before{inset-inline-start:-43px}
+.ev.show:before{background:var(--or);box-shadow:0 0 0 7px #F5622A33}
+.yr{font-family:var(--fn);color:var(--or);font-weight:700;font-size:18px;direction:ltr;text-align:start}
+.ev p{color:var(--mut);font-size:15px}
+.cert{display:flex;flex-direction:column;gap:2px}
+.cert b{font-family:var(--fn);font-size:26px;direction:ltr;text-align:start;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cert small{color:var(--cy);direction:ltr;text-align:start;font-family:var(--fn)}.cert span{color:var(--mut);font-size:14px}
+/* courses list */
+.clist{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));margin-top:40px}
+.cl{display:flex;gap:16px;align-items:center;padding:16px;border-radius:24px;background:var(--glass);border:1px solid var(--bd);transition:.3s}
+.cl:hover{border-color:var(--lav);transform:translateY(-4px)}
+.cl img{width:84px;border-radius:50%;flex:none}.cl h3{font-size:16px;margin-bottom:2px}.cl small{color:var(--mut);direction:ltr;display:block;font-family:var(--fn)}
+.cl .btn{padding:7px 16px;font-size:13px;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:30px}
+.chips a{display:inline-flex;align-items:center;gap:9px;padding:10px 20px;border-radius:99px;border:1px solid var(--bd);background:var(--glass);font-weight:500;transition:.25s}.chips a:hover{background:var(--bc,var(--vio2));border-color:transparent;transform:translateY(-3px)}
+.soonbox{text-align:center;padding:90px 20px;border:1px dashed var(--bd);border-radius:36px;margin-top:50px}
+.soonbox img{width:120px;animation:float 6s ease-in-out infinite;margin-bottom:10px}
+/* portal transition */
+.portal{position:fixed;inset:0;z-index:300;pointer-events:none;--x:50%;--y:50%;clip-path:circle(0 at var(--x) var(--y));display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 50%,#5B2D8F,#2A1157 55%,#0A0615)}
+.portal:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:56px 56px}
+.portal.in{pointer-events:all;clip-path:circle(150% at var(--x) var(--y));transition:clip-path .7s cubic-bezier(.7,0,.2,1)}
+.portal.out{pointer-events:all;clip-path:circle(0 at 50% 50%);transition:clip-path .8s cubic-bezier(.7,0,.2,1)}
+.pc{position:relative;text-align:center;opacity:0;transform:scale(.5) rotate(-120deg);transition:opacity .5s,transform .7s cubic-bezier(.2,.8,.2,1)}
+.portal.in .pc{opacity:1;transform:none;transition-delay:.3s}.portal.out .pc{opacity:1;transform:none}
+.pc img{width:150px;display:block;margin:auto;filter:drop-shadow(0 20px 40px #0008);animation:rot 1.4s cubic-bezier(.6,0,.3,1) infinite}
+.pc img.ph{width:230px;height:230px;border-radius:50%;object-fit:cover;object-position:50% 14%;animation:none;box-shadow:0 0 0 5px #F0447E,0 0 0 14px #F0447E33,0 30px 80px #000a}
+.pc img.pl{width:min(320px,70vw);height:auto;border-radius:28px;background:#fff;padding:14px 18px;animation:none;box-shadow:0 0 0 6px #ffffff22,0 30px 80px #000a}
+.pc img.pn{width:min(210px,52vw);height:auto;animation:pop 1.5s ease-in-out infinite;filter:drop-shadow(0 20px 50px #18C8E466)}
+@keyframes pop{50%{transform:scale(1.09)}}
+.pc b{display:block;margin-top:18px;font-family:var(--fd);font-size:clamp(28px,6vw,64px);font-weight:700}
+.rg{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:2px solid var(--or);opacity:0}
+.portal.in .rg{animation:ring 1.2s .35s ease-out infinite}.portal.in .r2x{animation-delay:.8s;border-color:var(--cy)}
+@keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(7);opacity:0}}
+html[lang=en] .en2{display:none!important}
+.tsec{padding:46px 0 10px}.tsec>h2{margin-bottom:18px}
+.tprose{max-width:860px;display:grid;gap:16px}.tprose p{color:var(--mut);font-size:17.5px;margin:0}
+.tprose p:first-child{color:var(--tx);font-size:20px;font-weight:500}
+.tpq{margin-top:8px;padding:22px 26px;border-radius:22px;border-inline-start:4px solid var(--or);background:var(--glass);color:var(--tx)!important;font-weight:600}
+.tgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.tgc{padding:24px;border-radius:24px;background:var(--glass);border:1px solid var(--bd);transition:border-color .3s}.tgc:hover{border-color:var(--lav)}
+.tgc h3{font-size:19px;margin:0}.tgc>.en2{display:block;color:var(--cy);font-family:var(--fn);direction:ltr;text-align:start;margin-bottom:8px}
+.tgc ul{padding-inline-start:20px;margin:10px 0 0;color:var(--mut)}.tgc li{margin:8px 0}
+.tgc li .en2{display:block;direction:ltr;text-align:start;font:400 13px var(--fn);color:var(--mut);opacity:.8}
+.tgc p{color:var(--mut);margin:8px 0 0;font-size:15.5px}
+.tach{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.ach{display:flex;gap:14px;align-items:flex-start;padding:20px;border-radius:22px;background:var(--glass);border:1px solid var(--bd)}
+.ach i{flex:none;width:38px;height:38px;border-radius:12px;background:var(--grad);display:grid;place-items:center;color:#fff;font-style:normal;font-size:18px}
+.ach p{margin:0;color:var(--tx)}.ach .en2{display:block;direction:ltr;text-align:start;font:400 13px var(--fn);color:var(--mut);margin-top:4px}
+.tchips{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.tchip{padding:18px;border-radius:20px;background:var(--glass);border:1px solid var(--bd);text-align:center;transition:.3s}.tchip:hover{border-color:var(--or);transform:translateY(-4px)}
+.tchip b{display:block;font:600 16px var(--fd)}.tchip .en2{display:block;color:var(--cy);font-family:var(--fn);direction:ltr;font-size:13px}
+.tq{margin-top:30px;padding:36px 26px;border-radius:30px;text-align:center;background:linear-gradient(135deg,#5B2D8F,#2A1157);color:#F4EFFF;border:1px solid #B79CF055}
+.tq b{display:block;font:700 clamp(20px,3vw,30px)/1.5 var(--fd)}.tq .en2{display:block;margin-top:12px;color:#7BE3F5;font-family:var(--fn);direction:ltr}
+.vm{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.vmc{position:relative;overflow:hidden;padding:36px;border-radius:32px;background:linear-gradient(145deg,#5B2D8F,#2A1157 65%,#1a0a36);color:#F4EFFF;border:1px solid #B79CF055;transform-style:preserve-3d}
+.vmc.m{background:linear-gradient(145deg,#0E6F86,#2A1157 65%,#1a0a36)}
+.vmc .vmn{position:absolute;top:10px;inset-inline-end:22px;font:700 96px/1 var(--fn);opacity:.12}
+.vmc .eyebrow{color:#7BE3F5}.vmc .eyebrow:before{background:#7BE3F5}
+.vmc h2{margin:10px 0 0}.vmc small{display:block;color:#7BE3F5;font-family:var(--fn);direction:ltr;margin-bottom:14px}
+.vmc p{color:#e5dcfa;font-size:17px;margin:14px 0 0}
+.obj{display:grid;gap:16px;grid-template-columns:repeat(3,1fr);margin-top:22px}
+.oc{padding:26px;border-radius:26px;background:var(--glass);border:1px solid var(--bd);transition:border-color .3s}.oc:hover{border-color:var(--lav)}
+.oc .on{display:block;font:700 44px/1 var(--fn);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:12px}
+.oc h3{font-size:20px}.oc p{color:var(--mut);margin:6px 0 0;font-size:15.5px}
+.obj .oc:last-child{grid-column:span 3}
+@media(max-width:960px){.obj{grid-template-columns:repeat(2,1fr)}.obj .oc:last-child{grid-column:span 2}}
+@media(max-width:640px){.obj{grid-template-columns:1fr}.obj .oc:last-child{grid-column:auto}.vmc{padding:28px}}
+.fsearch{width:100%;max-width:560px;display:block;margin:0 auto 18px;padding:14px 22px;border-radius:99px;border:1px solid var(--bd);background:var(--glass);color:var(--tx);font:500 16px var(--fb);outline:none;transition:border-color .3s}.fsearch:focus{border-color:var(--lav)}
+.fg{margin-bottom:34px}.fgh{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:34px 0 14px}.fgh h2{font-size:clamp(22px,2.6vw,30px);margin:0}.fgh .en2{color:var(--cy);font-family:var(--fn);direction:ltr}
+.qn{min-width:34px;height:34px;border-radius:11px;background:var(--grad);color:#fff;display:grid;place-items:center;font:700 14px var(--fn);flex:none}.qt{flex:1}
+.faq .ans{padding:0 0 18px}.faq .ans p{margin:8px 0;padding:0;color:var(--mut)}.faq .ans ul{margin:8px 0;padding-inline-start:22px;color:var(--mut)}.faq .ans li{margin:4px 0}
+.faq .ans .callout{margin-top:10px}
+.faq{max-width:900px;margin:auto;display:block}.faq .fg>details{margin-bottom:12px}
+.faq details{border:1px solid var(--bd);border-radius:20px;background:var(--glass);padding:0 22px;transition:border-color .3s,background .3s}
+.faq details[open]{border-color:var(--lav);background:rgba(155,107,255,.1)}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font:600 18px var(--fd);display:flex;justify-content:space-between;gap:14px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";font:400 26px var(--fn);color:var(--or);transition:transform .3s}
+.faq details[open] summary:after{transform:rotate(45deg)}
+.faq details p{color:var(--mut);padding:0 0 18px}
+/* course detail page (CAPM) */
+.crumbs{display:flex;gap:10px;align-items:center;padding:30px 0 0;color:var(--mut);font-size:14px}.crumbs a:hover{color:var(--tx)}.crumbs b{color:var(--tx);font-family:var(--fn)}
+.dgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:20px}
+.dcard{padding:22px;border-radius:22px;background:var(--glass);border:1px solid var(--bd);transition:.3s}.dcard:hover{border-color:var(--lav);transform:translateY(-4px)}
+.dcard b{display:block;font:600 18px var(--fd)}.dcard small{color:var(--cy);direction:ltr;display:block;font-family:var(--fn);text-align:start}.dcard p{color:var(--mut);margin:0}
+.dcard .tick{width:30px;height:30px;border-radius:50%;background:var(--grad);display:grid;place-items:center;margin-bottom:12px;font-size:15px;color:#fff}
+.tbl{max-width:640px;border:1px solid var(--bd);border-radius:22px;overflow:hidden;margin-top:18px}
+.tbl .tr{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 22px;border-top:1px solid var(--bd)}.tbl .tr:first-child{border-top:0}
+.tbl .th{background:var(--glass);font-weight:700;color:var(--mut)}
+.tbl small{color:var(--mut);font-family:var(--fn);margin-inline-start:6px;direction:ltr;display:inline-block}
+.tbl b{font:700 20px var(--fd);color:var(--or)}
+.callout{margin-top:16px;padding:14px 18px;border-radius:16px;border:1px solid var(--bd);border-inline-start:4px solid var(--or);background:var(--glass);color:var(--mut)}
+.callout.ok{border-inline-start-color:var(--ok);color:var(--tx);font-weight:600}
+.dstats{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:20px}
+.dstat{padding:30px;border-radius:26px;background:linear-gradient(145deg,#5B2D8F,#2A1157);color:#F4EFFF;border:1px solid #B79CF044}
+.dstat .big{font:700 clamp(40px,6vw,60px)/1.05 var(--fn);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;direction:ltr;text-align:start}
+.dstat b{display:block;font:600 18px var(--fd);margin:6px 0}.dstat p{color:#d9ccf0;font-size:15px;margin:0}.dstat small{display:block;margin-top:10px;color:#b8a9d8}
+.step{display:grid;grid-template-columns:auto 1fr;gap:22px;padding:28px;border-radius:28px;background:var(--glass);border:1px solid var(--bd);margin-bottom:16px}
+.step .sn{font:700 56px/1 var(--fn);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.step h3{font-size:22px}.step h4{margin:18px 0 6px;font:600 17px var(--fd);color:var(--cy)}
+.step p{color:var(--mut);margin:6px 0}.step ul,.step ol{margin:8px 0;padding-inline-start:22px;color:var(--mut)}.step li{margin:6px 0}.step li b{color:var(--tx)}
+.step .hl{color:var(--or);font-weight:600}
+.bars{display:grid;gap:18px;margin-top:14px}
+.bar-row .lab{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.bar-row b{font:600 16px var(--fd);display:block}.bar-row small{color:var(--cy);display:block;direction:ltr;font-family:var(--fn);text-align:start}
+.bar-row .pct{font:700 24px var(--fn);color:var(--or);white-space:nowrap;direction:ltr}.bar-row .pct small{display:inline;color:var(--mut);font:400 12px var(--fb);margin-inline-start:6px}
+.bar{height:10px;border-radius:99px;background:var(--glass);border:1px solid var(--bd);overflow:hidden;margin-top:8px}
+.bar span{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+.bars.show .bar span{width:var(--p)}
+.lchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.lchips span{padding:7px 14px;border-radius:99px;background:var(--glass);border:1px solid var(--bd);font-size:14px}
+.step h3 .en2{margin-inline-start:12px;color:var(--cy);font:500 14px var(--fn);direction:ltr;display:inline-block}
+.step h4 .en2{display:block;margin:2px 0 0;font:400 13px var(--fn);color:var(--mut);direction:ltr;text-align:start}
+.paths{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:14px 0 8px}
+.pathc{padding:22px;border-radius:22px;background:var(--glass);border:1px solid var(--bd);display:flex;flex-direction:column;gap:4px}
+.pathc b{font:600 16px var(--fd);color:var(--tx)}.pathc small{color:var(--cy);direction:ltr;text-align:start;font-family:var(--fn)}
+.pathc p{margin:6px 0 0!important;font-size:14.5px}
+.pathc .yrs{margin-top:auto;padding-top:12px;font:700 32px var(--fd);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pathc span{color:var(--mut);font-size:14px}
+@media(max-width:820px){.step{grid-template-columns:1fr;padding:22px}.step .sn{font-size:44px}}
+/* light theme: tokens remapped; dark feature panels keep their own colours */
+html[data-theme=light]{color-scheme:light;--ink:#F6F2FF;--ink2:#EDE6FB;--tx:#1B0E3A;--mut:#5B4B80;--glass:rgba(42,17,87,.05);--bd:rgba(42,17,87,.15);--lav:#7A55C2;--cy:#0B8FA6}
+html[data-theme=light] body{background-image:radial-gradient(900px 600px at 85% -5%,#9B6BFF33,transparent 60%),radial-gradient(700px 500px at -5% 45%,#F5622A1f,transparent 60%),radial-gradient(800px 600px at 60% 100%,#18C8E422,transparent 60%)}
+html[data-theme=light] .spot{background:radial-gradient(520px circle at var(--mx,70%) var(--my,20%),rgba(155,107,255,.14),transparent 60%)}
+html[data-theme=light] header.nav{background:rgba(255,255,255,.82);box-shadow:0 14px 40px #2A115733}
+html[data-theme=light] nav a.on{color:#fff}
+html[data-theme=light] .note{background:#F5622A1a}
+html[data-theme=light] .card:hover{background:rgba(42,17,87,.08)}
+html[data-theme=light] .dot{background:rgba(42,17,87,.25)}html[data-theme=light] .dot.on{background:var(--or)}
+html[data-theme=light] .st.soon,html[data-theme=light] .cat em{background:rgba(42,17,87,.12)}
+html[data-theme=light] .st.ok,html[data-theme=light] .cat em.ok,html[data-theme=light] .tg.ok{color:#04210f}
+html[data-theme=light] .ev:before{background:var(--ink)}
+html[data-theme=light] .chips a:hover,html[data-theme=light] .strip .soc a:hover{color:#fff}
+html[data-theme=light] .cat.big,html[data-theme=light] .cta,html[data-theme=light] .ft.hl,html[data-theme=light] .portal,html[data-theme=light] .tt{color:#F4EFFF}
+html[data-theme=light] .tt{background:linear-gradient(135deg,#5B2D8F,#2A1157);border-color:transparent}
+html[data-theme=light] .tt .sub,html[data-theme=light] .cat.big small{color:#d9ccf0}
+html[data-theme=light] .tt .tags span{color:#F4EFFF;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+html[data-theme=light] .cat.big small,html[data-theme=light] .tt .eyebrow{color:#7BE3F5}
+html[data-theme=light] .paper{background:linear-gradient(145deg,#2A1157,#3a1a6e);color:#F4EFFF}
+html[data-theme=light] .paper .sub{color:#d9ccf0}html[data-theme=light] .paper .eyebrow{color:#FFB38A}html[data-theme=light] .paper .eyebrow:before{background:#FFB38A}
+html[data-theme=light] footer h4,html[data-theme=light] footer a:hover{color:var(--tx)}
+html[data-theme=light] .arc .tg{color:#F4EFFF}
+html[data-theme=light] .stagebox{background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,.3))}
+/* responsive */
+@media(max-width:960px){.bento,.feat{grid-template-columns:repeat(2,1fr)}.ft.w2{grid-column:span 2}.fgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){
+  .hero{grid-template-columns:1fr;text-align:center;min-height:auto}.hero .lead{margin-inline:auto}.btns{justify-content:center}
+  .ovis{min-height:340px;overflow:hidden;height:340px}.orbit{transform:scale(.62);flex:none}
+  header.nav{flex-wrap:wrap;width:calc(100% - 20px);border-radius:20px}nav{order:3;width:100%;margin:0;grid-template-columns:repeat(4,1fr)}nav a{padding:9px 4px;font-size:13px}
+  .strip .soc{margin-inline-start:0}.arc{height:300px}.facts{grid-template-columns:1fr}
+  .paper{padding:44px 20px;border-radius:30px}.tt{grid-template-columns:1fr;text-align:center;justify-items:center}.ribbon{margin-inline:-20px}
+  .tl:before{left:auto;inset-inline-start:8px;transform:none}.tl{padding-inline-start:30px}
+  .ev{width:auto;margin:0 0 18px!important}.ev:before{inset-inline-start:-30px!important;inset-inline-end:auto!important}
+  .bento,.feat{grid-template-columns:1fr}.cat.big,.ft.w2{grid-column:auto;grid-row:auto}.fgrid{grid-template-columns:1fr}.clist{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></symbol>
+<symbol id="i-in" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></symbol>
+<symbol id="i-fb" viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+<symbol id="i-ig" viewBox="0 0 24 24"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></symbol>
+<symbol id="i-tk" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></symbol>
+<symbol id="i-yt" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+</defs></svg>
+<div class="spot" id="spot"></div><div class="prog" id="prog"></div>
+<div class="portal" id="cur" aria-hidden="true"><span class="rg"></span><span class="rg r2x"></span><div class="pc"><img id="pimg" src="badges/i1.png" alt=""><b id="pt"></b></div></div>
+<div class="note">معاينة تصميم فقط (ليست الموقع النهائي). النصوص بين أقواس مربعة نائبة بانتظار صاحب الموقع.</div>
+
+<div class="strip">
+  <div class="soc">
+    <a href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener" aria-label="WhatsApp" style="--bc:#25D366"><svg class="si"><use href="#i-wa"/></svg></a>
+    <a href="https://www.linkedin.com/in/ahmed-aldeib" target="_blank" rel="noopener" aria-label="LinkedIn" style="--bc:#0A66C2"><svg class="si"><use href="#i-in"/></svg></a>
+    <a href="https://www.facebook.com/share/1BmbRpiUu9/" target="_blank" rel="noopener" aria-label="Facebook" style="--bc:#1877F2"><svg class="si"><use href="#i-fb"/></svg></a>
+    <a href="https://www.instagram.com/ahmedaldeibpmp" target="_blank" rel="noopener" aria-label="Instagram" style="--bc:#D6249F"><svg class="si"><use href="#i-ig"/></svg></a>
+    <a href="https://www.tiktok.com/@ahmed.aldeib" target="_blank" rel="noopener" aria-label="TikTok" style="--bc:#FE2C55"><svg class="si"><use href="#i-tk"/></svg></a>
+    <a href="https://youtube.com/@ahmedaldeibpmp" target="_blank" rel="noopener" aria-label="YouTube" style="--bc:#FF0000"><svg class="si"><use href="#i-yt"/></svg></a>
+  </div>
+</div>
+<header class="nav">
+  <a href="#/" class="brand" aria-label="AHMED ALDEIB — الرئيسية"><img class="lp" src="badges/trainer.jpg" alt="أحمد الديب" onerror="this.onerror=null;this.src='badges/i1.png';this.classList.remove('lp')"><span class="wm"><span>Ahmed</span><span class="l2">Aldeib</span></span></a>
+  <nav id="nav">
+    <a href="#/" data-p="home">الرئيسية</a><a href="#/about" data-p="about">عن الموقع</a><a href="#/pmi" data-p="pmi">معهد PMI</a>
+    <a href="#/trainer" data-p="trainer">المدرب</a><a href="#/courses" data-p="courses">الدورات</a><a href="#/blog" data-p="blog">المدونة</a><a href="#/faq" data-p="faq">الأسئلة الشائعة</a><a href="#/contact" data-p="contact">تواصل معنا</a>
+  </nav>
+  <button class="lang" id="lang" type="button" aria-label="Language / اللغة">EN</button>
+  <button class="theme" id="theme" type="button" aria-label="Light / Dark"><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></button>
+  <a class="lg" href="https://potp-pm.moodiy.com/login/index.php" target="_blank" rel="noopener">دخول المنصة</a>
+  <a class="wa" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">احجز عبر واتساب</a>
+</header>
+<a class="fab" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener" aria-label="واتساب"><svg viewBox="0 0 24 24"><use href="#i-wa"/></svg></a>
+
+<!-- HOME -->
+<main class="page" id="p-home">
+  <div class="hero">
+    <div>
+      <div class="chip rv"><i></i> شريك تدريب معتمد · Authorized Training Partner (ATP) of PMI®</div>
+      <h1 class="rv">منصة التدريب <em class="g">الرائدة</em> في الشهادات الدولية لإدارة المشاريع<span class="en">Leading Training Platform for International Project Management Certifications</span></h1>
+      <p class="lead rv">تجربة تعليمية متكاملة ومبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI.</p>
+      <div class="btns rv"><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a><a class="btn s" href="#/courses">استعرض الدورات</a></div>
+    </div>
+    <div class="ovis rv">
+      <div class="orbit" aria-hidden="true">
+        <div class="glowball"></div>
+        <div class="ring r2"><span class="b" style="--a:0deg;--r:-260px"><img src="badges/i3.webp" alt=""></span><span class="b" style="--a:120deg;--r:-260px"><img src="badges/i4.png" alt=""></span><span class="b" style="--a:240deg;--r:-260px"><img src="badges/i5.png" alt=""></span></div>
+        <div class="ring r1"><span class="b" style="--a:60deg;--r:-180px"><img src="badges/i7.webp" alt=""></span><span class="b" style="--a:180deg;--r:-180px"><img src="badges/i6.png" alt=""></span><span class="b" style="--a:300deg;--r:-180px"><img src="badges/i9.png" alt=""></span></div>
+        <img class="orb-c" src="badges/i1.png" alt="PMI Authorized Training Partner 2026">
+      </div>
+    </div>
+  </div>
+  <div class="facts">
+    <div class="fact rv"><b>6</b><span>دورات تدريبية بشهادات PMI</span></div>
+    <div class="fact rv"><b>2</b><span>متاحة الآن للحجز</span></div>
+    <div class="fact rv"><b>ATP</b><span>شريك تدريب معتمد من PMI</span></div>
+  </div>
+  <div class="ribbon" aria-hidden="true"><div><span>PMP®</span><span>CAPM®</span><span>PMI-RMP®</span><span>PMI-ACP®</span><span>PMI-CP™</span><span>PMI-PMOCP™</span><span>PMP®</span><span>CAPM®</span><span>PMI-RMP®</span><span>PMI-ACP®</span><span>PMI-CP™</span><span>PMI-PMOCP™</span></div></div>
+
+  <section>
+    <div class="stagebox reveal">
+      <div class="head"><div class="eyebrow">اختر شهادتك</div><h2>الدورات التدريبية</h2><p class="sub" style="margin:auto">اسحب الحلقة أو انقر على أي شهادة لتتعرف عليها.</p></div>
+      <div class="arc" id="arcH"></div><div class="cinfo" id="infoH"></div><div class="ctl" id="ctlH"></div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal">مسارات التعلم</div><h2 class="reveal">أقسام الدورات</h2>
+    <div class="bento" style="margin-top:26px">
+      <a class="cat big reveal" data-wm="PMP®" href="#/pmp"><span class="n">01</span><b>محترف إدارة المشاريع</b><small>PMP® · Project Management Professional</small><em class="ok">متاحة الآن</em></a>
+      <a class="cat big capm reveal" data-wm="CAPM®" href="#/capm"><span class="n">02</span><b>مساعد معتمد في إدارة المشاريع</b><small>CAPM® · Certified Associate in Project Management</small><em class="ok">متاحة الآن</em></a>
+      <a class="cat reveal" href="#/courses"><span class="n">03</span><b>إدارة المخاطر</b><small>Risk Management</small><em>PMI-RMP — قريبًا</em></a>
+      <a class="cat reveal" href="#/courses"><span class="n">04</span><b>المشاريع الرشيقة</b><small>Agile</small><em>PMI-ACP — قريبًا</em></a>
+      <a class="cat reveal" href="#/courses"><span class="n">05</span><b>مشاريع البناء</b><small>Construction</small><em>PMI-CP — قريبًا</em></a>
+      <a class="cat reveal" href="#/courses"><span class="n">06</span><b>مكاتب المشاريع</b><small>PMO</small><em>PMI-PMOCP — قريبًا</em></a>
+    </div>
+  </section>
+
+  <div class="paper">
+    <div class="eyebrow reveal">لماذا تختارنا؟</div>
+    <h2 class="reveal">تعلّم ذكي وفعّال بأعلى جودة</h2>
+    <p class="sub reveal">تجربة تعليمية متكاملة، مبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI، لتضمن لك التعلّم الذكي والفعّال بأعلى جودة.</p>
+    <div class="why">
+      <div class="wc tilt reveal"><div class="num">01</div><h3>منصة متكاملة</h3><p>نظام إدارة التعلم الخاص بنا يغطي جميع احتياجات التدريب، بدون الحاجة لمصادر خارجية، مع أدوات عملية وواجهة سهلة الاستخدام.</p></div>
+      <div class="wc tilt reveal"><div class="num">02</div><h3>محاكاة الامتحان الدولي</h3><p>اختبر نفسك باستخدام أسئلة محاكية تمامًا لأسئلة امتحانات PMI، لتعزز فرصك في النجاح بثقة واحتراف.</p></div>
+      <div class="wc tilt reveal"><div class="num">03</div><h3>خطة دراسة متكاملة</h3><p>نقدم منهجية منظمة وواضحة خطوة بخطوة، لضمان تحقيق أهدافك التدريبية والتأهيل لشهادة PMP أو أي شهادة PMI أخرى.</p></div>
+      <div class="wc tilt reveal"><div class="num">04</div><h3>قيمة حقيقية للمتدربين</h3><p>محتوى شامل يشمل فيديوهات مسجلة، ملفات تعليمية وخرائط ذهنية، وأداة ذكاء اصطناعي لمساعدتك في تطوير مشاريعك.</p></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="eyebrow reveal">ما تحصل عليه</div><h2 class="reveal">ما تحصل عليه مع منصتنا</h2>
+    <div class="feat">
+      <div class="ft w2 tilt reveal"><div class="ib"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/></svg></div><h3>فيديوهات مسجلة</h3><p>لكل المنهج بجودة عالية</p></div>
+      <div class="ft tilt reveal"><div class="ib"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg></div><h3>ملفات تعليمية</h3><p>مواد مرجعية شاملة</p></div>
+      <div class="ft tilt reveal"><div class="ib"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/></svg></div><h3>خرائط ذهنية</h3><p>لتسهيل الفهم والحفظ</p></div>
+      <div class="ft w2 tilt reveal"><div class="ib"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div><h3>نماذج وقوالب</h3><p>لتطبيق ما تعلمته على مشاريعك الواقعية</p></div>
+      <div class="ft w2 hl tilt reveal"><img src="badges/i1.png" alt=""><div><h3>مدرب خبير</h3><p style="color:#e5dcfa">معتمد بـ 6 شهادات PMI دولية</p></div></div>
+    </div>
+  </section>
+
+  <section style="padding-top:10px">
+    <div class="tt reveal">
+      <div class="avatar"><img src="badges/trainer.jpg" alt="م. أحمد الديب" onerror="this.remove()"><span>👤</span></div>
+      <div>
+        <div class="eyebrow">المدرب</div><h2>م. أحمد الديب</h2>
+        <p class="sub">مهندس مدني، متخصص في الرقابة والتدقيق على المشاريع وإدارة المخاطر والحوكمة، مدرب ضمن منظومة PMI Authorized Training Partner.</p>
+        <div class="tags"><span>الرقابة والتدقيق على المشاريع</span><span>إدارة المخاطر</span><span>الحوكمة</span></div>
+        <a class="btn p" href="#/trainer">تعرّف على المدرب</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ABOUT -->
+<main class="page" id="p-about">
+  <div class="phead"><div class="eyebrow rv en2" style="direction:ltr">About</div><h1 class="rv" style="margin-top:8px"><em class="g">عن</em> الموقع</h1></div>
+  <section style="padding-top:30px">
+    <div class="vm">
+      <div class="vmc tilt reveal"><div class="vmn">01</div><div class="eyebrow" style="direction:ltr">OUR VISION</div><h2>رؤيتنا</h2><small class="en2">Vision</small><p>أن نصبح روادًا للتميز في التدريب الاحترافي محليًا وإقليميًا، من خلال محتوى مبتكر يواكب التطور، ويعزز الكفاءة المهنية، ويحقق أثرًا إيجابيًا مستدامًا في المجتمع والاقتصاد.</p></div>
+      <div class="vmc m tilt reveal"><div class="vmn">02</div><div class="eyebrow" style="direction:ltr">OUR MISSION</div><h2>رسالتنا</h2><small class="en2">Mission</small><p>تقديم تدريب احترافي معتمد دوليًا في إدارة المشاريع والتخصصات المرتبطة بها، يجمع بين الجودة والابتكار والتطبيق العملي، ويسهم في تطوير قدرات الأفراد والمؤسسات في ليبيا والعالم العربي، وإعداد كفاءات قادرة على قيادة التغيير وتحقيق التميز المستدام.</p></div>
+    </div>
+  </section>
+  <section style="padding-top:10px">
+    <div class="eyebrow reveal" style="direction:ltr">03 · STRATEGIC OBJECTIVES</div>
+    <h2 class="reveal">أهدافنا الاستراتيجية</h2><small class="en2 reveal" style="color:var(--cy);font-family:var(--fn);direction:ltr;display:block">Strategic Objectives</small>
+    <div class="obj">
+      <div class="oc tilt reveal"><span class="on">01</span><h3>التميز والاعتماد الدولي</h3><p>برامج تدريبية وفق المعايير وأفضل الممارسات الدولية.</p></div>
+      <div class="oc tilt reveal"><span class="on">02</span><h3>النمو والتوسع</h3><p>تعزيز حضورنا في ليبيا والتوسع في الأسواق العربية.</p></div>
+      <div class="oc tilt reveal"><span class="on">03</span><h3>التحول الرقمي</h3><p>تطوير منصات تعليمية تفاعلية وأتمتة الخدمات.</p></div>
+      <div class="oc tilt reveal"><span class="on">04</span><h3>تنمية الكفاءات</h3><p>تأهيل الكوادر وتطوير المهارات المهنية.</p></div>
+      <div class="oc tilt reveal"><span class="on">05</span><h3>الشراكات الاستراتيجية</h3><p>بناء علاقات تعاون مهنية وأكاديمية.</p></div>
+      <div class="oc tilt reveal"><span class="on">06</span><h3>المسؤولية المجتمعية</h3><p>إتاحة فرص التعلم والتطوير لمختلف فئات المجتمع.</p></div>
+      <div class="oc tilt reveal"><span class="on">07</span><h3>الاستدامة والابتكار</h3><p>تنويع الخدمات ومصادر الإيرادات لضمان النمو والاستمرارية.</p></div>
+    </div>
+  </section>
+</main>
+
+<!-- PMI -->
+<main class="page" id="p-pmi">
+  <div class="hero" style="min-height:auto;padding-bottom:0">
+    <div><div class="eyebrow rv">Lighting the way for the project profession since 1969</div><h1 class="rv" style="margin-top:10px">معهد إدارة المشاريع <em class="g">PMI</em></h1>
+    <p class="lead rv">منذ عام 1969، يشكل معهد إدارة المشاريع (PMI) السلطة الرائدة عالميًا في مجال إدارة المشاريع، ملتزمًا بتوجيه الطريق نحو نجاح المشاريع وتسليط الضوء على قوة إدارة المشاريع والأشخاص الذين يقفون خلفها.</p></div>
+    <div class="ovis rv" style="min-height:340px"><div class="glowball"></div><img src="badges/pmi-logo.jpg" alt="Project Management Institute (PMI)" style="position:relative;width:min(340px,78vw);height:auto;background:#fff;border-radius:30px;padding:18px 22px;animation:float 7s ease-in-out infinite;box-shadow:0 0 0 6px #ffffff22,0 30px 80px #9B6BFF77"></div>
+  </div>
+  <section>
+    <div class="eyebrow reveal">تاريخ PMI</div><h2 class="reveal">منذ التأسيس</h2>
+    <p class="sub reveal">منذ تأسيسه، ركز PMI على جمع المهنيين معًا وتعريف وتطوير مهنة إدارة المشاريع بشكل مستمر. بدأت الفكرة بعد سلسلة من النقاشات بين جيم سنيدر وزملائه، وأسفرت عن اجتماع رسمي في معهد جورجيا للتكنولوجيا، أتلانتا، الولايات المتحدة الأمريكية في 3 أكتوبر 1969، حيث وُلد معهد PMI. وتم توقيع أوراق التأسيس في بنسلفانيا من قبل خمسة مؤسسين رسميين.</p>
+    <h3 class="reveal" style="margin-top:34px">المؤسسون الخمسة</h3>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card tilt founder reveal"><div class="ph">JS</div><h3 style="direction:ltr;text-align:start">James R. Snyder</h3><p>المؤسس والمدير التنفيذي الأول، يُلقب بـ «أب PMI»</p></div>
+      <div class="card tilt founder reveal"><div class="ph">EJ</div><h3 style="direction:ltr;text-align:start">Eric Jenett, PMP</h3><p>أول حاصل على شهادة PMP®، مؤسس مشارك</p></div>
+      <div class="card tilt founder reveal"><div class="ph">JD</div><h3 style="direction:ltr;text-align:start">J. Gordon Davis, PhD</h3><p>بناء الأسس الأكاديمية لمهنة إدارة المشاريع</p></div>
+      <div class="card tilt founder reveal"><div class="ph">SG</div><h3 style="direction:ltr;text-align:start">Susan C. Gallagher</h3><p>إدارة أولى الأنشطة المالية والفنية</p></div>
+      <div class="card tilt founder reveal"><div class="ph">EE</div><h3 style="direction:ltr;text-align:start">E.A. "Ned" Engman</h3><p>تطبيق مبادئ إدارة المشاريع في قطاع الصناعة</p></div>
+    </div>
+  </section>
+  <section style="padding-top:10px">
+    <div class="eyebrow reveal">مراحل التطور</div><h2 class="reveal">مراحل تطور PMI عبر العقود</h2>
+    <div class="tl" id="tl"></div>
+  </section>
+  <section style="padding-top:10px">
+    <div class="grid g3">
+      <div class="card tilt reveal"><div class="eyebrow">رسالتنا</div><p style="margin-top:10px;font-size:18px;color:var(--tx)">نحن مجتمع يبتكر المنتجات والخدمات والخبرات التي تعزز نجاح المشاريع.</p></div>
+      <div class="card tilt reveal"><div class="eyebrow">رؤيتنا</div><p style="margin-top:10px;font-size:18px;color:var(--tx)">عالم تحقق فيه كل المشاريع أقصى إمكاناتها لتحقيق أثر إيجابي.</p></div>
+      <div class="card tilt reveal"><div class="eyebrow">قيمنا وأهدافنا</div><p style="margin-top:10px">تعظيم نجاح المشاريع بتعريف موحّد يمكن للجميع الاتفاق عليه، وإحداث أثر اجتماعي بتشجيع المهنيين على استخدام مهاراتهم لتحقيق فرق إيجابي في المجتمع.</p></div>
+    </div>
+  </section>
+  <section>
+    <div class="eyebrow reveal">شهادات PMI</div><h2 class="reveal">الشهادات المعتمدة عالميًا</h2>
+    <p class="sub reveal">للمزيد من التفاصيل زر الموقع الرسمي <a href="https://www.pmi.org/certifications" target="_blank" rel="noopener" style="color:var(--cy)">pmi.org</a></p>
+    <h3 class="reveal" style="margin-top:30px">Core Certifications – الشهادات الأساسية</h3>
+    <div class="grid g4" id="core" style="margin:14px 0 30px"></div>
+    <h3 class="reveal">Specialized Certifications – الشهادات المتخصصة</h3>
+    <div class="grid g4" id="spec" style="margin-top:14px"></div>
+  </section>
+</main>
+
+<!-- TRAINER -->
+<main class="page" id="p-trainer">
+  <div class="hero" style="min-height:auto">
+    <div><div class="eyebrow rv">المدرب</div><h1 class="rv" style="margin-top:10px">المهندس <em class="g">أحمد الديب</em></h1>
+    <p class="lead rv" style="margin-bottom:8px">مهندس مدني | مدرب معتمد في إدارة المشاريع | متخصص في الرقابة والتدقيق على المشاريع</p>
+    <p class="rv en2" style="direction:ltr;text-align:start;color:var(--cy);font-family:var(--fn);margin:0 0 16px">Civil Engineer | Certified Project Management Trainer | Project Monitoring &amp; Auditing Professional</p>
+    <div class="tags rv"><span>الرقابة والتدقيق على المشاريع</span><span>إدارة المخاطر</span><span>الحوكمة</span><span>معتمد بـ 6 شهادات PMI</span></div>
+    </div>
+    <div class="ovis rv" style="min-height:360px"><div class="avatar" style="width:min(340px,80vw);height:min(340px,80vw);font-size:110px"><img src="badges/trainer.jpg" alt="م. أحمد الديب" onerror="this.remove()"><span>👤</span></div></div>
+  </div>
+  <div id="trainerBody"></div>
+  <div class="btns" style="margin-top:20px"><a class="btn p" href="#/courses">الدورات التي يقدمها</a><a class="btn s" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">تواصل عبر واتساب</a></div></main>
+
+<!-- COURSES -->
+<main class="page" id="p-courses">
+  <div class="phead"><div class="eyebrow rv">الدورات التدريبية</div><h1 class="rv" style="margin-top:8px">اختر شهادتك، وابدأ <em class="g">مسارك</em></h1></div>
+  <section style="padding-top:30px">
+    <div class="stagebox"><div class="arc" id="arcC"></div><div class="cinfo" id="infoC"></div><div class="ctl" id="ctlC"></div></div>
+    <h2 style="margin-top:60px" class="reveal">كل الدورات</h2>
+    <div class="clist" id="clist"></div>
+  </section>
+</main>
+
+<!-- BLOG -->
+<main class="page" id="p-blog">
+  <div class="soonbox rv"><img src="badges/i1.png" alt=""><h1>المدونة</h1><p class="sub" style="margin:12px auto">قريبًا</p><div class="ph-line">[المقالات تُضاف لاحقًا من ملفات نصية بسيطة]</div></div>
+</main>
+
+<!-- COURSE DETAIL: CAPM -->
+<main class="page" id="p-capm">
+  <div class="crumbs rv"><a href="#/courses">الدورات</a><span>/</span><b>CAPM®</b></div>
+  <div class="hero" style="min-height:auto;padding-top:30px">
+    <div>
+      <div class="chip rv"><i></i>لا يشترط وجود خبرة عملية</div>
+      <h1 class="rv"><em class="g">مساعد معتمد في إدارة المشاريع (CAPM)®</em><span class="en">Certified Associate in Project Management (CAPM)®</span></h1>
+      <p class="lead rv">أثبت للعالم أنك تمتلك المعارف والمهارات الأساسية التي تتطلبها فرق المشاريع. تثبت شهادة CAPM أنك مستعد للمشاركة في إدارة مجموعة واسعة من المشاريع، من خلال إتقان أساليب العمل التي تشمل:</p>
+      <div class="btns rv"><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a><a class="btn s" href="#/courses">كل الدورات</a></div>
+    </div>
+    <div class="ovis rv" style="min-height:360px"><div class="glowball"></div><img src="badges/i7.webp" alt="CAPM®" style="width:min(300px,70vw);position:relative;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 30px 60px #18C8E466)"></div>
+  </div>
+  <div class="dgrid" style="margin-top:0">
+    <div class="dcard tilt reveal"><b>إدارة المشاريع التنبؤية</b><small>Predictive Project Management</small></div>
+    <div class="dcard tilt reveal"><b>المبادئ والممارسات الرشيقة</b><small>Agile Principles</small></div>
+    <div class="dcard tilt reveal"><b>تحليل الأعمال</b><small>Business Analysis</small></div>
+  </div>
+
+  <section>
+    <div class="eyebrow reveal">PMI exam fees</div><h2 class="reveal">رسوم الاختبار</h2>
+    <div class="tbl reveal">
+      <div class="tr th"><span>نوع الرسوم</span><span>القيمة</span></div>
+      <div class="tr"><span>سعر الأعضاء<small>(Member Price)</small></span><b>158 دولاراً</b></div>
+      <div class="tr"><span>السعر الكامل<small>(Full Price)</small></span><b>210 دولارات</b></div>
+    </div>
+    <div class="callout reveal" style="max-width:640px">ملاحظة: لا يُطلب دفع رسوم الاختبار إلا بعد قبول طلب التقديم، وعندما تصبح مستعداً لحجز موعد الاختبار.</div>
+  </section>
+
+  <section style="padding-top:20px">
+    <h2 class="reveal">هل شهادة CAPM مناسبة لك؟</h2>
+    <p class="sub reveal">تُصنّف شهادة CAPM في المرتبة الأولى ضمن قائمة «أكثر 9 شهادات مهنية طلباً» وفقاً لمؤسسة Entrepreneur Media, Inc.</p>
+    <p class="sub reveal" style="margin-top:12px">يمكن أن يساعدك الحصول على شهادة CAPM في تطوير مسارك المهني من خلال:</p>
+    <div class="dgrid">
+      <div class="dcard tilt reveal"><div class="tick">✓</div><p>زيادة فرص التقدم الوظيفي.</p></div>
+      <div class="dcard tilt reveal"><div class="tick">✓</div><p>تعزيز إمكانية الحصول على دخل أعلى.</p></div>
+      <div class="dcard tilt reveal"><div class="tick">✓</div><p>بناء أساس مهني متين يؤهلك للحصول على شهادات احترافية أخرى ذات قيمة عالمية.</p></div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <h2 class="reveal">المسارات الوظيفية المحتملة لحاملي شهادة CAPM</h2>
+    <p class="sub reveal">يمكن أن تؤهلك شهادة CAPM للعمل في مجموعة متنوعة من الوظائف المرتبطة بإدارة المشاريع، ومنها:</p>
+    <div class="dgrid">
+      <div class="dcard tilt reveal"><b>مساعد مدير مشروع</b><small>Assistant Project Manager</small></div>
+      <div class="dcard tilt reveal"><b>مسؤول إدارة المشاريع</b><small>Project Administrator</small></div>
+      <div class="dcard tilt reveal"><b>محلل مشاريع</b><small>Project Analyst</small></div>
+      <div class="dcard tilt reveal"><b>منسق مشاريع</b><small>Project Coordinator</small></div>
+      <div class="dcard tilt reveal"><b>مدير مشروع</b><small>Project Manager</small></div>
+      <div class="dcard tilt reveal"><b>مدير مشاريع تقنية لدى PMI</b><small>PMI Technical Project Manager</small></div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal">أرقام ومؤشرات</div>
+    <div class="dstats">
+      <div class="dstat tilt reveal"><div class="big">1.7M+</div><b>أكثر من 1.7 مليون</b><p>حاصل على شهادات PMI حول العالم، مما يجعل PMI المؤسسة الرائدة في هذا المجال منذ عام 1969.</p></div>
+      <div class="dstat tilt reveal"><div class="big">$100,750</div><b>100,750 دولاراً سنوياً</b><p>متوسط راتب مديري المشاريع الحاصلين على شهادة CAPM في الولايات المتحدة.</p><small>المصدر المذكور: Forbes.</small></div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <h2 class="reveal">معلومات عن الاختبار</h2>
+    <div class="facts" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:16px">
+      <div class="fact reveal"><b>150</b><span>عدد الأسئلة</span></div>
+      <div class="fact reveal"><b>180</b><span>دقيقة — مدة الاختبار</span></div>
+    </div>
+    <h3 class="reveal" style="margin-top:28px">لغات الاختبار المتاحة</h3>
+    <div class="lchips reveal"><span>الإنجليزية (English)</span><span>العربية (Arabic)</span><span>البرتغالية البرازيلية (Brazilian Portuguese)</span><span>الفرنسية (French)</span><span>الألمانية (German)</span><span>الإيطالية (Italian)</span><span>اليابانية (Japanese)</span><span>الإسبانية (Spanish)</span><span>الكورية (Korean)</span><span>الصينية المبسطة (Chinese Simplified)</span><span>الصينية التقليدية (Chinese Traditional)</span></div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal">Roadmap</div><h2 class="reveal">خطوات الحصول على شهادة CAPM</h2>
+    <div style="margin-top:24px">
+      <div class="step reveal"><div class="sn">01</div><div>
+        <h3>الخطوة الأولى: التحقق من الأهلية والاستعداد</h3>
+        <p>قبل التقديم، تأكد من استيفائك لمتطلبات الحصول على شهادة CAPM.</p>
+        <h4>متطلبات الأهلية (Eligibility Requirements)</h4>
+        <p>يجب استيفاء المتطلبات التالية:</p>
+        <ol>
+          <li><b>المؤهل الدراسي:</b> الحصول على شهادة التعليم الثانوي، مثل شهادة الثانوية العامة أو GED (شهادة التطوير التعليمي العام)، أو ما يعادلها دولياً.</li>
+          <li><b>العمر:</b> ألا يقل العمر عن 18 عاماً.</li>
+          <li><b>التعليم في إدارة المشاريع:</b> إكمال 23 ساعة تعليمية في إدارة المشاريع قبل دخول الاختبار.</li>
+        </ol>
+        <p>يمكن استيفاء متطلب الساعات التعليمية من خلال أحد الخيارات التالية:</p>
+        <ul>
+          <li>دورة التحضير لاختبار CAPM المقدمة عبر الإنترنت من PMI (PMI On-Demand CAPM Exam Prep Course).</li>
+          <li>دورة CAPM التدريبية بقيادة مدرب (Instructor-Led CAPM Course)، سواء عبر الإنترنت أو بالحضور الشخصي.</li>
+        </ul>
+        <div class="callout ok">وبصفتنا شريك تدريب معتمد نوفر لك هذا الشرط</div>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">02</div><div>
+        <h3>الخطوة الثانية: استكمال طلب التقديم (Complete the Application)</h3>
+        <p>اتبع الخطوات التالية لضمان تقديم طلبك بصورة صحيحة.</p>
+        <h4>تجهيز مستندات التقديم (Gather Your Application Materials)</h4>
+        <p>قم بإدخال البيانات المتعلقة بما يلي:</p>
+        <ul>
+          <li>مؤهلك العلمي.</li>
+          <li>الدورات التعليمية والمهنية التي أكملت من خلالها 23 ساعة تعليمية في إدارة المشاريع. <span class="hl">(الدورة التدريبية التي قدمناها لك)</span></li>
+        </ul>
+        <h4>نصائح إضافية (Additional Tips)</h4>
+        <ul>
+          <li>تأكد من إنشاء حساب مستخدم على موقع PMI.org قبل البدء في تقديم الطلب.</li>
+          <li>خذ وقتك في تعبئة الطلب.</li>
+          <li>يتيح لك نظام التقديم حفظ البيانات تلقائياً أثناء العمل (Save-as-you-go)، مما يسمح لك بالتوقف واستكمال الطلب في وقت لاحق.</li>
+        </ul>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">03</div><div>
+        <h3>الخطوة الثالثة: دفع الرسوم وحجز الاختبار (Pay and Schedule the Exam)</h3>
+        <p>بعد قبول طلبك، تكون قد قطعت خطوة مهمة نحو الحصول على الشهادة.</p>
+        <h4>ماذا بعد قبول الطلب؟</h4>
+        <ul><li>تحقق من قبول طلب التقديم.</li><li>ادفع رسوم الاختبار المقررة.</li><li>انتقل إلى حجز موعد الاختبار.</li></ul>
+        <h4>طرق أداء الاختبار</h4>
+        <p>يمكنك أداء الاختبار بإحدى الطريقتين:</p>
+        <ul><li>في أحد مراكز الاختبارات التابعة لشركة Pearson VUE، وهو الخيار الموصى به.</li><li>عبر الإنترنت باستخدام نظام الاختبار الإلكتروني الآمن.</li></ul>
+        <h4>عدد المحاولات</h4>
+        <p>يُسمح لك بالتقدم للاختبار حتى ثلاث محاولات خلال سنة واحدة، في حال عدم اجتياز الاختبار.</p>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">04</div><div>
+        <h3>الخطوة الرابعة: الاستعداد للاختبار (Study for the Exam)</h3>
+        <p>استعد جيداً ليوم الاختبار.</p>
+        <p>تؤكد شهادات PMI امتلاكك للمعارف والمهارات المهنية، لكن التحضير والدراسة الجيدة يظلان عنصرين أساسيين لاجتياز الاختبار.</p>
+        <p>تتوفر أمامك خيارات متعددة للتحضير، منها:</p>
+        <ul><li>الدورات التدريبية بالحضور الشخصي.</li><li>الاختبارات التجريبية (Practice Exams).</li><li>الدورات التعليمية عند الطلب (On-Demand Courses)، التي تتيح لك التعلم وفقاً لسرعتك وجدولك الخاص.</li></ul>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">05</div><div>
+        <h3>الخطوة الخامسة: أداء الاختبار (Take the Exam)</h3>
+        <p>حان موعد اختبار CAPM.</p>
+        <h4>ملخص مواصفات الاختبار</h4>
+        <div class="tbl" style="margin-top:8px">
+          <div class="tr th"><span>العنصر</span><span>التفاصيل</span></div>
+          <div class="tr"><span>مدة الاختبار</span><b>180 دقيقة</b></div>
+          <div class="tr"><span>إجمالي الأسئلة</span><b>150 سؤالاً</b></div>
+          <div class="tr"><span>الأسئلة المحتسبة</span><b>135 سؤالاً</b></div>
+          <div class="tr"><span>أسئلة الاختبار التجريبية غير المحتسبة</span><b>15 سؤالاً</b></div>
+        </div>
+        <h4>توزيع محتوى اختبار CAPM</h4>
+        <p>يتكون الاختبار من أربعة مجالات رئيسية، موزعة حسب النسب التالية:</p>
+        <div class="bars reveal">
+          <div class="bar-row"><div class="lab"><div><b>أساسيات إدارة المشاريع والمفاهيم الأساسية</b><small>Project Management Fundamentals and Core Concepts</small></div><div class="pct">36%<small>من إجمالي الاختبار</small></div></div><div class="bar"><span style="--p:36%"></span></div></div>
+          <div class="bar-row"><div class="lab"><div><b>المنهجيات التنبؤية القائمة على التخطيط</b><small>Predictive, Plan-Based Methodologies</small></div><div class="pct">17%<small>من إجمالي الاختبار</small></div></div><div class="bar"><span style="--p:17%"></span></div></div>
+          <div class="bar-row"><div class="lab"><div><b>الأطر والمنهجيات الرشيقة</b><small>Agile Frameworks/Methodologies</small></div><div class="pct">20%<small>من إجمالي الاختبار</small></div></div><div class="bar"><span style="--p:20%"></span></div></div>
+          <div class="bar-row"><div class="lab"><div><b>أطر تحليل الأعمال</b><small>Business Analysis Frameworks</small></div><div class="pct">27%<small>من إجمالي الاختبار</small></div></div><div class="bar"><span style="--p:27%"></span></div></div>
+        </div>
+        <p style="margin-top:14px"><b style="color:var(--tx)">إجمالي التوزيع: 100%.</b></p>
+      </div></div>
+    </div>
+  </section>
+
+  <div class="cta reveal"><h2>ابدأ مسارك نحو شهادة CAPM</h2><p class="sub" style="margin:0 auto 22px">احجز مقعدك في الدورة عبر واتساب.</p><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a></div>
+</main>
+
+<!-- COURSE DETAIL: PMP -->
+<main class="page" id="p-pmp">
+  <div class="crumbs rv"><a href="#/courses">الدورات</a><span>/</span><b>PMP®</b></div>
+  <div class="hero" style="min-height:auto;padding-top:30px">
+    <div>
+      <div class="chip rv"><i></i>يتطلب خبرة عملية في قيادة وإدارة المشاريع</div>
+      <h1 class="rv"><em class="g">محترف إدارة المشاريع (PMP)®</em><span class="en">Project Management Professional (PMP)®</span></h1>
+      <p class="lead rv" style="margin-bottom:12px">أثبت قدرتك على قيادة المشاريع في مختلف القطاعات من خلال هذه الشهادة المهنية المعترف بها عالمياً، وافتح أمامك آفاقاً واسعة من الفرص المهنية.</p>
+      <p class="lead rv" style="margin-top:0">تُعد شهادة محترف إدارة المشاريع (PMP)® اعترافاً مهنياً بامتلاكك المهارات اللازمة لإدارة الأشخاص والعمليات وأولويات الأعمال في المشاريع الاحترافية.</p>
+      <div class="btns rv"><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a><a class="btn s" href="#/courses">كل الدورات</a></div>
+    </div>
+    <div class="ovis rv" style="min-height:360px"><div class="glowball"></div><img src="badges/i6.png" alt="PMP®" style="width:min(300px,70vw);position:relative;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 30px 60px #9B6BFF88)"></div>
+  </div>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal en2" style="direction:ltr">Exam Fees</div><h2 class="reveal">أولاً: رسوم الاختبار</h2>
+    <div class="tbl reveal">
+      <div class="tr th"><span>نوع الرسوم</span><span>القيمة</span></div>
+      <div class="tr"><span>سعر الأعضاء<small>(Member Price)</small></span><b>284 دولاراً</b></div>
+      <div class="tr"><span>السعر الكامل<small>(Full Price)</small></span><b>575 دولاراً</b></div>
+    </div>
+    <div class="callout reveal" style="max-width:640px">ملاحظة: لا يُطلب دفع رسوم الاختبار إلا بعد قبول طلب التقديم، وعندما تصبح مستعداً لحجز موعد الاختبار.</div>
+  </section>
+
+  <section style="padding-top:20px">
+    <h2 class="reveal">ثانياً: هل شهادة PMP مناسبة لك؟</h2>
+    <p class="sub reveal">تثبت شهادة PMP امتلاكك القدرة والخبرة اللازمتين لقيادة المشاريع باستخدام مختلف أساليب العمل (Ways of Working)، بما في ذلك:</p>
+    <div class="dgrid">
+      <div class="dcard tilt reveal"><b>إدارة المشاريع التنبؤية</b><small>Predictive</small></div>
+      <div class="dcard tilt reveal"><b>إدارة المشاريع الهجينة</b><small>Hybrid</small></div>
+      <div class="dcard tilt reveal"><b>إدارة المشاريع الرشيقة</b><small>Agile</small></div>
+    </div>
+    <p class="sub reveal" style="margin-top:22px">وعلى عكس بعض الشهادات المهنية الأخرى، لا ترتبط شهادة PMP بمنهجية محددة أو قطاع صناعي معين أو نطاق جغرافي محدد، بل تثبت قدرتك على قيادة المشاريع في مختلف البيئات والقطاعات.</p>
+    <p class="sub reveal" style="margin-top:12px">لهذا السبب، تحظى شهادة PMP باعتراف أصحاب العمل حول العالم، وتُعد المعيار الذهبي (Gold Standard) ضمن شهادات احتراف إدارة المشاريع.</p>
+    <p class="sub reveal" style="margin-top:12px">كما تشير البيانات إلى أن الحاصلين على شهادة PMP يحققون، في المتوسط، رواتب أعلى من نظرائهم غير الحاصلين عليها.</p>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal">أرقام ومؤشرات</div>
+    <div class="dstats">
+      <div class="dstat tilt reveal"><div class="big">17%</div><b>زيادة في الرواتب</b><p>الحاصلون على شهادة PMP يسجلون رواتب وسيطة أعلى بنسبة 17% مقارنة بغير الحاصلين عليها.</p></div>
+      <div class="dstat tilt reveal"><div class="big">$135,000</div><b>135,000 دولار سنوياً</b><p>الراتب الوسيط لمحترفي إدارة المشاريع الحاصلين على PMP في الولايات المتحدة.</p></div>
+      <div class="dstat tilt reveal"><div class="big">1.7M+</div><b>أكثر من 1.7 مليون حامل للشهادة حول العالم.</b></div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal en2" style="direction:ltr">About the Exam</div><h2 class="reveal">ثالثاً: معلومات عن الاختبار</h2>
+    <div class="facts" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:16px">
+      <div class="fact reveal"><b>180</b><span>عدد الأسئلة</span></div>
+      <div class="fact reveal"><b>240</b><span>دقيقة — مدة الاختبار</span></div>
+      <div class="fact reveal"><b>15</b><span>لغة متاحة</span></div>
+    </div>
+    <h3 class="reveal" style="margin-top:28px">لغات الاختبار المتاحة</h3>
+    <div class="lchips reveal"><span>الإنجليزية (English)</span><span>العربية (Arabic)</span><span>البرتغالية البرازيلية (Brazilian Portuguese)</span><span>الصينية المبسطة (Chinese Simplified)</span><span>الصينية التقليدية (Chinese Traditional)</span><span>الفرنسية (French)</span><span>الألمانية (German)</span><span>الإندونيسية (Indonesian)</span><span>الإيطالية (Italian)</span><span>اليابانية (Japanese)</span><span>الكورية (Korean)</span><span>البولندية (Polish)</span><span>الروسية (Russian)</span><span>الإسبانية (Spanish)</span><span>التركية (Turkish)</span></div>
+  </section>
+
+  <section style="padding-top:20px">
+    <h2 class="reveal">رابعاً: خطوات الحصول على شهادة PMP</h2>
+    <div style="margin-top:24px">
+      <div class="step reveal"><div class="sn">01</div><div>
+        <h3>الخطوة الأولى: الاستعداد<span class="en2">Prepare</span></h3>
+        <p>للتقديم على شهادة PMP، يجب استيفاء متطلبات الأهلية المتعلقة بالمؤهل العلمي والخبرة العملية والتدريب المهني في إدارة المشاريع.</p>
+        <h4>خيارات الاستعداد والتدريب</h4>
+        <p>يمكنك الاستعداد من خلال:</p>
+        <ul>
+          <li>دورة التحضير لاختبار PMP المقدمة عبر الإنترنت وعند الطلب (Online, On-Demand PMP Exam Prep Course).</li>
+          <li>التعلم المباشر عبر الإنترنت أو بالحضور الشخصي من خلال شركاء PMI المعتمدين للتدريب (PMI Authorized Training Partners – ATP).</li>
+        </ul>
+        <div class="callout ok">وبصفتنا شريكاً معتمداً من PMI (ATP)، نوفر لك التدريب المطلوب لاستيفاء متطلبات التأهيل والتقدم للاختبار.</div>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">02</div><div>
+        <h3>الخطوة الثانية: تقديم الطلب<span class="en2">Apply</span></h3>
+        <p>تهدف عملية التقديم إلى التحقق من استيفائك لمتطلبات أهلية شهادة PMP، مما يعزز قيمة الشهادة ومصداقيتها لدى أصحاب العمل.</p>
+        <h4>متطلبات الأهلية للحصول على شهادة PMP</h4>
+        <p>تُعد متطلبات الأهلية أحد الأسباب التي تجعل شهادة PMP معياراً عالمياً للتميز المهني؛ إذ تشترط PMI استيفاء معايير محددة قبل السماح للمرشح بدخول الاختبار.</p>
+        <p>قبل تقديم طلبك، تأكد من استيفاء أحد المسارات التالية:</p>
+        <h4>أولاً: متطلبات المؤهل العلمي والخبرة العملية</h4>
+        <p>يجب استيفاء أحد الخيارات الأربعة التالية:</p>
+        <div class="paths">
+          <div class="pathc"><b>المسار الأول: شهادة التعليم الثانوي</b><small>High School Diploma</small><p>تشمل شهادة الثانوية العامة أو شهادة GED أو ما يعادلها.</p><div class="yrs">5 سنوات</div><span>خبرة في إدارة المشاريع.</span></div>
+          <div class="pathc"><b>المسار الثاني: درجة الدبلوم المتوسط أو دبلوم التعليم المهني</b><small>Associate’s Degree or Vocational Trade School Diploma</small><div class="yrs">4 سنوات</div><span>خبرة في إدارة المشاريع.</span></div>
+          <div class="pathc"><b>المسار الثالث: درجة البكالوريوس أو أعلى</b><small>Bachelor’s Degree or Higher</small><div class="yrs">3 سنوات</div><span>خبرة في إدارة المشاريع.</span></div>
+          <div class="pathc"><b>المسار الرابع: شهادة من برنامج معتمد من مركز الاعتماد العالمي لدى PMI</b><small>PMI Global Accreditation Center (GAC) Program</small><p>الحصول على درجة البكالوريوس أو الدراسات العليا من برنامج معتمد من مركز الاعتماد العالمي لدى PMI.</p><div class="yrs">سنتان</div><span>خبرة في إدارة المشاريع.</span></div>
+        </div>
+        <h4>ثانياً: ما الذي يُحتسب خبرة في إدارة المشاريع؟<span class="en2">What Counts as Project Management Experience?</span></h4>
+        <p>تُحتسب الخبرة التي اكتسبتها من إدارة المشاريع في بيئة عمل مهنية، عندما تكون مسؤولاً عن جوانب مثل:</p>
+        <ul>
+          <li>تخطيط المشاريع (Planning).</li>
+          <li>اتخاذ القرارات (Decision-Making).</li>
+          <li>تسليم مخرجات المشروع (Delivery).</li>
+          <li>تحمل المسؤولية عن النتائج (Outcomes).</li>
+        </ul>
+        <p><b style="color:var(--tx)">ضوابط احتساب الخبرة:</b></p>
+        <ul>
+          <li>يجب أن تكون الخبرة خلال السنوات العشر الأخيرة.</li>
+          <li>يجب أن تكون لديك مسؤوليات فعلية في إدارة المشاريع.</li>
+          <li>يجب تسجيل كل مشروع بشكل مستقل في طلب التقديم.</li>
+          <li>لا يجوز احتساب الفترات الزمنية المتداخلة للمشاريع أكثر من مرة (Don’t Double-Count Overlapping Projects).</li>
+        </ul>
+        <div class="callout">ملاحظة: لا يشترط أن يكون المسمى الوظيفي الرسمي هو مدير مشروع، وإنما المهم طبيعة المسؤوليات والمهام التي مارستها فعلياً.</div>
+        <h4>ثالثاً: استكمال متطلبات التقديم</h4>
+        <p>بعد التأكد من استيفاء متطلبات المؤهل العلمي والخبرة العملية، اتبع الخطوات التالية:</p>
+        <ul>
+          <li>إدخال بيانات المؤهل العلمي.</li>
+          <li>توثيق الخبرة المطلوبة في إدارة المشاريع.</li>
+          <li>استكمال 35 ساعة تدريبية في إدارة المشاريع، أو استيفاء البديل المعتمد، مثل شهادة CAPM السارية.</li>
+          <li>إنشاء حساب مجاني على موقع PMI.org.</li>
+          <li>استكمال طلب التقديم الإلكتروني (Application).</li>
+        </ul>
+        <div class="callout ok">وبصفتنا شريك تدريب معتمداً من PMI، نوفر لك الدورة التدريبية اللازمة لاستيفاء متطلب الساعات التعليمية، مع المساعدة في فهم متطلبات التقديم والاستعداد له.</div>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">03</div><div>
+        <h3>الخطوة الثالثة: الدراسة والاستعداد للاختبار<span class="en2">Study</span></h3>
+        <p>بعد قبول طلبك ودفع رسوم الاختبار وحجز موعده، تبدأ مرحلة الاستعداد النهائي ليوم الاختبار.</p>
+        <h4>المصادر التعليمية المقترحة من PMI</h4>
+        <ul><li>الاختبار التجريبي لشهادة PMP (PMP Practice Exam).</li><li>اشتراك PMI Study Hall Essentials.</li><li>دليل إدارة المشاريع (PMBOK® Guide).</li></ul>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">04</div><div>
+        <h3>الخطوة الرابعة: اجتياز الاختبار والحصول على الشهادة<span class="en2">Earn</span></h3>
+        <p>يمكنك أداء الاختبار بإحدى الطريقتين:</p>
+        <ul><li>في أحد مراكز الاختبارات التابعة لشركة Pearson VUE، وهو الخيار الموصى به.</li><li>عبر الإنترنت باستخدام نظام الاختبار الإلكتروني الآمن.</li></ul>
+        <h4>حجز الاختبار وعدد المحاولات</h4>
+        <ul><li>اختر موعد الاختبار عبر الإنترنت.</li><li>يمكنك التقدم للاختبار حتى ثلاث محاولات خلال سنة واحدة، في حال عدم اجتياز الاختبار، وفقاً لشروط PMI.</li></ul>
+      </div></div>
+
+      <div class="step reveal"><div class="sn">05</div><div>
+        <h3>الخطوة الخامسة: المحافظة على الشهادة<span class="en2">Maintain</span></h3>
+        <p>للمحافظة على حالة شهادة PMP نشطة، يجب على حامل الشهادة استكمال متطلبات التطوير المهني المستمر.</p>
+        <div class="dstat" style="margin-top:14px;max-width:460px"><div class="big">60 PDU</div><b>وحدة تطوير مهني خلال كل دورة مدتها 3 سنوات</b><small style="direction:ltr;text-align:start">Professional Development Units (PDUs)</small></div>
+        <h4>كيف تجمع وحدات PDUs؟</h4>
+        <p>يمكنك جمع وحدات التطوير المهني من خلال:</p>
+        <ul><li>الندوات الإلكترونية (Webinars).</li><li>الدورات التدريبية (Courses).</li><li>العمل والممارسة المهنية في المشاريع (Project Work).</li><li>الأنشطة التطوعية (Volunteering).</li></ul>
+      </div></div>
+    </div>
+  </section>
+
+  <div class="cta reveal"><h2>ابدأ مسارك نحو شهادة PMP</h2><p class="sub" style="margin:0 auto 22px">احجز مقعدك في الدورة عبر واتساب.</p><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a></div>
+</main>
+
+<!-- FAQ -->
+<main class="page" id="p-faq">
+  <div class="phead"><div class="eyebrow rv en2" style="direction:ltr">PMI Certifications – Frequently Asked Questions (FAQs)</div><h1 class="rv" style="margin-top:8px"><em class="g">الأسئلة</em> الشائعة</h1>
+    <p class="sub rv">اخترت أهم الأسئلة التي يحتاج المرشح إلى معرفتها قبل التقديم، وأثناء الاختبار، وبعد الحصول على الشهادة. رتبتها حسب المراحل العملية للحصول على الشهادة والمحافظة عليها.</p></div>
+  <section style="padding-top:24px">
+    <input id="faqq" class="fsearch rv" type="search" placeholder="ابحث في الأسئلة…" aria-label="ابحث في الأسئلة…">
+    <div class="faq" id="faqList"></div>
+    <p id="faqNone" class="sub" style="display:none;margin:30px auto;text-align:center">لا توجد نتائج مطابقة.</p>
+    <div class="cta reveal" style="margin-top:40px"><h2>لم تجد إجابة سؤالك؟</h2><p class="sub" style="margin:0 auto 22px">تواصل معنا مباشرة عبر واتساب.</p><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">اسأل عبر واتساب</a></div>
+  </section>
+</main>
+
+<!-- CONTACT -->
+<main class="page" id="p-contact">
+  <section style="padding-top:70px;text-align:center">
+    <div class="eyebrow rv">تواصل معنا</div><h1 class="rv" style="margin-top:8px">بنقرة واحدة على <em class="g">واتساب</em></h1>
+    <p class="sub rv" style="margin:14px auto 28px">احجز مقعدك في الدورات المتاحة، أو سجّل اهتمامك بالدورات القادمة.</p>
+    <a class="btn p rv" style="font-size:18px;padding:16px 40px" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">ابدأ المحادثة على واتساب</a>
+    <div class="chips rv"><a href="https://www.linkedin.com/in/ahmed-aldeib" target="_blank" rel="noopener" style="--bc:#0A66C2"><svg class="si"><use href="#i-in"/></svg>LinkedIn</a><a href="https://www.facebook.com/share/1BmbRpiUu9/" target="_blank" rel="noopener" style="--bc:#1877F2"><svg class="si"><use href="#i-fb"/></svg>Facebook</a><a href="https://www.instagram.com/ahmedaldeibpmp" target="_blank" rel="noopener" style="--bc:#D6249F"><svg class="si"><use href="#i-ig"/></svg>Instagram</a><a href="https://www.tiktok.com/@ahmed.aldeib" target="_blank" rel="noopener" style="--bc:#FE2C55"><svg class="si"><use href="#i-tk"/></svg>TikTok</a><a href="https://youtube.com/@ahmedaldeibpmp" target="_blank" rel="noopener" style="--bc:#FF0000"><svg class="si"><use href="#i-yt"/></svg>YouTube</a></div>
+    <div class="chips" style="margin-top:14px"><a href="https://potp-pm.moodiy.com/login/index.php" target="_blank" rel="noopener">دخول المنصة التعليمية</a></div>
+  </section>
+</main>
+
+<div style="max-width:1240px;margin:0 auto;padding:0 20px"><div class="cta"><h2>ابدأ مسارك نحو شهادة PMI</h2><p class="sub" style="margin:0 auto 22px">احجز مقعدك في الدورات المتاحة، أو سجّل اهتمامك بالدورات القادمة.</p><a class="btn p" href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener">تواصل معنا عبر واتساب</a></div></div>
+<footer>
+  <div class="fgrid">
+    <div><div class="brand" style="margin-bottom:12px"><img class="lp" src="badges/trainer.jpg" alt="" style="width:76px;height:76px" onerror="this.onerror=null;this.src='badges/i1.png';this.classList.remove('lp')"><span class="wm" style="font-size:24px"><span style="color:#fff">Ahmed</span><span class="l2" style="font-size:19px">Aldeib</span></span></div><p>شريك تدريب معتمد من PMI. [نبذة قصيرة تُكتب لاحقًا]</p></div>
+    <div><h4>روابط</h4><a href="#/">الرئيسية</a><a href="#/pmi">معهد PMI</a><a href="#/trainer">المدرب</a><a href="#/courses">الدورات</a><a href="#/blog">المدونة</a><a href="#/faq">الأسئلة الشائعة</a><a href="https://potp-pm.moodiy.com/login/index.php" target="_blank" rel="noopener">دخول المنصة</a></div>
+    <div><h4>تواصل</h4><a href="https://wa.me/message/WFY6JB3E3WVLL1" target="_blank" rel="noopener"><svg class="si"><use href="#i-wa"/></svg>واتساب</a><a href="https://www.linkedin.com/in/ahmed-aldeib" target="_blank" rel="noopener"><svg class="si"><use href="#i-in"/></svg>LinkedIn</a><a href="https://www.facebook.com/share/1BmbRpiUu9/" target="_blank" rel="noopener"><svg class="si"><use href="#i-fb"/></svg>Facebook</a><a href="https://www.instagram.com/ahmedaldeibpmp" target="_blank" rel="noopener"><svg class="si"><use href="#i-ig"/></svg>Instagram</a><a href="https://www.tiktok.com/@ahmed.aldeib" target="_blank" rel="noopener"><svg class="si"><use href="#i-tk"/></svg>TikTok</a><a href="https://youtube.com/@ahmedaldeibpmp" target="_blank" rel="noopener"><svg class="si"><use href="#i-yt"/></svg>YouTube</a></div>
+  </div>
+  <div class="copy">موقع شخصي للمدرب، وليس موقع PMI الرسمي. [الصياغة النهائية يراجعها صاحب الموقع]
+    <div class="credit"><span>جميع الحقوق محفوظة © 2026</span><span>تم التطوير من م. أحمد الديب</span></div></div>
+</footer>
+
+<script>
+var WA='https://wa.me/message/WFY6JB3E3WVLL1';
+var C=[
+ {img:'badges/i7.webp',cat:'إدارة المشاريع | Project Management',t:'دورة مساعد معتمد في إدارة المشاريع CAPM®',s:'Certified Associate in Project Management',ok:1,page:'capm'},
+ {img:'badges/i6.png',cat:'إدارة المشاريع | Project Management',t:'دورة محترف إدارة المشاريع PMP®',s:'Project Management Professional',ok:1,page:'pmp'},
+ {img:'badges/i3.webp',cat:'إدارة المخاطر | Risk Management',t:'دورة محترف إدارة المخاطر PMI-RMP®',s:'Risk Management Professional'},
+ {img:'badges/i4.png',cat:'إدارة المشاريع الرشيقة | Agile',t:'دورة محترف الممارسات الرشيقة PMI-ACP®',s:'Agile Certified Practitioner'},
+ {img:'badges/i5.png',cat:'إدارة مشاريع البناء | Construction',t:'دورة محترف إدارة مشاريع البناء PMI-CP™',s:'Construction Professional'},
+ {img:'badges/i9.png',cat:'مكاتب إدارة المشاريع | PMO',t:'دورة محترف إدارة مكاتب المشاريع PMI-PMOCP™',s:'PMO Certified Professional'}];
+var TL=[['1969-1979','البداية والانطلاق','تنظيم أولى الندوات والمؤتمرات وافتتاح أول فروعه.'],
+['1979-1989','فترة التغيير','توسيع الفروع، تقديم شهادة PMP®، تأسيس جوائز التميز.'],
+['1989-1999','خطوات كبيرة نحو العالمية','إصدار أول نسخة من PMBOK® Guide، أول منتدى عالمي.'],
+['1999-2009','التوسع العالمي','ترجمة دليل PMBOK®، إطلاق مركز الاعتماد العالمي.'],
+['2009-2019','الوصول إلى آفاق جديدة','فتح مكاتب دولية، إطلاق شهادات جديدة.'],
+['2019-2024','المستقبل نحو الأمام','حملات توعية، دمج الذكاء الاصطناعي في المهنة.'],
+['2024 – الحاضر','إشعال الطريق نحو المستقبل','استراتيجية PMI:Next، تعزيز أثر المشاريع عالميًا.']];
+var CORE=[['CAPM®','Certified Associate in Project Management','مساعد معتمد في إدارة المشاريع'],['PMP®','Project Management Professional','إدارة المشاريع الاحترافية'],['PgMP®','Program Management Professional','إدارة البرامج الاحترافية'],['PfMP®','Portfolio Management Professional','إدارة المحافظ الاحترافية']];
+var SPEC=[['PMI-CP™','PMI Construction Professional','محترف البناء'],['PMI-ACP®','PMI Agile Certified Practitioner','الممارس المعتمد في الأساليب الرشيقة'],['PMI-RMP®','PMI Risk Management Professional','المحترف المعتمد في إدارة المخاطر'],['PMI-PBA®','PMI Professional in Business Analysis','المحترف المعتمد في تحليل الأعمال'],['PMI-SP®','PMI Scheduling Professional','المحترف المعتمد في جدولة المشاريع'],['PMI-PMOCP™','PMO Certified Professional','المحترف في إدارة مكاتب المشاريع'],['CPMAI™','PMI Certified Professional in Managing AI (PMI-CPMAI)™','محترف معتمد في إدارة الذكاء الاصطناعي'],['GPM-b™','Green Project Manager – Basic','مدير المشاريع الأخضر – المستوى الأساسي']];
+function certs(id,a){document.getElementById(id).innerHTML=a.map(function(c){return '<div class="card tilt cert reveal"><b>'+c[0]+'</b><small>'+c[1]+'</small><span>'+c[2]+'</span></div>'}).join('')}
+certs('core',CORE);certs('spec',SPEC);
+document.getElementById('tl').innerHTML=TL.map(function(e){return '<div class="ev reveal"><div class="yr">'+e[0]+'</div><h3>'+e[1]+'</h3><p>'+e[2]+'</p></div>'}).join('');
+document.getElementById('clist').innerHTML=C.map(function(c){return '<div class="cl reveal"><img src="'+c.img+'" alt=""><div><h3>'+c.t+'</h3><small>'+c.s+'</small><span class="st '+(c.ok?'ok':'soon')+'">'+(c.ok?'متاحة الآن':'قريبًا')+'</span><br><a class="btn s" target="_blank" rel="noopener" href="'+WA+'">'+(c.ok?'احجز مقعدك':'سجّل اهتمامك')+'</a>'+(c.page?' <a class="btn s" href="#/'+c.page+'">تفاصيل الدورة</a>':'')+'</div></div>'}).join('');
+
+/* 3D ring carousel (home + courses): drag, inertia, wheel, keys, pointer parallax */
+function arc(arcId,infoId,ctlId){
+  var el=document.getElementById(arcId),info=document.getElementById(infoId),ctl=document.getElementById(ctlId);
+  var n=C.length,step=360/n,ang=-step,tgt=-step,vel=0,drag=false,moved=0,lx=0,act=-1,tx=0,ty=0,cx=0,cy=0,R=330;
+  var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  el.tabIndex=0;el.setAttribute('role','group');el.setAttribute('aria-label','دوّار الدورات: اسحب أو استخدم الأسهم');
+  var stage=document.createElement('div');stage.className='stage';el.appendChild(stage);
+  var els=C.map(function(c,i){var d=document.createElement('div');d.className='it';
+    d.innerHTML='<img draggable="false" src="'+c.img+'" alt="'+c.t+'"><span class="tg'+(c.ok?' ok':'')+'">'+(c.ok?'متاحة الآن':'قريبًا')+'</span>';
+    stage.appendChild(d);return d});
+  ctl.innerHTML='<button class="ar" aria-label="السابق">›</button><span class="dots"></span><button class="ar" aria-label="التالي">‹</button>';
+  var bs=ctl.querySelectorAll('button'),dots=ctl.querySelector('.dots');
+  C.forEach(function(c,i){var b=document.createElement('button');b.className='dot';b.setAttribute('aria-label',c.t);b.onclick=function(){go(i)};dots.appendChild(b)});
+  function snap(k){k=((k%n)+n)%n;tgt=-k*step+360*Math.round((ang+k*step)/360)}
+  function go(k){snap(k)}
+  function cur(){return(((Math.round(-ang/step))%n)+n)%n}
+  bs[0].onclick=function(){go(cur()-1)};bs[1].onclick=function(){go(cur()+1)};
+  el.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){go(cur()+1);e.preventDefault()}if(e.key==='ArrowRight'){go(cur()-1);e.preventDefault()}});
+  el.addEventListener('wheel',function(e){var d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:0;if(d){go(cur()+(d>0?1:-1));e.preventDefault()}},{passive:false});
+  el.addEventListener('pointerdown',function(e){drag=true;moved=0;lx=e.clientX;vel=0;el.setPointerCapture(e.pointerId)});
+  el.addEventListener('pointermove',function(e){
+    var r=el.getBoundingClientRect();ty=((e.clientX-r.left)/r.width-.5)*18;tx=-((e.clientY-r.top)/r.height-.5)*12;
+    if(!drag)return;var dx=e.clientX-lx;lx=e.clientX;moved+=Math.abs(dx);ang+=dx*.45;vel=dx*.45;tgt=ang});
+  el.addEventListener('pointerup',function(e){if(!drag)return;drag=false;
+    if(moved<6){var t=e.target.closest('.it');if(t){var ix=els.indexOf(t);if(ix===cur()&&C[ix].page&&window.go){window.go(C[ix].page)}else go(ix)}else snap(cur())}
+    else{snap(Math.round(-(ang+vel*9)/step))}});
+  el.addEventListener('pointerleave',function(){tx=0;ty=0});
+  function setInfo(k){var c=C[k];
+    el.style.setProperty('--g',c.ok?(k===0?'#18C8E4':'#9B6BFF'):'#D08A5A');
+    info.innerHTML='<div class="eyebrow">'+c.cat+'</div><h2 style="font-size:clamp(20px,2.6vw,30px)">'+c.t+'</h2><div style="color:var(--mut);font-family:var(--fn)" dir="ltr">'+c.s+'</div><span class="st '+(c.ok?'ok':'soon')+'">'+(c.ok?'متاحة الآن':'قريبًا')+'</span><div style="margin-top:12px"><a class="btn p" style="padding:10px 26px" target="_blank" rel="noopener" href="'+WA+'">'+(c.ok?'احجز مقعدك عبر واتساب':'سجّل اهتمامك عبر واتساب')+'</a>'+(c.page?'<a class="btn s" style="padding:10px 26px;margin-inline-start:8px" href="#/'+c.page+'">تفاصيل الدورة</a>':'')+'</div>';
+    dots.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('on',i===k)})}
+  function frame(){
+    if(el.offsetParent!==null){
+      var W=innerWidth<820?150:210;R=innerWidth<820?170:330;el.style.setProperty('--w',W+'px');
+      if(!drag){ang=RM?tgt:ang+(tgt-ang)*.1}
+      cx+=(tx-cx)*.08;cy+=(ty-cy)*.08;
+      stage.style.transform='rotateX('+(-9+cx)+'deg) rotateY('+cy+'deg)';
+      els.forEach(function(d,i){var th=(i*step+ang)*Math.PI/180,c=Math.cos(th),s=Math.sin(th);
+        var front=(c+1)/2;
+        d.style.transform='translate3d('+(s*R*1.15)+'px,'+(-c*26)+'px,'+((c-1)*R*.7)+'px) rotateY('+(-s*38)+'deg) scale('+(.72+.38*front)+')';
+        d.style.opacity=(.3+.7*front).toFixed(3);d.style.zIndex=Math.round(front*100);
+        d.style.filter='brightness('+(.55+.45*front).toFixed(3)+')'});
+      var k=cur();if(k!==act){act=k;setInfo(k)}}
+    requestAnimationFrame(frame)}
+  frame();
+}
+arc('arcH','infoH','ctlH');arc('arcC','infoC','ctlC');
+
+/* 3D tilt on cards, cursor spotlight, scroll progress */
+var RMq=matchMedia('(prefers-reduced-motion:reduce)').matches;
+document.addEventListener('pointermove',function(e){
+  document.getElementById('spot').style.cssText='--mx:'+e.clientX+'px;--my:'+e.clientY+'px';
+  var c=e.target.closest&&e.target.closest('.tilt');
+  document.querySelectorAll('.tilt').forEach(function(t){if(t!==c)t.style.transform=''});
+  if(!c||RMq)return;
+  var r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  c.style.transform='perspective(700px) rotateY('+(x*14)+'deg) rotateX('+(-y*14)+'deg) translateZ(8px)'});
+addEventListener('scroll',function(){var h=document.documentElement;document.getElementById('prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight||1)*100)+'%'},{passive:true});
+
+/* scroll reveal with stagger */
+var io=new IntersectionObserver(function(es){var i=0;es.forEach(function(e){if(e.isIntersecting){e.target.style.transitionDelay=(i++*70)+'ms';e.target.classList.add('show');io.unobserve(e.target)}})},{threshold:.12});
+function observe(){document.querySelectorAll('.page.on .reveal:not(.show)').forEach(function(x){io.observe(x)})}
+
+/* preload the transition images so they are on screen the instant the portal opens */
+var NAVIMG={home:'badges/nav-home.png',about:'badges/nav-about.png',courses:'badges/nav-courses.png',capm:'badges/i7.webp',pmp:'badges/i6.png',trainer:'badges/nav-trainer.png',faq:'badges/nav-faq.png',blog:'badges/nav-blog.png',contact:'badges/nav-contact.png'};
+['badges/trainer.jpg','badges/pmi-logo.jpg'].concat(Object.keys(NAVIMG).map(function(k){return NAVIMG[k]})).forEach(function(s){var i=new Image();i.src=s});
+/* router + badge-portal transition */
+var cur_=document.getElementById('cur'),pages=['home','about','pmi','trainer','courses','capm','pmp','blog','faq','contact'],busy=false,now=null;
+var TITLES={home:'الرئيسية',about:'عن الموقع',pmi:'معهد PMI',trainer:'المدرب',courses:'الدورات',capm:'CAPM®',pmp:'PMP®',blog:'المدونة',faq:'الأسئلة الشائعة',contact:'تواصل معنا'};
+function show(p){pages.forEach(function(x){document.getElementById('p-'+x).classList.toggle('on',x===p)});
+  document.querySelectorAll('#nav a').forEach(function(a){a.classList.toggle('on',a.dataset.p===((p==='capm'||p==='pmp')?'courses':p))});
+  scrollTo(0,0);now=p;requestAnimationFrame(observe)}
+function route(){go(location.hash.replace('#/','')||'home')}
+function go(h){if(pages.indexOf(h)<0)h='home';if(h===now||busy)return;
+  if(now===null||RMq){show(h);return}
+  busy=true;var pi=document.getElementById('pimg');
+  if(h==='trainer'){pi.src='badges/nav-trainer.png';pi.className='pn';document.getElementById('pt').textContent=__t('م. أحمد الديب')}
+  else if(h==='pmi'){pi.src='badges/pmi-logo.jpg';pi.className='pl';document.getElementById('pt').textContent=__t('معهد إدارة المشاريع PMI')}
+  else{pi.src=NAVIMG[h]||'badges/i1.png';pi.className='pn';document.getElementById('pt').textContent=__t(TITLES[h])}
+  cur_.className='portal in';
+  setTimeout(function(){show(h);cur_.className='portal out';setTimeout(function(){cur_.className='portal';busy=false},850)},1250)}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#/"]');
+  if(a){e.preventDefault();cur_.style.setProperty('--x',e.clientX+'px');cur_.style.setProperty('--y',e.clientY+'px');
+    var t=a.getAttribute('href').replace('#/','')||'home';try{history.replaceState(null,'','#/'+(t==='home'?'':t))}catch(_){}go(t)}});
+addEventListener('hashchange',route);route();
+</script>
+<script>
+/* ===== Arabic / English switch: dictionary + text-node translator ===== */
+var LANG='ar';
+var EN={
+'معاينة تصميم فقط (ليست الموقع النهائي). النصوص بين أقواس مربعة نائبة بانتظار صاحب الموقع.':'Design preview only (not the final site). Text in square brackets is a placeholder awaiting the site owner.',
+'تفاصيل الدورة':'Course details','لا يشترط وجود خبرة عملية':'No work experience required',
+'مساعد معتمد في إدارة المشاريع (CAPM)®':'Certified Associate in Project Management (CAPM)®',
+'أثبت للعالم أنك تمتلك المعارف والمهارات الأساسية التي تتطلبها فرق المشاريع. تثبت شهادة CAPM أنك مستعد للمشاركة في إدارة مجموعة واسعة من المشاريع، من خلال إتقان أساليب العمل التي تشمل:':'Show the world you have the foundational knowledge and skills project teams need. The CAPM certification proves you are ready to take part in managing a wide range of projects by mastering ways of working that include:',
+'إدارة المشاريع التنبؤية':'Predictive project management','المبادئ والممارسات الرشيقة':'Agile principles and practices','تحليل الأعمال':'Business analysis',
+'رسوم الاختبار':'Exam fees','نوع الرسوم':'Fee type','القيمة':'Amount','سعر الأعضاء':'Member price','السعر الكامل':'Full price','158 دولاراً':'$158','210 دولارات':'$210',
+'ملاحظة: لا يُطلب دفع رسوم الاختبار إلا بعد قبول طلب التقديم، وعندما تصبح مستعداً لحجز موعد الاختبار.':'Note: exam fees are only requested after your application is accepted, when you are ready to schedule the exam.',
+'هل شهادة CAPM مناسبة لك؟':'Is the CAPM right for you?',
+'تُصنّف شهادة CAPM في المرتبة الأولى ضمن قائمة «أكثر 9 شهادات مهنية طلباً» وفقاً لمؤسسة Entrepreneur Media, Inc.':'The CAPM is ranked first on the list of “the 9 most in-demand professional certifications”, according to Entrepreneur Media, Inc.',
+'يمكن أن يساعدك الحصول على شهادة CAPM في تطوير مسارك المهني من خلال:':'Earning the CAPM can help advance your career by:',
+'زيادة فرص التقدم الوظيفي.':'Increasing your chances of career advancement.','تعزيز إمكانية الحصول على دخل أعلى.':'Improving your potential for higher income.','بناء أساس مهني متين يؤهلك للحصول على شهادات احترافية أخرى ذات قيمة عالمية.':'Building a solid professional foundation that qualifies you for other globally valuable professional certifications.',
+'المسارات الوظيفية المحتملة لحاملي شهادة CAPM':'Potential career paths for CAPM holders',
+'يمكن أن تؤهلك شهادة CAPM للعمل في مجموعة متنوعة من الوظائف المرتبطة بإدارة المشاريع، ومنها:':'The CAPM can qualify you for a variety of project management-related roles, including:',
+'مساعد مدير مشروع':'Assistant project manager','مسؤول إدارة المشاريع':'Project administrator','محلل مشاريع':'Project analyst','منسق مشاريع':'Project coordinator','مدير مشروع':'Project manager','مدير مشاريع تقنية لدى PMI':'PMI technical project manager',
+'أرقام ومؤشرات':'Key figures','أكثر من 1.7 مليون':'More than 1.7 million',
+'حاصل على شهادات PMI حول العالم، مما يجعل PMI المؤسسة الرائدة في هذا المجال منذ عام 1969.':'PMI certification holders worldwide, making PMI the leading organization in this field since 1969.',
+'100,750 دولاراً سنوياً':'$100,750 per year','متوسط راتب مديري المشاريع الحاصلين على شهادة CAPM في الولايات المتحدة.':'Average salary of project managers holding the CAPM in the United States.','المصدر المذكور: Forbes.':'Cited source: Forbes.',
+'معلومات عن الاختبار':'Exam information','عدد الأسئلة':'Number of questions','دقيقة — مدة الاختبار':'minutes — exam duration','لغات الاختبار المتاحة':'Available exam languages',
+'الإنجليزية (English)':'English','العربية (Arabic)':'Arabic','البرتغالية البرازيلية (Brazilian Portuguese)':'Brazilian Portuguese','الفرنسية (French)':'French','الألمانية (German)':'German','الإيطالية (Italian)':'Italian','اليابانية (Japanese)':'Japanese','الإسبانية (Spanish)':'Spanish','الكورية (Korean)':'Korean','الصينية المبسطة (Chinese Simplified)':'Chinese Simplified','الصينية التقليدية (Chinese Traditional)':'Chinese Traditional',
+'خطوات الحصول على شهادة CAPM':'Steps to earn the CAPM certification',
+'الخطوة الأولى: التحقق من الأهلية والاستعداد':'Step 1: Verify eligibility and readiness','قبل التقديم، تأكد من استيفائك لمتطلبات الحصول على شهادة CAPM.':'Before applying, make sure you meet the requirements for the CAPM certification.',
+'متطلبات الأهلية (Eligibility Requirements)':'Eligibility requirements','يجب استيفاء المتطلبات التالية:':'You must meet the following requirements:',
+'المؤهل الدراسي:':'Education:','الحصول على شهادة التعليم الثانوي، مثل شهادة الثانوية العامة أو GED (شهادة التطوير التعليمي العام)، أو ما يعادلها دولياً.':'A secondary-school diploma, such as a high-school certificate or a GED (General Educational Development), or an international equivalent.',
+'العمر:':'Age:','ألا يقل العمر عن 18 عاماً.':'You must be at least 18 years old.',
+'التعليم في إدارة المشاريع:':'Project management education:','إكمال 23 ساعة تعليمية في إدارة المشاريع قبل دخول الاختبار.':'Completing 23 contact hours of project management education before taking the exam.',
+'يمكن استيفاء متطلب الساعات التعليمية من خلال أحد الخيارات التالية:':'The education-hours requirement can be met through one of the following options:',
+'دورة التحضير لاختبار CAPM المقدمة عبر الإنترنت من PMI (PMI On-Demand CAPM Exam Prep Course).':'The online CAPM exam prep course from PMI (PMI On-Demand CAPM Exam Prep Course).',
+'دورة CAPM التدريبية بقيادة مدرب (Instructor-Led CAPM Course)، سواء عبر الإنترنت أو بالحضور الشخصي.':'An instructor-led CAPM course, either online or in person.',
+'وبصفتنا شريك تدريب معتمد نوفر لك هذا الشرط':'As an Authorized Training Partner, we provide you with this requirement.',
+'الخطوة الثانية: استكمال طلب التقديم (Complete the Application)':'Step 2: Complete the application','اتبع الخطوات التالية لضمان تقديم طلبك بصورة صحيحة.':'Follow these steps to make sure your application is submitted correctly.',
+'تجهيز مستندات التقديم (Gather Your Application Materials)':'Gather your application materials','قم بإدخال البيانات المتعلقة بما يلي:':'Enter the information related to the following:',
+'مؤهلك العلمي.':'Your educational qualification.','الدورات التعليمية والمهنية التي أكملت من خلالها 23 ساعة تعليمية في إدارة المشاريع.':'The educational and professional courses through which you completed 23 hours of project management education.','(الدورة التدريبية التي قدمناها لك)':'(the training course we provided you)',
+'نصائح إضافية (Additional Tips)':'Additional tips','تأكد من إنشاء حساب مستخدم على موقع PMI.org قبل البدء في تقديم الطلب.':'Make sure you create a user account on PMI.org before you start your application.','خذ وقتك في تعبئة الطلب.':'Take your time filling out the application.','يتيح لك نظام التقديم حفظ البيانات تلقائياً أثناء العمل (Save-as-you-go)، مما يسمح لك بالتوقف واستكمال الطلب في وقت لاحق.':'The application system saves your data automatically as you go (Save-as-you-go), so you can stop and finish the application later.',
+'الخطوة الثالثة: دفع الرسوم وحجز الاختبار (Pay and Schedule the Exam)':'Step 3: Pay the fee and schedule the exam','بعد قبول طلبك، تكون قد قطعت خطوة مهمة نحو الحصول على الشهادة.':'Once your application is accepted, you have taken an important step toward the certification.',
+'ماذا بعد قبول الطلب؟':'What happens after acceptance?','تحقق من قبول طلب التقديم.':'Confirm your application was accepted.','ادفع رسوم الاختبار المقررة.':'Pay the exam fee.','انتقل إلى حجز موعد الاختبار.':'Go on to schedule your exam.',
+'طرق أداء الاختبار':'Ways to take the exam','يمكنك أداء الاختبار بإحدى الطريقتين:':'You can take the exam in one of two ways:','في أحد مراكز الاختبارات التابعة لشركة Pearson VUE، وهو الخيار الموصى به.':'At a Pearson VUE test center, which is the recommended option.','عبر الإنترنت باستخدام نظام الاختبار الإلكتروني الآمن.':'Online, using a secure electronic testing system.',
+'عدد المحاولات':'Number of attempts','يُسمح لك بالتقدم للاختبار حتى ثلاث محاولات خلال سنة واحدة، في حال عدم اجتياز الاختبار.':'If you do not pass, you may take the exam up to three times within one year.',
+'الخطوة الرابعة: الاستعداد للاختبار (Study for the Exam)':'Step 4: Study for the exam','استعد جيداً ليوم الاختبار.':'Prepare well for exam day.','تؤكد شهادات PMI امتلاكك للمعارف والمهارات المهنية، لكن التحضير والدراسة الجيدة يظلان عنصرين أساسيين لاجتياز الاختبار.':'PMI certifications confirm your professional knowledge and skills, but good preparation and study remain essential to passing the exam.','تتوفر أمامك خيارات متعددة للتحضير، منها:':'You have several preparation options, including:',
+'الدورات التدريبية بالحضور الشخصي.':'In-person training courses.','الاختبارات التجريبية (Practice Exams).':'Practice exams.','الدورات التعليمية عند الطلب (On-Demand Courses)، التي تتيح لك التعلم وفقاً لسرعتك وجدولك الخاص.':'On-demand courses, which let you learn at your own pace and schedule.',
+'الخطوة الخامسة: أداء الاختبار (Take the Exam)':'Step 5: Take the exam','حان موعد اختبار CAPM.':'It is time for your CAPM exam.','ملخص مواصفات الاختبار':'Exam specifications summary','العنصر':'Item','التفاصيل':'Details','مدة الاختبار':'Exam duration','180 دقيقة':'180 minutes','إجمالي الأسئلة':'Total questions','150 سؤالاً':'150 questions','الأسئلة المحتسبة':'Scored questions','135 سؤالاً':'135 questions','أسئلة الاختبار التجريبية غير المحتسبة':'Unscored pretest questions','15 سؤالاً':'15 questions',
+'توزيع محتوى اختبار CAPM':'CAPM exam content distribution','يتكون الاختبار من أربعة مجالات رئيسية، موزعة حسب النسب التالية:':'The exam has four main domains, distributed as follows:',
+'أساسيات إدارة المشاريع والمفاهيم الأساسية':'Project management fundamentals and core concepts','المنهجيات التنبؤية القائمة على التخطيط':'Predictive, plan-based methodologies','الأطر والمنهجيات الرشيقة':'Agile frameworks and methodologies','أطر تحليل الأعمال':'Business analysis frameworks','من إجمالي الاختبار':'of the exam','إجمالي التوزيع: 100%.':'Total distribution: 100%.',
+'ابدأ مسارك نحو شهادة CAPM':'Start your path to the CAPM certification','احجز مقعدك في الدورة عبر واتساب.':'Book your seat in the course on WhatsApp.',
+'الأسئلة الشائعة':'FAQ','أسئلة':'Frequently','شائعة':'Asked Questions','[السؤال الأول]':'[First question]','[السؤال الثاني]':'[Second question]','[السؤال الثالث]':'[Third question]','[الإجابة يكتبها صاحب الموقع]':'[Answer to be written by the site owner]','الأسئلة وإجاباتها قريبًا. وفي الأثناء يسعدنا أن تسأل مباشرة عبر واتساب.':'Questions and answers are coming soon. In the meantime, feel free to ask us directly on WhatsApp.','اسأل عبر واتساب':'Ask on WhatsApp',
+'الرئيسية':'Home','عن الموقع':'About','معهد PMI':'PMI Institute','المدرب':'Trainer','الدورات':'Courses','المدونة':'Blog','تواصل معنا':'Contact',
+'دخول المنصة':'Platform Login','احجز عبر واتساب':'Book on WhatsApp',
+'شريك تدريب معتمد · Authorized Training Partner (ATP) of PMI®':'Authorized Training Partner (ATP) of PMI®',
+'منصة التدريب':'The','الرائدة':'Leading','في الشهادات الدولية لإدارة المشاريع':'Training Platform for International Project Management Certifications',
+'تجربة تعليمية متكاملة ومبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI.':'A complete, innovative and professional learning experience in project management, built on PMI standards.',
+'احجز مقعدك عبر واتساب':'Book your seat on WhatsApp','استعرض الدورات':'Browse courses',
+'دورات تدريبية بشهادات PMI':'PMI-certification courses','متاحة الآن للحجز':'Available to book now','شريك تدريب معتمد من PMI':'PMI Authorized Training Partner',
+'اختر شهادتك':'Choose your certification','الدورات التدريبية':'Training Courses','اسحب الحلقة أو انقر على أي شهادة لتتعرف عليها.':'Drag the ring or tap any certification to learn about it.',
+'متاحة الآن':'Available now','قريبًا':'Coming soon',
+'إدارة المشاريع | Project Management':'Project Management','إدارة المخاطر | Risk Management':'Risk Management','إدارة المشاريع الرشيقة | Agile':'Agile Project Management','إدارة مشاريع البناء | Construction':'Construction Project Management','مكاتب إدارة المشاريع | PMO':'Project Management Offices (PMO)',
+'دورة محترف إدارة المشاريع PMP®':'Project Management Professional (PMP)® Course','دورة مساعد معتمد في إدارة المشاريع CAPM®':'Certified Associate in Project Management (CAPM)® Course','دورة محترف إدارة المخاطر PMI-RMP®':'PMI Risk Management Professional (PMI-RMP)® Course','دورة محترف الممارسات الرشيقة PMI-ACP®':'PMI Agile Certified Practitioner (PMI-ACP)® Course','دورة محترف إدارة مشاريع البناء PMI-CP™':'PMI Construction Professional (PMI-CP)™ Course','دورة محترف إدارة مكاتب المشاريع PMI-PMOCP™':'PMI PMO Certified Professional (PMI-PMOCP)™ Course',
+'مسارات التعلم':'Learning paths','أقسام الدورات':'Course Categories','إدارة المشاريع':'Project Management','PMP · CAPM — متاحة الآن':'PMP · CAPM — Available now','محترف إدارة المشاريع':'Project Management Professional','إدارة المخاطر':'Risk Management','PMI-RMP — قريبًا':'PMI-RMP — Coming soon','المشاريع الرشيقة':'Agile Projects','PMI-ACP — قريبًا':'PMI-ACP — Coming soon','مشاريع البناء':'Construction Projects','PMI-CP — قريبًا':'PMI-CP — Coming soon','مكاتب المشاريع':'Project Offices','PMI-PMOCP — قريبًا':'PMI-PMOCP — Coming soon',
+'لماذا تختارنا؟':'Why choose us?','تعلّم ذكي وفعّال بأعلى جودة':'Smart, effective learning at the highest quality',
+'تجربة تعليمية متكاملة، مبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI، لتضمن لك التعلّم الذكي والفعّال بأعلى جودة.':'A complete, innovative and professional learning experience in project management, based on PMI standards, to ensure smart and effective learning at the highest quality.',
+'منصة متكاملة':'Integrated platform','نظام إدارة التعلم الخاص بنا يغطي جميع احتياجات التدريب، بدون الحاجة لمصادر خارجية، مع أدوات عملية وواجهة سهلة الاستخدام.':'Our learning management system covers all training needs without external resources, with practical tools and an easy-to-use interface.',
+'محاكاة الامتحان الدولي':'International exam simulation','اختبر نفسك باستخدام أسئلة محاكية تمامًا لأسئلة امتحانات PMI، لتعزز فرصك في النجاح بثقة واحتراف.':'Test yourself with questions that closely simulate PMI exam questions, to boost your chances of passing with confidence.',
+'خطة دراسة متكاملة':'Complete study plan','نقدم منهجية منظمة وواضحة خطوة بخطوة، لضمان تحقيق أهدافك التدريبية والتأهيل لشهادة PMP أو أي شهادة PMI أخرى.':'We provide a clear, organized step-by-step methodology to ensure you reach your training goals and qualify for the PMP or any other PMI certification.',
+'قيمة حقيقية للمتدربين':'Real value for trainees','محتوى شامل يشمل فيديوهات مسجلة، ملفات تعليمية وخرائط ذهنية، وأداة ذكاء اصطناعي لمساعدتك في تطوير مشاريعك.':'Comprehensive content including recorded videos, learning files and mind maps, and an AI tool to help you develop your projects.',
+'ما تحصل عليه':'What you get','ما تحصل عليه مع منصتنا':'What you get with our platform',
+'فيديوهات مسجلة':'Recorded videos','لكل المنهج بجودة عالية':'For the entire syllabus in high quality','ملفات تعليمية':'Learning files','مواد مرجعية شاملة':'Comprehensive reference material','خرائط ذهنية':'Mind maps','لتسهيل الفهم والحفظ':'To make understanding and memorizing easier','أداة ذكاء اصطناعي':'AI tool','لمساعدتك في تطوير مشاريعك':'To help you develop your projects','نماذج وقوالب':'Templates and forms','لتطبيق ما تعلمته على مشاريعك الواقعية':'To apply what you learned to your real projects',
+'مدرب خبير':'Expert trainer','معتمد بـ 6 شهادات PMI دولية':'Holder of 6 international PMI certifications','معتمد بـ 6 شهادات PMI':'Holder of 6 PMI certifications',
+'م. أحمد الديب':'Eng. Ahmed Aldeib','م. أحمد':'Eng. Ahmed','الديب':'Aldeib','أحمد الديب':'Ahmed Aldeib',
+'مهندس مدني، متخصص في الرقابة والتدقيق على المشاريع وإدارة المخاطر والحوكمة، مدرب ضمن منظومة PMI Authorized Training Partner.':'Civil engineer specializing in project audit and controls, risk management and governance; a trainer within the PMI Authorized Training Partner (ATP) network.',
+'الرقابة والتدقيق على المشاريع':'Project Audit & Controls','الحوكمة':'Governance','تعرّف على المدرب':'Meet the trainer',
+'[نص «عن الموقع» يكتبه صاحب الموقع]':'[“About” text to be written by the site owner]','[النبذة الكاملة ومجالات التخصص من نص صاحب الموقع]':'[Full bio and areas of expertise from the site owner’s text]','[المقالات تُضاف لاحقًا من ملفات نصية بسيطة]':'[Articles will be added later from simple text files]',
+'معهد إدارة المشاريع':'Project Management Institute',
+'منذ عام 1969، يشكل معهد إدارة المشاريع (PMI) السلطة الرائدة عالميًا في مجال إدارة المشاريع، ملتزمًا بتوجيه الطريق نحو نجاح المشاريع وتسليط الضوء على قوة إدارة المشاريع والأشخاص الذين يقفون خلفها.':'Since 1969, the Project Management Institute (PMI) has been the world’s leading authority in project management, committed to lighting the way to project success and highlighting the power of project management and the people behind it.',
+'تاريخ PMI':'PMI History','منذ التأسيس':'Since the founding',
+'منذ تأسيسه، ركز PMI على جمع المهنيين معًا وتعريف وتطوير مهنة إدارة المشاريع بشكل مستمر. بدأت الفكرة بعد سلسلة من النقاشات بين جيم سنيدر وزملائه، وأسفرت عن اجتماع رسمي في معهد جورجيا للتكنولوجيا، أتلانتا، الولايات المتحدة الأمريكية في 3 أكتوبر 1969، حيث وُلد معهد PMI. وتم توقيع أوراق التأسيس في بنسلفانيا من قبل خمسة مؤسسين رسميين.':'Since its founding, PMI has focused on bringing professionals together and continuously defining and developing the project management profession. The idea began after a series of discussions between Jim Snyder and his colleagues, leading to a formal meeting at the Georgia Institute of Technology in Atlanta, USA, on October 3, 1969, where PMI was born. The founding papers were signed in Pennsylvania by five official founders.',
+'المؤسسون الخمسة':'The five founders','المؤسس والمدير التنفيذي الأول، يُلقب بـ «أب PMI»':'Founder and first executive director, known as the “father of PMI”','أول حاصل على شهادة PMP®، مؤسس مشارك':'The first PMP® holder, co-founder','بناء الأسس الأكاديمية لمهنة إدارة المشاريع':'Built the academic foundations of the project management profession','إدارة أولى الأنشطة المالية والفنية':'Managed the first financial and technical activities','تطبيق مبادئ إدارة المشاريع في قطاع الصناعة':'Applied project management principles in industry',
+'مراحل التطور':'Milestones','مراحل تطور PMI عبر العقود':'PMI’s evolution through the decades',
+'البداية والانطلاق':'The beginning','تنظيم أولى الندوات والمؤتمرات وافتتاح أول فروعه.':'Organized the first seminars and conferences and opened the first chapters.',
+'فترة التغيير':'A period of change','توسيع الفروع، تقديم شهادة PMP®، تأسيس جوائز التميز.':'Expanded chapters, introduced the PMP® certification, established excellence awards.',
+'خطوات كبيرة نحو العالمية':'Big steps toward going global','إصدار أول نسخة من PMBOK® Guide، أول منتدى عالمي.':'Published the first edition of the PMBOK® Guide and held the first global forum.',
+'التوسع العالمي':'Global expansion','ترجمة دليل PMBOK®، إطلاق مركز الاعتماد العالمي.':'Translated the PMBOK® Guide and launched the global certification center.',
+'الوصول إلى آفاق جديدة':'Reaching new horizons','فتح مكاتب دولية، إطلاق شهادات جديدة.':'Opened international offices and launched new certifications.',
+'المستقبل نحو الأمام':'The future ahead','حملات توعية، دمج الذكاء الاصطناعي في المهنة.':'Awareness campaigns and integrating AI into the profession.',
+'2024 – الحاضر':'2024 – Present','إشعال الطريق نحو المستقبل':'Lighting the way to the future','استراتيجية PMI:Next، تعزيز أثر المشاريع عالميًا.':'The PMI:Next strategy, strengthening the impact of projects worldwide.',
+'رسالتنا':'Our mission','نحن مجتمع يبتكر المنتجات والخدمات والخبرات التي تعزز نجاح المشاريع.':'We are a community that creates the products, services and experiences that advance project success.',
+'رؤيتنا':'Our vision','عالم تحقق فيه كل المشاريع أقصى إمكاناتها لتحقيق أثر إيجابي.':'A world where all projects achieve their full potential to create a positive impact.',
+'قيمنا وأهدافنا':'Our values and goals','تعظيم نجاح المشاريع بتعريف موحّد يمكن للجميع الاتفاق عليه، وإحداث أثر اجتماعي بتشجيع المهنيين على استخدام مهاراتهم لتحقيق فرق إيجابي في المجتمع.':'Maximizing project success with a unified definition everyone can agree on, and creating social impact by encouraging professionals to use their skills to make a positive difference in society.',
+'شهادات PMI':'PMI Certifications','الشهادات المعتمدة عالميًا':'Globally recognized certifications','للمزيد من التفاصيل زر الموقع الرسمي':'For more details, visit the official website',
+'Core Certifications – الشهادات الأساسية':'Core Certifications','Specialized Certifications – الشهادات المتخصصة':'Specialized Certifications',
+'مساعد معتمد في إدارة المشاريع':'Certified associate in project management','إدارة المشاريع الاحترافية':'Professional project management','إدارة البرامج الاحترافية':'Professional program management','إدارة المحافظ الاحترافية':'Professional portfolio management',
+'محترف البناء':'Construction professional','الممارس المعتمد في الأساليب الرشيقة':'Certified Agile practitioner','المحترف المعتمد في إدارة المخاطر':'Certified risk management professional','المحترف المعتمد في تحليل الأعمال':'Certified business analysis professional','المحترف المعتمد في جدولة المشاريع':'Certified project scheduling professional','المحترف في إدارة مكاتب المشاريع':'Project management office professional','محترف معتمد في إدارة الذكاء الاصطناعي':'Certified professional in managing AI','مدير المشاريع الأخضر – المستوى الأساسي':'Green Project Manager – Basic level',
+'الدورات التي يقدمها':'Courses he offers','تواصل عبر واتساب':'Contact via WhatsApp',
+'اختر شهادتك، وابدأ':'Choose your certification and start your','مسارك':'journey','كل الدورات':'All courses','احجز مقعدك':'Book your seat','سجّل اهتمامك':'Register your interest','سجّل اهتمامك عبر واتساب':'Register your interest on WhatsApp',
+'بنقرة واحدة على':'One tap on','واتساب':'WhatsApp','احجز مقعدك في الدورات المتاحة، أو سجّل اهتمامك بالدورات القادمة.':'Book your seat in the available courses, or register your interest in upcoming ones.',
+'ابدأ المحادثة على واتساب':'Start the chat on WhatsApp','دخول المنصة التعليمية':'Learning platform login','ابدأ مسارك نحو شهادة PMI':'Start your path to a PMI certification','تواصل معنا عبر واتساب':'Contact us on WhatsApp',
+'شريك تدريب معتمد من PMI. [نبذة قصيرة تُكتب لاحقًا]':'PMI Authorized Training Partner. [Short bio to be written later]','روابط':'Links','تواصل':'Contact',
+'موقع شخصي للمدرب، وليس موقع PMI الرسمي. [الصياغة النهائية يراجعها صاحب الموقع]':'Personal website of the trainer, not the official PMI website. [Final wording to be reviewed by the site owner]',
+'AHMED ALDEIB — الرئيسية':'AHMED ALDEIB — Home','دوّار الدورات: اسحب أو استخدم الأسهم':'Courses ring: drag or use the arrow keys','السابق':'Previous','التالي':'Next',
+'معاينة الموقع الكاملة — نموذج':'Full Site Preview — Draft'
+};
+function __t(s){return LANG==='en'&&EN[s]?EN[s]:s}
+var ATTRS=['alt','aria-label','title','placeholder'];
+function trNode(n){
+  if(n.nodeType===3){var p=n.parentNode;if(!p||/^(SCRIPT|STYLE)$/.test(p.nodeName))return;
+    if(n.__o===undefined)n.__o=n.nodeValue;var k=n.__o.trim();
+    n.nodeValue=(LANG==='en'&&EN[k])?n.__o.replace(k,EN[k]):n.__o;return}
+  if(n.nodeType!==1||/^(SCRIPT|STYLE)$/.test(n.nodeName))return;
+  ATTRS.forEach(function(a){var v=n.getAttribute(a);if(v===null)return;n.__a=n.__a||{};if(n.__a[a]===undefined)n.__a[a]=v;
+    var o=n.__a[a];n.setAttribute(a,(LANG==='en'&&EN[o])?EN[o]:o)});
+  for(var c=n.firstChild;c;c=c.nextSibling)trNode(c)}
+function applyLang(l){
+  LANG=l;var h=document.documentElement;h.lang=l;h.dir=l==='en'?'ltr':'rtl';
+  trNode(document.body);document.title=__t('معاينة الموقع الكاملة — نموذج');
+  document.getElementById('lang').textContent=l==='en'?'عربي':'EN';
+  try{localStorage.setItem('lang',l)}catch(e){}}
+new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(trNode)})}).observe(document.body,{childList:true,subtree:true});
+document.getElementById('lang').addEventListener('click',function(){applyLang(LANG==='en'?'ar':'en')});
+(function(){var s=null;try{s=localStorage.getItem('lang')}catch(e){}if(s==='en')applyLang('en')})();
+/* light / dark */
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('theme',t)}catch(e){}}
+document.getElementById('theme').addEventListener('click',function(){applyTheme(document.documentElement.getAttribute('data-theme')==='light'?'dark':'light')});
+(function(){var s=null;try{s=localStorage.getItem('theme')}catch(e){}applyTheme(s==='light'?'light':'dark')})();
+</script>
+<script>
+/* ===== FAQ: one data source (Arabic + English) -> rendered list, search, translations ===== */
+(function(){
+var G=[
+{t:["أولاً: التقديم ومتطلبات الأهلية","Part 1: Application & Eligibility Requirements"],s:"Application & Eligibility",items:[
+ [["كيف يمكنني الحصول على إحدى شهادات PMI؟","How can I earn a PMI certification?"],[
+  ["p","يجب عليك استيفاء متطلبات الأهلية الخاصة بالشهادة التي ترغب في الحصول عليها، ثم تقديم طلب إلكتروني واجتياز الاختبار أو التقييم المطلوب.","You must meet the eligibility requirements for the certification you want, then submit an online application and pass the required exam or assessment."]]],
+ [["ما متطلبات الأهلية للحصول على شهادات PMI؟","What are the eligibility requirements for PMI certifications?"],[
+  ["p","تختلف المتطلبات حسب الشهادة. وتشمل بعض الشهادات المؤهل العلمي، والخبرة العملية، والساعات التعليمية في إدارة المشاريع. يمكنك الرجوع إلى دليل الشهادة (Certification Handbook) والمخطط العام لمحتوى الاختبار (Exam Content Outline).","Requirements vary by certification. Some certifications include education, work experience, and project management education hours. Refer to the Certification Handbook and the Exam Content Outline."]]],
+ [["هل يجب أن أحصل على شهادة CAPM أو PMP قبل التقديم على شهادات PMI الأخرى؟","Do I need to hold the CAPM or PMP before applying for other PMI certifications?"],[
+  ["p","لا. لا تشترط PMI الحصول على شهادة مسبقة للتقدم إلى شهادة أخرى. كما لا يُشترط أن تكون عضواً في PMI للتقديم على أي شهادة.","No. PMI does not require a prior certification to apply for another one, and you do not need to be a PMI member to apply for any certification."]]],
+ [["هل يجب أن أكون عضواً في PMI للحصول على إحدى شهاداتها؟","Do I have to be a PMI member to earn one of its certifications?"],[
+  ["p","لا. عضوية PMI ليست شرطاً للحصول على الشهادة، ولكنها قد تمنحك مزايا، منها أسعار مخفضة للاختبارات وبعض الخدمات والموارد التعليمية.","No. PMI membership is not a requirement for certification, but it may give you benefits, including discounted exam prices and some services and learning resources."]]],
+ [["كيف يمكنني تقديم طلب الحصول على الشهادة؟","How do I submit my certification application?"],[
+  ["p","تتوفر طلبات التقديم لجميع شهادات PMI عبر الإنترنت. ادخل إلى صفحة الشهادة المطلوبة واضغط على (Apply). احرص على إدخال جميع البيانات المطلوبة، لأن نقص المعلومات قد يؤدي إلى تأخير معالجة طلبك.","Applications for all PMI certifications are available online. Go to the page of the certification you want and click (Apply). Make sure you enter all the required information, because missing details may delay the processing of your application."]]],
+ [["هل يجب إرفاق المستندات والشهادات عند تقديم الطلب؟","Do I need to attach documents and certificates when applying?"],[
+  ["p","لا. لا تحتاج إلى إرسال المستندات الداعمة عند تقديم الطلب الأولي. ولكن إذا تم اختيار طلبك للمراجعة العشوائية (Random Audit)، فسيُطلب منك تقديم المستندات التي تثبت استيفاء متطلبات الأهلية.","No. You do not need to send supporting documents with your initial application. However, if your application is selected for a Random Audit, you will be asked to provide documents proving you meet the eligibility requirements."]]]
+]},
+{t:["ثانياً: الاختبار وإجراءاته","Part 2: The Exam & Its Procedures"],s:"Exam Guidance",items:[
+ [["كيف يمكنني حجز موعد الاختبار؟","How can I schedule my exam?"],[
+  ["p","بعد التأكد من استيفائك لمتطلبات الأهلية وقبول طلبك، سترسل PMI رسالة إلكترونية تتضمن تعليمات حجز الاختبار ورابط تحديد الموعد.","Once you have been confirmed as meeting the eligibility requirements and your application is accepted, PMI will email you instructions for scheduling the exam and a link to choose your date."],
+  ["p","كما يمكنك الوصول إلى رابط الحجز من خلال لوحة التحكم الخاصة بك على موقع PMI (myPMI Dashboard).","You can also reach the scheduling link from your dashboard on the PMI website (myPMI Dashboard)."]]],
+ [["أين يمكنني أداء اختبار PMI؟","Where can I take the PMI exam?"],[
+  ["p","يمكنك أداء الاختبار في أحد مراكز الاختبارات المعتمدة التابعة لشركة Pearson VUE حول العالم.","You can take the exam at one of the authorized Pearson VUE test centers around the world."],
+  ["p","وبعض الشهادات تتيح أيضاً أداء الاختبار عبر الإنترنت من المنزل أو المكتب، تحت مراقبة مراقب إلكتروني (Online Proctor)، وفقاً للشروط والقيود المعمول بها لكل اختبار.","Some certifications also allow you to take the exam online from home or the office under an Online Proctor, subject to the conditions and restrictions that apply to each exam."]]],
+ [["هل تتوفر اختبارات PMI بلغات غير الإنجليزية؟","Are PMI exams available in languages other than English?"],[
+  ["p","نعم. تتوفر اختبارات بعض شهادات PMI بلغات متعددة.","Yes. Exams for some PMI certifications are available in multiple languages."],
+  ["p","وتشمل الاختبارات التي توفر ترجمات متعددة:","Exams that offer multiple translations include:"],
+  ["ul",[["PMP.","PMP."],["CAPM.","CAPM."],["PMI-ACP.","PMI-ACP."]]],
+  ["p","يجب مراجعة دليل الشهادة للتأكد من اللغات المتاحة لكل اختبار.","Check the certification handbook to confirm the languages available for each exam."]]],
+ [["ماذا يحدث إذا لم أجتز الاختبار من المحاولة الأولى؟","What happens if I do not pass the exam on my first attempt?"],[
+  ["p","إذا لم تجتز الاختبار من المحاولة الأولى، يمكنك إعادة الاختبار مرتين إضافيتين خلال فترة الأهلية البالغة سنة واحدة من تاريخ الموافقة على طلبك.","If you do not pass on your first attempt, you can retake the exam up to two more times within the one-year eligibility period from the date your application was approved."],
+  ["p","تُطبق رسوم على إعادة الاختبار، وقد تسري بعض القيود وفقاً لسياسات PMI.","A fee applies to exam retakes, and some restrictions may apply under PMI policies."]]],
+ [["ما مدة صلاحية طلب التقديم؟","How long is my application valid?"],[
+  ["p","يظل طلب التقديم صالحاً لمدة سنة واحدة من تاريخ الموافقة عليه.","Your application remains valid for one year from the date it is approved."],
+  ["p","إذا انتهت فترة الأهلية دون أداء الاختبار، فسيتعين عليك تقديم طلب جديد.","If the eligibility period ends before you take the exam, you will need to submit a new application."]]],
+ [["ماذا يحدث بعد اجتياز الاختبار؟","What happens after I pass the exam?"],[
+  ["p","بعد اجتياز الاختبار أو التقييم المطلوب، يمكنك استخدام صفة حامل الشهادة (Certification Holder).","After passing the required exam or assessment, you can use the title Certification Holder."],
+  ["p","كما ستحصل على الشارة الرقمية (Digital Badge) عبر البريد الإلكتروني من منصة Credly، ويمكنك مشاركتها على منصات التواصل الاجتماعي وإتاحتها لأصحاب العمل للتحقق من صحة شهادتك.","You will also receive a Digital Badge by email from the Credly platform, which you can share on social media and make available to employers to verify your certification."],
+  ["n","ملاحظة: يُفضّل استخدام عنوان البريد الإلكتروني نفسه في حساب PMI وحساب Credly.","Note: it is best to use the same email address for your PMI account and your Credly account."]]]
+]},
+{t:["ثالثاً: المحافظة على الشهادة وتجديدها","Part 3: Maintaining & Renewing Your Certification"],s:"Maintaining Certifications",items:[
+ [["هل تنتهي صلاحية شهادات PMI بعد الحصول عليها؟","Do PMI certifications expire after you earn them?"],[
+  ["p","تتطلب شهادات PMI المحافظة على التطوير المهني المستمر (Continuous Professional Development) من أجل الاحتفاظ بحالة الشهادة النشطة.","PMI certifications require ongoing Continuous Professional Development in order to keep the certification active."],
+  ["p","وتختلف متطلبات التجديد حسب نوع الشهادة، ويمكن الرجوع إلى دليل متطلبات المحافظة على الشهادات (CCR Handbook).","Renewal requirements vary by certification type; refer to the Continuing Certification Requirements (CCR) Handbook."]]],
+ [["ما وحدات التطوير المهني PDUs؟","What are Professional Development Units (PDUs)?"],[
+  ["p","وحدات التطوير المهني (Professional Development Units – PDUs) هي وحدة قياس تستخدمها PMI لاحتساب أنشطة التطوير المهني ضمن برنامج متطلبات المحافظة على الشهادات (CCR).","Professional Development Units (PDUs) are the unit of measure PMI uses to count professional development activities within the Continuing Certification Requirements (CCR) program."],
+  ["p","كل وحدة PDU تعادل ساعة واحدة من التعلم أو النشاط المهني.","Each PDU equals one hour of learning or professional activity."]]],
+ [["متى يمكنني البدء في جمع وحدات PDUs؟","When can I start earning PDUs?"],[
+  ["p","يمكنك البدء في جمع وتسجيل وحدات PDUs بمجرد حصولك على شهادة PMI.","You can start earning and logging PDUs as soon as you earn your PMI certification."],
+  ["p","أما الأنشطة التي أكملتها قبل الحصول على الشهادة، فلا تُحتسب ضمن وحدات التطوير المهني الخاصة بدورة الشهادة الجديدة.","Activities you completed before earning the certification do not count toward the PDUs for the new certification cycle."]]],
+ [["كيف يمكنني الحصول على وحدات PDUs؟","How can I earn PDUs?"],[
+  ["p","يمكنك الحصول عليها من خلال مجموعة من الأنشطة، منها:","You can earn them through a range of activities, including:"],
+  ["ul",[["حضور الدورات التدريبية المقدمة من شركاء PMI المعتمدين (Authorized Training Partners).","Attending training courses offered by PMI Authorized Training Partners."],["حضور فعاليات وفصول فروع PMI (PMI Chapters).","Attending PMI Chapter events and meetings."],["المشاركة في المؤتمرات والفعاليات التدريبية التي تنظمها PMI.","Taking part in conferences and training events organized by PMI."],["حضور البرامج التعليمية التي تقدمها الجامعات والمؤسسات.","Attending educational programs offered by universities and institutions."],["التعلم الذاتي (Self-Directed Learning).","Self-Directed Learning."]]]]],
+ [["هل يمكنني احتساب نشاط تعليمي واحد ضمن أكثر من مجال من مجالات PMI Talent Triangle؟","Can I count a single learning activity toward more than one PMI Talent Triangle area?"],[
+  ["p","نعم. يمكنك توزيع وحدات PDUs الناتجة عن نشاط تعليمي واحد على أكثر من مجال، إذا كان محتوى النشاط يغطي تلك المجالات فعلياً.","Yes. You can split the PDUs from a single learning activity across more than one area, if the activity’s content genuinely covers those areas."],
+  ["p","وتشمل مجالات مثلث المواهب PMI Talent Triangle:","The areas of the PMI Talent Triangle are:"],
+  ["ul",[["أساليب العمل (Ways of Working).","Ways of Working."],["المهارات القيادية والتأثيرية (Power Skills).","Power Skills."],["الفطنة التجارية (Business Acumen).","Business Acumen."]]]]],
+ [["كيف يمكنني المحافظة على أكثر من شهادة PMI في الوقت نفسه؟","How can I maintain more than one PMI certification at the same time?"],[
+  ["p","يتيح نظام متطلبات المحافظة على الشهادات (CCR) إمكانية مشاركة بعض وحدات PDUs بين عدة شهادات، مما يسهل عملية التجديد ويقلل تكرار الجهد المطلوب.","The Continuing Certification Requirements (CCR) system lets some PDUs be shared across several certifications, which makes renewal easier and reduces duplicated effort."]]],
+ [["هل يمكن ترحيل وحدات PDUs الزائدة إلى دورة التجديد التالية؟","Can excess PDUs be carried over to the next renewal cycle?"],[
+  ["p","نعم. يمكن ترحيل بعض الوحدات الزائدة التي تم اكتسابها خلال السنة الأخيرة من دورة الشهادة الحالية إلى الدورة التالية.","Yes. Some excess units earned during the last year of the current certification cycle can be carried over to the next cycle."],
+  ["p","على سبيل المثال، في شهادة PMP، يمكن ترحيل الوحدات التي تزيد عن الحد المطلوب، وفقاً لشروط دليل CCR.","For example, for the PMP, units above the required amount can be carried over, in line with the terms of the CCR Handbook."]]]
+]},
+{t:["رابعاً: التدقيق والمراجعة","Part 4: Audit & Review"],s:"Application Audits",items:[
+ [["لماذا تقوم PMI بمراجعة بعض طلبات التقديم (Audit)؟","Why does PMI audit some applications?"],[
+  ["p","تقوم PMI بإجراء مراجعات عشوائية لبعض طلبات التقديم بهدف التحقق من صحة الخبرات العملية والمؤهلات التعليمية والساعات التدريبية المذكورة في الطلب.","PMI conducts random reviews of some applications to verify the work experience, educational qualifications and training hours stated in the application."],
+  ["p","وتهدف هذه العملية إلى تعزيز مصداقية شهادات PMI والمحافظة على موثوقيتها المهنية.","The purpose of this process is to strengthen the credibility of PMI certifications and maintain their professional reliability."]]],
+ [["كم من الوقت لديّ لاستكمال متطلبات التدقيق؟","How much time do I have to complete the audit requirements?"],[
+  ["p","لديك 90 يوماً لاستكمال المستندات المطلوبة وتقديم ملف التدقيق.","You have 90 days to complete the required documents and submit your audit package."],
+  ["p","ويمكنك متابعة الوقت المتبقي من خلال لوحة التحكم الخاصة بحسابك على موقع PMI.","You can track the time remaining from your account dashboard on the PMI website."]]],
+ [["كيف يمكنني تقديم مستندات التدقيق؟","How do I submit my audit documents?"],[
+  ["p","يمكنك الدخول إلى حساب myPMI واختيار (Access Audit Package)، ثم رفع المستندات المطلوبة إلكترونياً.","Log in to your myPMI account, choose (Access Audit Package), then upload the required documents electronically."],
+  ["p","وقد تشمل المستندات:","The documents may include:"],
+  ["ul",[["إثبات المؤهل العلمي.","Proof of your educational qualification."],["شهادات إتمام الدورات التعليمية.","Certificates of completion for educational courses."],["مستندات إثبات الخبرة عند اشتراطها.","Documents proving work experience, when required."],["التحقق من المراجع المهنية (References)، عند طلبها.","Verification of professional references, when requested."]]]]],
+ [["كم تستغرق مراجعة ملف التدقيق؟","How long does the audit review take?"],[
+  ["p","وفقاً للمعلومات الواردة في إرشادات PMI، تستغرق معالجة مستندات التدقيق من 5 إلى 7 أيام عمل بعد تقديمها.","According to PMI’s guidance, processing audit documents takes 5 to 7 business days after submission."],
+  ["p","وبعد مراجعة المستندات والموافقة عليها، سترسل PMI رسالة إلكترونية تتضمن تعليمات الدفع.","After the documents are reviewed and approved, PMI will send an email with payment instructions."]]],
+ [["ماذا يحدث إذا قررت عدم استكمال إجراءات التدقيق؟","What happens if I decide not to complete the audit?"],[
+  ["p","إذا قررت عدم استكمال التدقيق، فسيُعتبر ذلك إخفاقاً في عملية التدقيق بسبب عدم الامتثال للمتطلبات.","If you decide not to complete the audit, it will be treated as failing the audit for non-compliance with the requirements."],
+  ["p","ويمكنك إعادة التقديم بعد مرور سنة واحدة، مع تقديم طلب جديد ودفع الرسوم المطلوبة، وقد يخضع الطلب الجديد لعملية تدقيق أخرى.","You can reapply after one year with a new application and the required fees, and the new application may be subject to another audit."]]],
+ [["هل يمكن استخدام شهادة حضور دورة تدريبية داخلية إذا لم تصدر المؤسسة شهادة رسمية؟","Can I use proof of attending an in-house training course if the organization did not issue an official certificate?"],[
+  ["p","نعم. تقبل PMI خطاب إتمام الدورة الصادر عن مسؤول التدريب أو إدارة الموارد البشرية أو المدير المختص، بشرط أن يكون الخطاب على الورق الرسمي للمؤسسة ويؤكد إتمام الدورة.","Yes. PMI accepts a course completion letter issued by the training officer, the HR department or the relevant manager, provided it is on the organization’s official letterhead and confirms completion of the course."]]],
+ [["هل تقبل PMI كشف الدرجات الجامعي لإثبات المؤهل العلمي؟","Does PMI accept a university transcript as proof of education?"],[
+  ["p","نعم. تقبل PMI كشف الدرجات الأكاديمي (Academic Transcript) لإثبات استيفاء متطلب المؤهل العلمي.","Yes. PMI accepts an Academic Transcript as proof of meeting the education requirement."]]],
+ [["هل يجب ترجمة الشهادات الصادرة بلغة غير الإنجليزية؟","Do certificates issued in a language other than English need to be translated?"],[
+  ["p","نعم. يجب تقديم الشهادة الأصلية، بالإضافة إلى خطاب يتضمن ترجمة عامة لمحتواها.","Yes. You must provide the original certificate along with a letter containing a general translation of its content."]]]
+]}
+];
+Object.assign(EN,{
+"يتطلب خبرة عملية في قيادة وإدارة المشاريع":"Requires hands-on experience leading and managing projects",
+"محترف إدارة المشاريع (PMP)®":"Project Management Professional (PMP)®",
+"أثبت قدرتك على قيادة المشاريع في مختلف القطاعات من خلال هذه الشهادة المهنية المعترف بها عالمياً، وافتح أمامك آفاقاً واسعة من الفرص المهنية.":"Prove your ability to lead projects across industries with this globally recognized professional certification, and open up a wide range of career opportunities.",
+"تُعد شهادة محترف إدارة المشاريع (PMP)® اعترافاً مهنياً بامتلاكك المهارات اللازمة لإدارة الأشخاص والعمليات وأولويات الأعمال في المشاريع الاحترافية.":"The Project Management Professional (PMP)® certification is professional recognition that you have the skills needed to manage people, processes and business priorities in professional projects.",
+"أولاً: رسوم الاختبار":"Part 1: Exam fees","284 دولاراً":"$284","575 دولاراً":"$575",
+"ثانياً: هل شهادة PMP مناسبة لك؟":"Part 2: Is the PMP right for you?",
+"تثبت شهادة PMP امتلاكك القدرة والخبرة اللازمتين لقيادة المشاريع باستخدام مختلف أساليب العمل (Ways of Working)، بما في ذلك:":"The PMP proves you have the ability and experience needed to lead projects using different ways of working, including:",
+"إدارة المشاريع الهجينة":"Hybrid project management","إدارة المشاريع الرشيقة":"Agile project management",
+"وعلى عكس بعض الشهادات المهنية الأخرى، لا ترتبط شهادة PMP بمنهجية محددة أو قطاع صناعي معين أو نطاق جغرافي محدد، بل تثبت قدرتك على قيادة المشاريع في مختلف البيئات والقطاعات.":"Unlike some other professional certifications, the PMP is not tied to a specific methodology, industry or geographic area; it proves your ability to lead projects in all kinds of environments and sectors.",
+"لهذا السبب، تحظى شهادة PMP باعتراف أصحاب العمل حول العالم، وتُعد المعيار الذهبي (Gold Standard) ضمن شهادات احتراف إدارة المشاريع.":"For this reason, the PMP is recognized by employers around the world and is considered the Gold Standard among project management professional certifications.",
+"كما تشير البيانات إلى أن الحاصلين على شهادة PMP يحققون، في المتوسط، رواتب أعلى من نظرائهم غير الحاصلين عليها.":"Data also indicates that PMP holders earn, on average, higher salaries than their peers without it.",
+"زيادة في الرواتب":"Salary increase","الحاصلون على شهادة PMP يسجلون رواتب وسيطة أعلى بنسبة 17% مقارنة بغير الحاصلين عليها.":"PMP holders report median salaries 17% higher than those without the certification.",
+"135,000 دولار سنوياً":"$135,000 per year","الراتب الوسيط لمحترفي إدارة المشاريع الحاصلين على PMP في الولايات المتحدة.":"The median salary of project management professionals holding the PMP in the United States.",
+"أكثر من 1.7 مليون حامل للشهادة حول العالم.":"More than 1.7 million certification holders worldwide.",
+"ثالثاً: معلومات عن الاختبار":"Part 3: About the exam","لغة متاحة":"languages available",
+"الإندونيسية (Indonesian)":"Indonesian","البولندية (Polish)":"Polish","الروسية (Russian)":"Russian","التركية (Turkish)":"Turkish",
+"رابعاً: خطوات الحصول على شهادة PMP":"Part 4: Steps to earn the PMP certification",
+"الخطوة الأولى: الاستعداد":"Step 1: Prepare",
+"للتقديم على شهادة PMP، يجب استيفاء متطلبات الأهلية المتعلقة بالمؤهل العلمي والخبرة العملية والتدريب المهني في إدارة المشاريع.":"To apply for the PMP, you must meet the eligibility requirements for education, work experience and professional training in project management.",
+"خيارات الاستعداد والتدريب":"Preparation and training options","يمكنك الاستعداد من خلال:":"You can prepare through:",
+"دورة التحضير لاختبار PMP المقدمة عبر الإنترنت وعند الطلب (Online, On-Demand PMP Exam Prep Course).":"The online, on-demand PMP exam prep course.",
+"التعلم المباشر عبر الإنترنت أو بالحضور الشخصي من خلال شركاء PMI المعتمدين للتدريب (PMI Authorized Training Partners – ATP).":"Live learning, online or in person, through PMI Authorized Training Partners (ATP).",
+"وبصفتنا شريكاً معتمداً من PMI (ATP)، نوفر لك التدريب المطلوب لاستيفاء متطلبات التأهيل والتقدم للاختبار.":"As a PMI Authorized Training Partner (ATP), we provide the training you need to meet the qualification requirements and apply for the exam.",
+"الخطوة الثانية: تقديم الطلب":"Step 2: Apply",
+"تهدف عملية التقديم إلى التحقق من استيفائك لمتطلبات أهلية شهادة PMP، مما يعزز قيمة الشهادة ومصداقيتها لدى أصحاب العمل.":"The application process verifies that you meet the PMP eligibility requirements, which strengthens the value and credibility of the certification with employers.",
+"متطلبات الأهلية للحصول على شهادة PMP":"Eligibility requirements for the PMP",
+"تُعد متطلبات الأهلية أحد الأسباب التي تجعل شهادة PMP معياراً عالمياً للتميز المهني؛ إذ تشترط PMI استيفاء معايير محددة قبل السماح للمرشح بدخول الاختبار.":"Eligibility requirements are one reason the PMP is a global standard of professional excellence: PMI requires specific criteria to be met before a candidate may sit the exam.",
+"قبل تقديم طلبك، تأكد من استيفاء أحد المسارات التالية:":"Before submitting your application, make sure you meet one of the following paths:",
+"أولاً: متطلبات المؤهل العلمي والخبرة العملية":"1. Education and work experience requirements","يجب استيفاء أحد الخيارات الأربعة التالية:":"You must meet one of the following four options:",
+"المسار الأول: شهادة التعليم الثانوي":"Path 1: Secondary-school diploma","تشمل شهادة الثانوية العامة أو شهادة GED أو ما يعادلها.":"Includes a high-school certificate, a GED, or an equivalent.",
+"المسار الثاني: درجة الدبلوم المتوسط أو دبلوم التعليم المهني":"Path 2: Associate’s degree or vocational trade school diploma",
+"المسار الثالث: درجة البكالوريوس أو أعلى":"Path 3: Bachelor’s degree or higher",
+"المسار الرابع: شهادة من برنامج معتمد من مركز الاعتماد العالمي لدى PMI":"Path 4: A degree from a program accredited by the PMI Global Accreditation Center",
+"الحصول على درجة البكالوريوس أو الدراسات العليا من برنامج معتمد من مركز الاعتماد العالمي لدى PMI.":"A bachelor’s or postgraduate degree from a program accredited by the PMI Global Accreditation Center.",
+"5 سنوات":"5 years","4 سنوات":"4 years","3 سنوات":"3 years","سنتان":"2 years","خبرة في إدارة المشاريع.":"of project management experience.",
+"ثانياً: ما الذي يُحتسب خبرة في إدارة المشاريع؟":"2. What counts as project management experience?",
+"تُحتسب الخبرة التي اكتسبتها من إدارة المشاريع في بيئة عمل مهنية، عندما تكون مسؤولاً عن جوانب مثل:":"Experience gained managing projects in a professional work environment counts when you are responsible for aspects such as:",
+"تخطيط المشاريع (Planning).":"Project planning.","اتخاذ القرارات (Decision-Making).":"Decision-making.","تسليم مخرجات المشروع (Delivery).":"Delivering project outputs.","تحمل المسؤولية عن النتائج (Outcomes).":"Taking responsibility for outcomes.",
+"ضوابط احتساب الخبرة:":"Rules for counting experience:",
+"يجب أن تكون الخبرة خلال السنوات العشر الأخيرة.":"The experience must be within the last ten years.","يجب أن تكون لديك مسؤوليات فعلية في إدارة المشاريع.":"You must have had actual project management responsibilities.","يجب تسجيل كل مشروع بشكل مستقل في طلب التقديم.":"Each project must be recorded separately in the application.","لا يجوز احتساب الفترات الزمنية المتداخلة للمشاريع أكثر من مرة (Don’t Double-Count Overlapping Projects).":"Overlapping project periods may not be counted more than once (don’t double-count overlapping projects).",
+"ملاحظة: لا يشترط أن يكون المسمى الوظيفي الرسمي هو مدير مشروع، وإنما المهم طبيعة المسؤوليات والمهام التي مارستها فعلياً.":"Note: your official job title does not have to be project manager; what matters is the nature of the responsibilities and tasks you actually performed.",
+"ثالثاً: استكمال متطلبات التقديم":"3. Completing the application requirements",
+"بعد التأكد من استيفاء متطلبات المؤهل العلمي والخبرة العملية، اتبع الخطوات التالية:":"After confirming you meet the education and work experience requirements, follow these steps:",
+"إدخال بيانات المؤهل العلمي.":"Enter your educational qualification details.","توثيق الخبرة المطلوبة في إدارة المشاريع.":"Document the required project management experience.",
+"استكمال 35 ساعة تدريبية في إدارة المشاريع، أو استيفاء البديل المعتمد، مثل شهادة CAPM السارية.":"Complete 35 hours of project management training, or meet the approved alternative, such as a valid CAPM certification.",
+"إنشاء حساب مجاني على موقع PMI.org.":"Create a free account on PMI.org.","استكمال طلب التقديم الإلكتروني (Application).":"Complete the online application.",
+"وبصفتنا شريك تدريب معتمداً من PMI، نوفر لك الدورة التدريبية اللازمة لاستيفاء متطلب الساعات التعليمية، مع المساعدة في فهم متطلبات التقديم والاستعداد له.":"As a PMI Authorized Training Partner, we provide the training course needed to meet the education-hours requirement, along with help understanding and preparing for the application requirements.",
+"الخطوة الثالثة: الدراسة والاستعداد للاختبار":"Step 3: Study and prepare for the exam",
+"بعد قبول طلبك ودفع رسوم الاختبار وحجز موعده، تبدأ مرحلة الاستعداد النهائي ليوم الاختبار.":"After your application is accepted, the exam fee is paid and your exam is scheduled, the final preparation stage for exam day begins.",
+"المصادر التعليمية المقترحة من PMI":"Study resources recommended by PMI",
+"الاختبار التجريبي لشهادة PMP (PMP Practice Exam).":"The PMP Practice Exam.","اشتراك PMI Study Hall Essentials.":"A PMI Study Hall Essentials subscription.","دليل إدارة المشاريع (PMBOK® Guide).":"The PMBOK® Guide.",
+"الخطوة الرابعة: اجتياز الاختبار والحصول على الشهادة":"Step 4: Pass the exam and earn the certification",
+"حجز الاختبار وعدد المحاولات":"Scheduling the exam and number of attempts",
+"اختر موعد الاختبار عبر الإنترنت.":"Choose your exam date online.",
+"يمكنك التقدم للاختبار حتى ثلاث محاولات خلال سنة واحدة، في حال عدم اجتياز الاختبار، وفقاً لشروط PMI.":"If you do not pass, you may take the exam up to three times within one year, subject to PMI’s terms.",
+"الخطوة الخامسة: المحافظة على الشهادة":"Step 5: Maintain the certification",
+"للمحافظة على حالة شهادة PMP نشطة، يجب على حامل الشهادة استكمال متطلبات التطوير المهني المستمر.":"To keep the PMP certification active, the holder must complete the continuing professional development requirements.",
+"وحدة تطوير مهني خلال كل دورة مدتها 3 سنوات":"professional development units in each 3-year cycle",
+"كيف تجمع وحدات PDUs؟":"How do you earn PDUs?","يمكنك جمع وحدات التطوير المهني من خلال:":"You can earn professional development units through:",
+"الندوات الإلكترونية (Webinars).":"Webinars.","الدورات التدريبية (Courses).":"Courses.","العمل والممارسة المهنية في المشاريع (Project Work).":"Project work and professional practice.","الأنشطة التطوعية (Volunteering).":"Volunteering.",
+"ابدأ مسارك نحو شهادة PMP":"Start your path to the PMP certification"
+});
+EN["جميع الحقوق محفوظة © 2026"]="All rights reserved © 2026";EN["تم التطوير من م. أحمد الديب"]="Developed by Eng. Ahmed Aldeib";
+EN["عن"]="About";EN["الموقع"]="the Site";
+EN["رسالتنا"]="Our mission";EN["رؤيتنا"]="Our vision";EN["أهدافنا الاستراتيجية"]="Our strategic objectives";
+EN["أن نصبح روادًا للتميز في التدريب الاحترافي محليًا وإقليميًا، من خلال محتوى مبتكر يواكب التطور، ويعزز الكفاءة المهنية، ويحقق أثرًا إيجابيًا مستدامًا في المجتمع والاقتصاد."]="To become leaders of excellence in professional training locally and regionally, through innovative content that keeps pace with developments, strengthens professional competence, and creates a lasting positive impact on society and the economy.";
+EN["تقديم تدريب احترافي معتمد دوليًا في إدارة المشاريع والتخصصات المرتبطة بها، يجمع بين الجودة والابتكار والتطبيق العملي، ويسهم في تطوير قدرات الأفراد والمؤسسات في ليبيا والعالم العربي، وإعداد كفاءات قادرة على قيادة التغيير وتحقيق التميز المستدام."]="To deliver internationally accredited professional training in project management and related disciplines, combining quality, innovation and practical application, contributing to the development of individuals and organizations in Libya and the Arab world, and preparing competent professionals able to lead change and achieve sustainable excellence.";
+EN["التميز والاعتماد الدولي"]="Excellence & International Accreditation";EN["برامج تدريبية وفق المعايير وأفضل الممارسات الدولية."]="Training programs aligned with international standards and best practices.";
+EN["النمو والتوسع"]="Growth & Expansion";EN["تعزيز حضورنا في ليبيا والتوسع في الأسواق العربية."]="Strengthening our presence in Libya and expanding into Arab markets.";
+EN["التحول الرقمي"]="Digital Transformation";EN["تطوير منصات تعليمية تفاعلية وأتمتة الخدمات."]="Developing interactive learning platforms and automating services.";
+EN["تنمية الكفاءات"]="Talent Development";EN["تأهيل الكوادر وتطوير المهارات المهنية."]="Qualifying professionals and developing professional skills.";
+EN["الشراكات الاستراتيجية"]="Strategic Partnerships";EN["بناء علاقات تعاون مهنية وأكاديمية."]="Building professional and academic cooperation.";
+EN["المسؤولية المجتمعية"]="Social Responsibility";EN["إتاحة فرص التعلم والتطوير لمختلف فئات المجتمع."]="Providing learning and development opportunities for all segments of society.";
+EN["الاستدامة والابتكار"]="Sustainability & Innovation";EN["تنويع الخدمات ومصادر الإيرادات لضمان النمو والاستمرارية."]="Diversifying services and revenue sources to ensure growth and continuity.";
+EN["الأسئلة"]="Frequently Asked";EN["الشائعة"]="Questions";
+EN["اخترت أهم الأسئلة التي يحتاج المرشح إلى معرفتها قبل التقديم، وأثناء الاختبار، وبعد الحصول على الشهادة. رتبتها حسب المراحل العملية للحصول على الشهادة والمحافظة عليها."]="I selected the most important questions a candidate needs to know before applying, during the exam, and after earning the certification, arranged by the practical stages of earning and maintaining the certification.";
+EN["ابحث في الأسئلة…"]="Search the questions…";EN["لا توجد نتائج مطابقة."]="No matching results.";
+EN["لم تجد إجابة سؤالك؟"]="Didn’t find your answer?";EN["تواصل معنا مباشرة عبر واتساب."]="Contact us directly on WhatsApp.";
+var n=0,html="";
+G.forEach(function(g){
+  EN[g.t[0]]=g.t[1];
+  html+='<section class="fg"><div class="fgh"><h2>'+g.t[0]+'</h2><span class="en2">'+g.s+'</span></div>';
+  g.items.forEach(function(it){
+    n++;EN[it[0][0]]=it[0][1];var a="";
+    it[1].forEach(function(b){
+      if(b[0]==="ul"){a+="<ul>";b[1].forEach(function(x){EN[x[0]]=x[1];a+="<li>"+x[0]+"</li>"});a+="</ul>"}
+      else{EN[b[1]]=b[2];a+=(b[0]==="n"?'<div class="callout">':"<p>")+b[1]+(b[0]==="n"?"</div>":"</p>")}
+    });
+    html+='<details><summary><span class="qn">'+n+'</span><span class="qt">'+it[0][0]+'</span></summary><div class="ans">'+a+'</div></details>';
+  });
+  html+="</section>";
+});
+var list=document.getElementById("faqList");list.innerHTML=html;
+list.querySelector("details").open=true;
+document.getElementById("faqq").addEventListener("input",function(e){
+  var q=e.target.value.trim().toLowerCase(),shown=0;
+  list.querySelectorAll("details").forEach(function(d){var m=!q||d.textContent.toLowerCase().indexOf(q)>-1;d.style.display=m?"":"none";if(q)d.open=m;if(m)shown++});
+  list.querySelectorAll(".fg").forEach(function(s){s.style.display=[].some.call(s.querySelectorAll("details"),function(d){return d.style.display!=="none"})?"":"none"});
+  document.getElementById("faqNone").style.display=shown?"none":"block";
+});
+if(LANG==="en")trNode(document.body);
+})();
+</script>
+<script>
+/* ===== Trainer page: one bilingual data source -> rendered sections ===== */
+(function(){
+function E(k,v){if(!EN[k])EN[k]=v}
+function T(ar,en){E(ar,en);return ar}
+function P(ar,en){E(ar,en);return "<b>"+ar+"</b><small class=\"en2\">"+en+"</small>"}
+function sec(n,ar,en,inner){E(ar,en);return "<section class=\"tsec\"><div class=\"eyebrow reveal en2\" style=\"direction:ltr\">0"+n+" · "+en+"</div><h2 class=\"reveal\">"+ar+"</h2>"+inner+"</section>"}
+E("المهندس","Eng.");
+E("مهندس مدني | مدرب معتمد في إدارة المشاريع | متخصص في الرقابة والتدقيق على المشاريع","Civil Engineer | Certified Project Management Trainer | Project Monitoring & Auditing Professional");
+var h="";
+/* 1. About */
+var about=[
+["أنا أحمد الديب، مهندس مدني ومدرب معتمد في إدارة المشاريع، أجمع بين المعرفة الهندسية والتأهيل المهني الدولي والخبرة العملية في مراقبة وتدقيق المشاريع.","I am Ahmed Aldeib, a civil engineer and certified project management trainer. I combine engineering knowledge, international professional qualifications and hands-on experience in project monitoring and auditing."],
+["أؤمن بأن نجاح المشاريع لا يتوقف عند إنجاز الأعمال ضمن الوقت والتكلفة والنطاق، بل يمتد إلى جودة القرارات، وفاعلية الحوكمة، وإدارة المخاطر، والقدرة على تحقيق القيمة المستدامة.","I believe project success does not end with completing the work within time, cost and scope, but extends to the quality of decisions, the effectiveness of governance, risk management, and the ability to deliver sustainable value."],
+["خلال مسيرتي المهنية، عملت في مجال مراقبة وتدقيق المشاريع الحكومية ومشاريع البنية التحتية والإنشاءات، وشاركت في متابعة الإجراءات التعاقدية، ومراجعة العقود والعطاءات، وتدقيق المستخلصات وشهادات الدفع، بما أتاح لي فهماً عملياً للتحديات التي تواجه المشاريع من الجوانب الفنية والإدارية والمالية والتعاقدية.","Throughout my career, I have worked in the monitoring and auditing of government projects, infrastructure and construction projects, and took part in following up contractual procedures, reviewing contracts and tenders, and auditing payment applications and payment certificates, which gave me a practical understanding of the technical, administrative, financial and contractual challenges projects face."],
+["وعلى الصعيد المهني، طورت خبرتي من خلال الحصول على ست شهادات دولية من معهد إدارة المشاريع (PMI)، إلى جانب برامج تدريبية وتخصصية في إدارة المشاريع، وإدارة المخاطر، والأجايل، والحوكمة، والإدارة الاستراتيجية، وإدارة مشاريع البناء، والسلامة والصحة المهنية.","Professionally, I have developed my expertise by earning six international certifications from the Project Management Institute (PMI), along with training and specialization programs in project management, risk management, Agile, governance, strategic management, construction project management, and occupational health and safety."],
+["أهتم بربط المعرفة المهنية بالتطبيق العملي، وتوظيف المعايير والمنهجيات الدولية والتقنيات الحديثة والذكاء الاصطناعي في تطوير أداء الأفراد والمؤسسات.","I am keen to connect professional knowledge with practical application, and to use international standards and methodologies, modern technologies and artificial intelligence to improve the performance of individuals and organizations."],
+["أرى أن التميز الحقيقي لا يتحقق بمجرد امتلاك المعرفة، بل بالقدرة على تحويلها إلى ممارسة، والممارسة إلى نتائج، والنتائج إلى قيمة مستدامة.","I believe true excellence is not achieved by merely possessing knowledge, but by turning it into practice, practice into results, and results into sustainable value."]
+];
+h+=sec(1,"من أنا؟","About Me","<div class=\"tprose reveal\">"+about.map(function(p,i){return "<p"+(i===5?" class=\"tpq\"":"")+">"+T(p[0],p[1])+"</p>"}).join("")+"</div>");
+/* 2. Academic */
+h+=sec(2,"المؤهلات الأكاديمية","Academic Qualifications","<div class=\"tgrid\"><div class=\"tgc tilt reveal\"><h3>"+T("بكالوريوس الهندسة المدنية – جامعة طرابلس.","Bachelor of Civil Engineering – University of Tripoli.")+"</h3><span class=\"en2\">Bachelor of Civil Engineering – University of Tripoli.</span></div></div>");
+/* 3. Certifications */
+var certs=[["PMP®","محترف إدارة المشاريع","Project Management Professional"],["CAPM®","مساعد معتمد في إدارة المشاريع","Certified Associate in Project Management"],["PMI-RMP®","محترف إدارة المخاطر","Risk Management Professional"],["PMI-ACP®","ممارس معتمد للأجايل","Agile Certified Practitioner"],["PMI-PMOCP™","محترف إدارة مكاتب المشاريع","PMO Certified Professional"],["PMI-CP™","محترف إدارة مشاريع البناء","Construction Professional"]];
+var c3="<div class=\"grid g3\">"+certs.map(function(c){E(c[1],c[2]);return "<div class=\"card tilt cert reveal\"><b>"+c[0]+"</b><small>"+c[2]+"</small><span>"+c[1]+"</span></div>"}).join("")+"</div>";
+c3+="<div class=\"tgc reveal\" style=\"margin-top:16px\"><span class=\"eyebrow\">"+T("اعتماد مهني إضافي","Additional Professional Credential")+"</span><span class=\"en2\">Additional Professional Credential</span><h3 style=\"margin-top:8px\">"+T("الاعتماد المصغر في اتصالات مشاريع البناء","Micro-Credential in Construction Project Communications")+"</h3><span class=\"en2\">Micro-Credential in Construction Project Communications</span></div>";
+h+=sec(3,"الشهادات المهنية الدولية","International Professional Certifications",c3);
+/* 4. Achievements */
+var ach=[["أول ليبي يحصل على ست شهادات مهنية دولية من معهد إدارة المشاريع (PMI)، وفق المعلومات المهنية المقدمة.","The first Libyan to earn six international professional certifications from the Project Management Institute (PMI), according to the professional information provided."],
+["أول ليبي يحصل على شهادة PMI-CP™، ومن أوائل 900 محترف حول العالم، وفق المعلومات المهنية المقدمة.","The first Libyan to earn the PMI-CP™ certification, and among the first 900 professionals worldwide, according to the professional information provided."],
+["عضو معهد إدارة المشاريع","Project Management Institute (PMI) Member."],
+["عضو التحالف العالمي لمكاتب إدارة المشاريع","Project Management Office Global Alliance (PMOGA) Member."]];
+h+=sec(4,"العضويات والإنجازات المهنية","Memberships & Achievements","<div class=\"tach\">"+ach.map(function(a,i){E(a[0],a[1]);return "<div class=\"ach reveal\"><i>"+(i<2?"★":"✓")+"</i><div><p>"+a[0]+"</p><span class=\"en2\">"+a[1]+"</span></div></div>"}).join("")+"</div>");
+/* groups helper */
+function grp(g,withEn){E(g[0],g[1]);return "<div class=\"tgc tilt reveal\"><h3>"+g[0]+"</h3><span class=\"en2\">"+g[1]+"</span><ul>"+g[2].map(function(x){E(x[0],x[1]);return "<li>"+x[0]+"<span class=\"en2\">"+x[1]+"</span></li>"}).join("")+"</ul></div>"}
+/* 5. Experience */
+var exp=[["مراقبة وتدقيق المشاريع","Project Monitoring & Auditing",[["مراقبة تنفيذ المشاريع الهندسية ومشاريع البنية التحتية.","Monitoring the execution of engineering and infrastructure projects."],["فحص جودة الأعمال والتحقق من مطابقتها للمواصفات.","Inspecting work quality and verifying conformity with specifications."],["متابعة الأداء الفني ورصد الملاحظات والمخاطر.","Following technical performance and recording observations and risks."]]],
+["مراجعة العقود والعطاءات","Contract Review & Tender Oversight",[["مراجعة العقود والوثائق التعاقدية.","Reviewing contracts and contractual documents."],["متابعة أعمال لجان العطاءات والتعاقد.","Following the work of tender and contracting committees."],["تقييم الإجراءات الفنية والإدارية والمالية.","Evaluating technical, administrative and financial procedures."],["التحقق من الالتزام بالمتطلبات التعاقدية.","Verifying compliance with contractual requirements."]]],
+["مراجعة المستخلصات وشهادات الدفع","Payment Certificates Review",[["مراجعة المستخلصات المالية.","Reviewing financial payment applications."],["تدقيق شهادات الدفع والمطالبات.","Auditing payment certificates and claims."],["التحقق من توافق المستحقات مع الأعمال المنفذة والوثائق التعاقدية.","Verifying that amounts due match the work executed and the contractual documents."]]]];
+h+=sec(5,"الخبرات المهنية","Professional Experience","<div class=\"tgrid\">"+exp.map(grp).join("")+"</div>");
+/* 6. Courses */
+var cr=[["إدارة المشاريع والبناء","Project & Construction Management",[["دورة التعلم الإلكتروني PMO-CP","PMO-CP E-Learning Course"],["إدارة العقود والمخاطر في البناء","Construction Contract & Risk Management"],["إدارة واجهات المشاريع الإنشائية","Construction Project Interface Management"],["إدارة نطاق البناء وأوامر التغيير","Construction Scope & Change Order Management"]]],
+["الإدارة الاستراتيجية والحوكمة","Strategic Management & Governance",[["الإدارة الاستراتيجية","Strategic Management"],["الحوكمة المؤسسية","Corporate Governance"],["الامتثال والرقابة المؤسسية","Compliance & Organizational Oversight"]]],
+["السلامة واستمرارية الأعمال","HSE & Business Continuity",[["برامج تدريبية في السلامة والصحة المهنية","Health, Safety & Environment (HSE)"],["استمرارية الأعمال","Business Continuity"]]],
+["الأجايل والتطوير المؤسسي","Agile & Organizational Development",[["مقدمة في أساسيات النهج الرشيق Disciplined Agile™","Disciplined Agile™ Fundamentals"],["مقاييس الأجايل لتحقيق النجاح","Agile Metrics for Success"],["أساسيات Scrum","Scrum Fundamentals"],["إدارة سلسلة القيمة","Value Stream Management"]]],
+["الذكاء الاصطناعي والتحول الرقمي","AI & Digital Transformation",[["المشهد البياني للذكاء الاصطناعي التوليدي لمديري المشاريع","Generative AI Landscape for Project Managers"],["التطبيق العملي للذكاء الاصطناعي التوليدي لمديري المشاريع","Practical Application of Generative AI for Project Managers"],["مقدمة مجانية لإدارة المشاريع المعرفية باستخدام الذكاء الاصطناعي","Introduction to CPMAI™"],["مهارات تصميم الأعمال باستخدام PMI Citizen Developer™","PMI Citizen Developer™ Business Design Skills"],["التعامل مع الانحياز وحل المشكلات المعقدة","Addressing Bias: Complex Problem Solving"]]]];
+h+=sec(6,"الدورات والبرامج التدريبية المستكملة","Completed Professional Training Courses","<div class=\"tgrid\">"+cr.map(grp).join("")+"</div>");
+/* 7. Training areas */
+var ta=[["إدارة المشاريع","Project Management"],["إدارة المخاطر","Risk Management"],["إدارة البناء","Construction Management"],["مكاتب المشاريع","PMO Management"],["إدارة العقود","Contract Management"],["الحوكمة والامتثال","Governance & Compliance"],["الإدارة الاستراتيجية","Strategic Management"],["الأجايل والذكاء الاصطناعي","Agile & Artificial Intelligence"]];
+h+=sec(7,"المجالات التدريبية","Training Areas","<div class=\"tchips\">"+ta.map(function(a){E(a[0],a[1]);return "<div class=\"tchip tilt reveal\"><b>"+a[0]+"</b><span class=\"en2\">"+a[1]+"</span></div>"}).join("")+"</div>");
+/* 8. Philosophy */
+var ph=[["التعلم التطبيقي","Applied Learning","تحويل المعرفة النظرية إلى ممارسات عملية مرتبطة بواقع المشاريع.","Turning theoretical knowledge into practical applications tied to real project environments."],
+["التعلم التفاعلي","Interactive Learning","بناء بيئة تعليمية تشجع المشاركة والنقاش وتبادل الخبرات.","Building a learning environment that encourages participation, discussion and the exchange of experience."],
+["التطوير القائم على الكفاءة","Competency-Based Development","تطوير المهارات المهنية والقدرات اللازمة لمواجهة تحديات بيئة العمل.","Developing the professional skills and capabilities needed to meet the challenges of the work environment."],
+["التعلم المستمر","Continuous Learning","مواكبة تطور المعايير الدولية والمنهجيات الحديثة والتقنيات الرقمية.","Keeping pace with evolving international standards, modern methodologies and digital technologies."]];
+var q1="المعرفة تصنع الوعي، والممارسة تصنع الخبرة، والتميز يصنع الأثر.",q2="Knowledge Builds Awareness. Practice Builds Expertise. Excellence Creates Impact.";
+E(q1,q2);
+h+=sec(8,"فلسفة التدريب","Training Philosophy","<div class=\"tgrid\">"+ph.map(function(p){E(p[0],p[1]);E(p[2],p[3]);return "<div class=\"tgc tilt reveal\"><h3>"+p[0]+"</h3><span class=\"en2\">"+p[1]+"</span><p>"+p[2]+"</p></div>"}).join("")+"</div><div class=\"tq reveal\"><b>"+q1+"</b><span class=\"en2\">"+q2+"</span></div>");
+document.getElementById("trainerBody").innerHTML=h;
+if(LANG==="en")trNode(document.body);
+})();
+</script>
+</body>
+</html>

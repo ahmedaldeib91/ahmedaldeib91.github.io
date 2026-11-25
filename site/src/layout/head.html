@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{desc}}">
+<link rel="canonical" href="{{canonical}}">
+<script>/* theme before first paint (no flash); main.js uses the same rule */
+try{document.documentElement.dataset.theme=localStorage.getItem('theme')==='light'?'light':'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<script>/* class js (the no-JS fallbacks in shared-extra.css key on it) and the badge-portal hand-off (T6), both before first paint:
+   a page opened by transition.js less than 4s ago (sessionStorage "portal", this very URL, not back/forward, no reduced motion)
+   starts covered by the portal (html.portal-pending); transition.js then opens it. The badge image, class and title of the previous
+   page's portal are copied into this page's portal as soon as the parser creates it (a MutationObserver runs before the next paint,
+   wherever the parser yields), and the image is preloaded from here. Details: transition.js */
+(function(){var d=document.documentElement,s,p,n,t;d.className+=(d.className?' ':'')+'js';
+try{s=sessionStorage.getItem('portal');if(!s)return;p=JSON.parse(s);t=Date.now()-p.ts;n=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
+if(p.to===location.pathname.replace(/index\.html?$/i,'').replace(/\/?$/,'/')&&t>=0&&t<4000&&!(n?n.type==='back_forward':performance.navigation&&performance.navigation.type===2)&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){d.className+=' portal-pending';window.__portalIn=p;fill(p)}else sessionStorage.removeItem('portal')}catch(e){}
+function fill(p){var ok=/^\/assets\/badges\/[\w.-]+$/.test(p.img),l,o;if(ok){l=document.createElement('link');l.rel='preload';l.as='image';l.href=p.img;document.head.appendChild(l)}
+function put(){var i=document.getElementById('pimg'),b=document.getElementById('pt');if(!i||!b)return false;if(ok)i.src=p.img;i.className=/^(pn|pl|ph)$/.test(p.cls)?p.cls:'';b.textContent=String(p.t||'');return true}
+if(!put()&&window.MutationObserver){o=new MutationObserver(function(){if(put())o.disconnect()});o.observe(d,{childList:true,subtree:true})}}})()</script>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="{{root}}/assets/fonts/readex-pro-arabic.woff2">
+<link rel="stylesheet" href="{{root}}/assets/css/fonts.css">
+<link rel="stylesheet" href="{{root}}/assets/css/tokens.css">
+<link rel="stylesheet" href="{{root}}/assets/css/base.css">
+<link rel="stylesheet" href="{{root}}/assets/css/components.css">
+<link rel="stylesheet" href="{{root}}/assets/css/pages.css">
+<link rel="stylesheet" href="{{root}}/assets/css/shared-extra.css">
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+<script src="{{root}}/assets/js/main.js" defer></script>
+<script src="{{root}}/assets/js/transition.js" defer></script>
+<script src="{{root}}/assets/js/platform-nav.js" defer></script>
+</head>
+<body data-page="{{nav}}">

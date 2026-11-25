@@ -1,0 +1,14 @@
+PASS  empty option rejected
+PASS  question added (3 options, correct = third)  [تمت إضافة السؤال.]
+PASS  trainee sees the new question in the quiz tab  [{"files":["ملف PDF مرفوع P4","ملف عربي بعد التعديل P4","ملف رابط خارجي P4","صورة PNG P4"],"videos":["فيديو اختبار P4","فيديو رابط خارجي P4"],"vlinks":["https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://example.com/video-page"],"iframes":["https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0"]
+PASS  trainee quiz graded server-side: 1 / 1
+PASS  trainee review shows the explanation text
+PASS  question edited  [["ما اسم أول مجال معرفة؟ (سؤال P4 معدّل)"]]
+PASS  unpublished question disappears for the trainee  [{"files":["ملف PDF مرفوع P4","ملف عربي بعد التعديل P4","ملف رابط خارجي P4","صورة PNG P4"],"videos":["فيديو اختبار P4","فيديو رابط خارجي P4"],"vlinks":["https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://example.com/video-page"],"iframes":["https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0"]
+PASS  question reorder: second question moved to first place  [["سؤال ثانٍ P4","ما اسم أول مجال معرفة؟ (سؤال P4 معدّل)"]]
+trainee errors: []
+PASS  trainee browser: no console errors  [[]]
+admin errors: []
+PASS  admin browser: no console errors  [[]]
+
+== 10 passed, 0 failed ==

@@ -1,0 +1,81 @@
+<!--page: slug=index; title=الرئيسية | م. أحمد الديب; desc=منصة التدريب الرائدة في الشهادات الدولية لإدارة المشاريع: تجربة تعليمية متكاملة ومبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI.; nav=index-->
+<main class="page on" id="main">
+  <div class="hero">
+    <div>
+      <div class="chip rv"><i></i> شريك تدريب معتمد · Authorized Training Partner (ATP) of PMI®</div>
+      <h1 class="rv">منصة التدريب <em class="g">الرائدة</em> في الشهادات الدولية لإدارة المشاريع<span class="en">Leading Training Platform for International Project Management Certifications</span></h1>
+      <p class="lead rv">تجربة تعليمية متكاملة ومبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI.</p>
+      <div class="btns rv"><a class="btn p" href="{{site.whatsapp}}" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a><a class="btn s" href="/courses/">استعرض الدورات</a></div>
+    </div>
+    <div class="ovis rv">
+      <div class="orbit" aria-hidden="true">
+        <div class="glowball"></div>
+        <div class="ring r2"><span class="b" style="--a:0deg;--r:-260px"><img src="/assets/badges/badge-rmp.webp" alt=""></span><span class="b" style="--a:120deg;--r:-260px"><img src="/assets/badges/badge-acp.png" alt=""></span><span class="b" style="--a:240deg;--r:-260px"><img src="/assets/badges/badge-cp.png" alt=""></span></div>
+        <div class="ring r1"><span class="b" style="--a:60deg;--r:-180px"><img src="/assets/badges/badge-capm.webp" alt=""></span><span class="b" style="--a:180deg;--r:-180px"><img src="/assets/badges/badge-pmp.png" alt=""></span><span class="b" style="--a:300deg;--r:-180px"><img src="/assets/badges/badge-pmocp.png" alt=""></span></div>
+        <img class="orb-c" src="/assets/badges/{{site.atpBadge}}" alt="PMI Authorized Training Partner {{site.year}}">
+      </div>
+    </div>
+  </div>
+  <div class="facts">
+    <div class="fact rv"><b data-count="total">{{count courses.courses}}</b><span>دورات تدريبية بشهادات PMI</span></div>
+    <div class="fact rv"><b data-count="available">{{count courses.courses status "available"}}</b><span>متاحة الآن للحجز</span></div>
+    <div class="fact rv"><b>ATP</b><span>شريك تدريب معتمد من PMI</span></div>
+  </div>
+  <div class="ribbon" aria-hidden="true"><div><span>PMP®</span><span>CAPM®</span><span>PMI-RMP®</span><span>PMI-ACP®</span><span>PMI-CP™</span><span>PMI-PMOCP™</span><span>PMP®</span><span>CAPM®</span><span>PMI-RMP®</span><span>PMI-ACP®</span><span>PMI-CP™</span><span>PMI-PMOCP™</span></div></div>
+
+  <section class="ringsec">
+    <div class="stagebox reveal">
+      <div class="head"><div class="eyebrow">اختر شهادتك</div><h2>الدورات التدريبية</h2><p class="sub" style="margin:auto">اسحب الحلقة أو انقر على أي شهادة لتتعرف عليها.</p></div>
+      <div class="arc" id="arcH"></div><div class="cinfo" id="infoH"></div><div class="ctl" id="ctlH"></div>
+    </div>
+  </section>
+
+  <section style="padding-top:20px">
+    <div class="eyebrow reveal">مسارات التعلم</div><h2 class="reveal">أقسام الدورات</h2>
+    <div class="bento" style="margin-top:26px">
+{{#each courses.courses}}{{#ifeq this.bentoNo "01"}}{{> bento-card}}{{/ifeq}}{{/each}}
+{{#each courses.courses}}{{#ifeq this.bentoNo "02"}}{{> bento-card}}{{/ifeq}}{{/each}}
+{{#each courses.courses}}{{#ifeq this.bentoNo "03"}}{{> bento-card}}{{/ifeq}}{{/each}}
+{{#each courses.courses}}{{#ifeq this.bentoNo "04"}}{{> bento-card}}{{/ifeq}}{{/each}}
+{{#each courses.courses}}{{#ifeq this.bentoNo "05"}}{{> bento-card}}{{/ifeq}}{{/each}}
+{{#each courses.courses}}{{#ifeq this.bentoNo "06"}}{{> bento-card}}{{/ifeq}}{{/each}}
+    </div>
+  </section>
+
+  <div class="paper">
+    <div class="eyebrow reveal">لماذا تختارنا؟</div>
+    <h2 class="reveal">تعلّم ذكي وفعّال بأعلى جودة</h2>
+    <p class="sub reveal">تجربة تعليمية متكاملة، مبتكرة واحترافية في إدارة المشاريع، معتمدة على معايير PMI، لتضمن لك التعلّم الذكي والفعّال بأعلى جودة.</p>
+    <div class="why">
+      <div class="wc tilt reveal"><div class="num">01</div><h3>منصة متكاملة</h3><p>نظام إدارة التعلم الخاص بنا يغطي جميع احتياجات التدريب، بدون الحاجة لمصادر خارجية، مع أدوات عملية وواجهة سهلة الاستخدام.</p></div>
+      <div class="wc tilt reveal"><div class="num">02</div><h3>محاكاة الامتحان الدولي</h3><p>اختبر نفسك باستخدام أسئلة محاكية تمامًا لأسئلة امتحانات PMI، لتعزز فرصك في النجاح بثقة واحتراف.</p></div>
+      <div class="wc tilt reveal"><div class="num">03</div><h3>خطة دراسة متكاملة</h3><p>نقدم منهجية منظمة وواضحة خطوة بخطوة، لضمان تحقيق أهدافك التدريبية والتأهيل لشهادة PMP أو أي شهادة PMI أخرى.</p></div>
+      <div class="wc tilt reveal"><div class="num">04</div><h3>قيمة حقيقية للمتدربين</h3><p>محتوى شامل يشمل فيديوهات مسجلة، ملفات تعليمية وخرائط ذهنية، وأداة ذكاء اصطناعي لمساعدتك في تطوير مشاريعك.</p></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="eyebrow reveal">ما تحصل عليه</div><h2 class="reveal">ما تحصل عليه مع منصتنا</h2>
+    <div class="feat">
+      <div class="ft w2 tilt reveal"><div class="ib"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/></svg></div><h3>فيديوهات مسجلة</h3><p>لكل المنهج بجودة عالية</p></div>
+      <div class="ft tilt reveal"><div class="ib"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg></div><h3>ملفات تعليمية</h3><p>مواد مرجعية شاملة</p></div>
+      <div class="ft tilt reveal"><div class="ib"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/></svg></div><h3>خرائط ذهنية</h3><p>لتسهيل الفهم والحفظ</p></div>
+      <div class="ft w2 tilt reveal"><div class="ib"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div><h3>نماذج وقوالب</h3><p>لتطبيق ما تعلمته على مشاريعك الواقعية</p></div>
+      <div class="ft w2 hl tilt reveal"><img src="/assets/badges/{{site.atpBadge}}" alt=""><div><h3>مدرب خبير</h3><p style="color:#e5dcfa">معتمد بـ 6 شهادات PMI دولية</p></div></div>
+    </div>
+  </section>
+
+  <section style="padding-top:10px">
+    <div class="tt reveal">
+      <div class="avatar"><img src="/assets/badges/trainer.jpg" alt="م. أحمد الديب"><span aria-hidden="true">👤</span></div>
+      <div>
+        <div class="eyebrow">المدرب</div><h2>م. أحمد الديب</h2>
+        <p class="sub">مهندس مدني، متخصص في الرقابة والتدقيق على المشاريع وإدارة المخاطر والحوكمة، مدرب ضمن منظومة PMI Authorized Training Partner.</p>
+        <div class="tags"><span>الرقابة والتدقيق على المشاريع</span><span>إدارة المخاطر</span><span>الحوكمة</span></div>
+        <a class="btn p" href="/trainer/">تعرّف على المدرب</a>
+      </div>
+    </div>
+  </section>
+  <script type="application/json" id="courses-data">{{json courses.courses}}</script>
+  <script defer src="/assets/js/carousel.js"></script>
+</main>

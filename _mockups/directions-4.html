@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>قوس الشهادات — نموذج</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--glow:#8E5FB0}
+  body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#120826;color:#fff;min-height:100vh;overflow-x:hidden}
+  .note{text-align:center;color:#9a8fb5;font-size:13px;padding:14px 16px 0}
+  .stage{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 12px 40px;
+    background:radial-gradient(60% 50% at 50% 38%,color-mix(in srgb,var(--glow) 38%,transparent),transparent 70%),#120826;transition:background .6s}
+  .eyebrow{font:700 13px Cairo;letter-spacing:.08em;color:#F05A22;margin-bottom:6px}
+  h1{font:900 clamp(26px,4.4vw,46px) Cairo;text-align:center;line-height:1.2}
+  .arc{position:relative;width:100%;max-width:1000px;height:340px;margin-top:26px;perspective:1400px;touch-action:pan-y;cursor:grab;user-select:none}
+  .arc:active{cursor:grabbing}
+  .card{position:absolute;left:50%;top:40px;width:190px;height:190px;margin-left:-95px;border-radius:50%;
+    transition:transform .65s cubic-bezier(.2,.9,.25,1),opacity .5s,filter .5s;will-change:transform;cursor:pointer}
+  .card img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;border-radius:50%;box-shadow:0 22px 40px #0008}
+  .card.active img{box-shadow:0 30px 70px color-mix(in srgb,var(--glow) 60%,transparent),0 0 0 2px #ffffff22}
+  .card .shine{position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 35%,#ffffff2e 48%,transparent 60%);opacity:0;transition:opacity .4s}
+  .card.active .shine{opacity:1;animation:sheen 4s ease-in-out infinite}
+  @keyframes sheen{0%,60%{transform:translateX(-70%)}100%{transform:translateX(70%)}}
+  .info{text-align:center;max-width:560px;min-height:150px;margin-top:6px;padding:0 10px}
+  .info .cat{font:700 12px Cairo;color:#10BCD8;letter-spacing:.06em}
+  .info h2{font:900 clamp(20px,3vw,28px) Cairo;margin-top:4px;line-height:1.35}
+  .info p{opacity:.78;font-size:14px;margin-top:6px}
+  .info.swap{animation:fade .45s ease}
+  .st{display:inline-block;margin-top:8px;padding:3px 12px;border-radius:99px;font:700 12px Cairo}
+  .st.ok{background:#1fbf75;color:#04210f}.st.soon{background:#ffffff22;color:#fff}
+  .tg{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);padding:2px 10px;border-radius:99px;background:#120826cc;border:1px solid #ffffff40;font:700 11px Cairo;white-space:nowrap}
+  .tg.ok{background:#1fbf75;border-color:#1fbf75;color:#04210f}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:16px}
+  .btn{display:inline-block;padding:12px 26px;border-radius:99px;background:#F05A22;color:#fff;font:700 15px Cairo;text-decoration:none;transition:transform .25s}
+  .btn:hover{transform:translateY(-3px) scale(1.05)}
+  .nav{width:44px;height:44px;border-radius:50%;border:1.5px solid #ffffff40;background:#ffffff10;color:#fff;font-size:18px;cursor:pointer;transition:background .2s}
+  .nav:hover{background:#ffffff25}
+  .dots{display:flex;gap:7px;justify-content:center;margin-top:16px}
+  .dots i{width:8px;height:8px;border-radius:9px;background:#ffffff30;transition:all .3s;cursor:pointer}
+  .dots i.on{width:26px;background:#F05A22}
+  .hint{font-size:12px;opacity:.5;margin-top:12px}
+  @media(max-width:700px){.card{width:130px;height:130px;margin-left:-65px}.arc{height:260px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<p class="note">نموذج حي: اسحب الدوّار، أو اضغط على أي شارة، أو استخدم الأسهم أو لوحة المفاتيح. وهو ليس نسخة من Scrolltide، فهذه فكرة مبنية من الصفر بشاراتك.</p>
+<section class="stage" id="stage">
+  <div class="eyebrow">الدورات التدريبية</div>
+  <h1>اختر شهادتك،<br>وابدأ مسارك</h1>
+  <div class="arc" id="arc"></div>
+  <div class="info" id="info"></div>
+  <div class="row">
+    <button class="nav" id="next" aria-label="التالي">→</button>
+    <a class="btn" id="wa" href="https://wa.me/message/WFY6JB3E3WVLL1">احجز مقعدك عبر واتساب</a>
+    <button class="nav" id="prev" aria-label="السابق">←</button>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="hint">← اسحب أو اضغط على الشارة →</div>
+</section>
+<script>
+(function(){
+  var C=[
+    {img:'badges/i7.webp',cat:'إدارة المشاريع | Project Management',t:'دورة مساعد معتمد في إدارة المشاريع CAPM®',s:'Certified Associate in Project Management',g:'#10BCD8'},
+    {img:'badges/i6.png',cat:'إدارة المشاريع | Project Management',t:'دورة محترف إدارة المشاريع PMP®',s:'Project Management Professional',g:'#8E5FB0'},
+    {img:'badges/i3.webp',cat:'إدارة المخاطر | Risk Management',t:'دورة محترف إدارة المخاطر PMI-RMP®',s:'Risk Management Professional',g:'#B07A55'},
+    {img:'badges/i4.png',cat:'إدارة المشاريع الرشيقة | Agile',t:'دورة محترف الممارسات الرشيقة PMI-ACP®',s:'Agile Certified Practitioner',g:'#B07A55'},
+    {img:'badges/i5.png',cat:'إدارة مشاريع البناء | Construction',t:'دورة محترف إدارة مشاريع البناء PMI-CP™',s:'Construction Professional',g:'#B07A55'},
+    {img:'badges/i9.png',cat:'مكاتب إدارة المشاريع | PMO',t:'دورة محترف إدارة مكاتب المشاريع PMI-PMOCP™',s:'PMO Certified Professional',g:'#B07A55'}
+  ];
+  var arc=document.getElementById('arc'),info=document.getElementById('info'),dots=document.getElementById('dots'),stage=document.getElementById('stage');
+  var a=1,els=[],mobile=function(){return innerWidth<700};
+  C.forEach(function(c,i){
+    var d=document.createElement('div');d.className='card';d.innerHTML='<img src="'+c.img+'" alt="'+c.t+'"><div class="shine"></div><span class="tg'+(i<2?' ok':'')+'">'+(i<2?'متاحة الآن':'قريبًا')+'</span>';
+    d.onclick=function(){go(i)};arc.appendChild(d);els.push(d);
+    var dt=document.createElement('i');dt.onclick=function(){go(i)};dots.appendChild(dt);
+  });
+  function layout(){
+    var gap=mobile()?92:158;
+    els.forEach(function(el,i){
+      var d=i-a,ad=Math.abs(d);
+      var x=d*gap, y=ad*ad*(mobile()?7:11)+(d===0?-18:0);
+      var rot=d*(mobile()?9:11), ry=-d*14, sc=d===0?(mobile()?1.18:1.32):Math.max(.62,1-ad*.13);
+      el.style.transform='translateX('+x+'px) translateY('+y+'px) translateZ('+(-ad*60)+'px) rotate('+rot+'deg) rotateY('+ry+'deg) scale('+sc+')';
+      el.style.zIndex=10-ad;el.style.opacity=ad>3?0:(1-ad*.12);el.style.filter=d===0?'none':'brightness(.65) saturate(.85)';
+      el.classList.toggle('active',d===0);
+    });
+    [].forEach.call(dots.children,function(x,i){x.classList.toggle('on',i===a)});
+  }
+  function render(){
+    var c=C[a];info.classList.remove('swap');void info.offsetWidth;info.classList.add('swap');
+    var ok=a<2;
+    info.innerHTML='<div class="cat">'+c.cat+'</div><h2>'+c.t+'</h2><p>'+c.s+'</p><span class="st '+(ok?'ok':'soon')+'">'+(ok?'متاحة الآن':'قريبًا')+'</span>';
+    document.getElementById('wa').textContent=ok?'احجز مقعدك عبر واتساب':'سجّل اهتمامك عبر واتساب';
+    stage.style.setProperty('--glow',c.g);document.documentElement.style.setProperty('--glow',c.g);layout();
+  }
+  function go(i){a=Math.max(0,Math.min(C.length-1,i));render()}
+  document.getElementById('next').onclick=function(){go(a+1)};
+  document.getElementById('prev').onclick=function(){go(a-1)};
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')go(a+1);if(e.key==='ArrowRight')go(a-1)});
+  // drag / swipe
+  var sx=null,moved=false;
+  arc.addEventListener('pointerdown',function(e){sx=e.clientX;moved=false});
+  addEventListener('pointerup',function(e){if(sx===null)return;var dx=e.clientX-sx;if(Math.abs(dx)>50){go(a+(dx<0?1:-1));}sx=null});
+  addEventListener('resize',layout);
+  render();
+})();
+</script>
+</body>
+</html>

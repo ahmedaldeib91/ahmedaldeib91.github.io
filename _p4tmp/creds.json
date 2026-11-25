@@ -1,0 +1,14 @@
+{
+  "admin": {
+    "email": "p4-admin@example.com",
+    "password": "P4q0ScqDAcs4uHWTYFRqal!x9"
+  },
+  "a": {
+    "email": "p4-trainee-a@example.com",
+    "password": "P4ZI56tKlgg7bBbo_cIEFb!x9"
+  },
+  "b": {
+    "email": "p4-trainee-b@example.com",
+    "password": "P49NzczPP2Az6nAyrxN78V!x9"
+  }
+}

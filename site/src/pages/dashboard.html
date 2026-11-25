@@ -1,0 +1,32 @@
+<!--page: slug=dashboard; title=لوحة المتدرب | م. أحمد الديب; desc=لوحة المتدرب: دوراتك وملفاتها وفيديوهاتها وأسئلتها المحاكية وبياناتك الشخصية.; nav=none-->
+<link rel="stylesheet" href="/assets/css/platform.css">
+<meta name="robots" content="noindex">
+<main class="page on" id="main" data-sb-url="{{site.supabase.url}}" data-sb-key="{{site.supabase.key}}" data-wa="{{site.whatsapp}}">
+  <noscript><div class="callout">تحتاج لوحة المتدرب إلى تفعيل JavaScript في المتصفح لتعمل.</div></noscript>
+  <div class="pf-app">
+    <div class="phead pf-dhead">
+      <div class="pf-dtop">
+        <div>
+          <div class="eyebrow rv">لوحة المتدرب</div>
+          <h1 class="rv">لوحتي</h1>
+          <p class="pf-hello" id="dash-hello" aria-live="polite"></p>
+        </div>
+        <div class="pf-dact">
+          <a class="btn s" id="dash-admin" hidden>لوحة المدرب</a>
+          <button type="button" class="btn s" id="dash-logout"><svg class="pf-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg>تسجيل الخروج</button>
+        </div>
+      </div>
+      <div class="pf-jump" id="dash-jump" role="navigation" aria-label="أقسام اللوحة" hidden>
+        <a href="#sec-mine">دوراتي</a><a href="#sec-avail">الدورات المتاحة</a><a href="#sec-info">معلوماتي</a>
+      </div>
+    </div>
+    <div class="pf-announce" id="dash-announce" hidden>
+      <svg class="pf-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z M15 9a4 4 0 0 1 0 6 M18 6.5a8 8 0 0 1 0 11"/></svg>
+      <p id="dash-announce-text"></p>
+    </div>
+    <div id="dash-status" role="status" aria-live="polite"></div>
+    <div id="dash-view"></div>
+  </div>
+  <script src="/assets/js/platform-api.js" defer></script>
+  <script src="/assets/js/dashboard.js" defer></script>
+</main>

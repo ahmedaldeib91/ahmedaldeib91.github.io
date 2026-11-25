@@ -1,0 +1,41 @@
+PASS  announcement saved (active)  [تم حفظ الإعلان وهو ظاهر الآن في لوحات المتدربين.]
+PASS  announcement shows on the trainee dashboard (as plain text)  [{"hidden":false,"text":"إعلان اختبار P4: تبدأ الدفعة السبت. <b>نص عريض</b>","hasB":false}]
+PASS  active announcement with empty text is rejected
+PASS  announcement hidden again after disabling
+PASS  trainer profile name saved + header greeting updated
+PASS  invalid phone rejected
+PASS  profile restored
+PASS  audit log card lists entries (read-only)  [11]
+PASS  blog list shows the 3 fixture posts
+PASS  filter "منشورة" shows 1
+PASS  XSS post title is shown as inert text in the list
+PASS  quick publish: anon (public) can now read p4-draft with published_at set  [[{"slug":"p4-draft","published_at":"2026-11-25T04:38:09.617069+00:00"}]]
+PASS  quick unpublish: anon cannot read it any more  [[]]
+PASS  slug auto-generated from the title (Arabic kept, hyphens)  [مقال-اختبار-p4-الأول]
+PASS  live preview renders 2 paragraphs from blank-line separation
+PASS  preview keeps raw HTML as inert text (no script element)
+PASS  image kind rejects .exe
+PASS  image kind rejects a video file (.webm)
+PASS  local preview shows the chosen image (blob:)
+PASS  new post saved as draft; editor reopened on #blog/<id>  [تم حفظ المقال.]
+PASS  media URL is a public blog-media URL under posts/  [https://rlfwkdvecypdjnijhojz.supabase.co/storage/v1/object/public/blog-media/posts/6b60c16b-7d25-4645-ae4d-1dfc80cd6242-p4-test.png]
+PASS  uploaded image is publicly reachable (200, image/png, 70 bytes)  [{"status":200,"type":"image/png","size":70}]
+PASS  draft is NOT visible to the public  [[]]
+PASS  publish: public can read it (published_at stamped, media_kind=image)  [[{"slug":"مقال-اختبار-p4-الأول","published":true,"published_at":"2026-11-25T04:38:24.426797+00:00","media_kind":"image"}]]
+PASS  unpublish: hidden from the public again  [[]]
+PASS  media replaced: new gif URL differs  [https://rlfwkdvecypdjnijhojz.supabase.co/storage/v1/object/public/blog-media/posts/58766fba-e4fc-479e-bc2b-c4f009a6700e-p4-img.gif]
+FAIL  old PNG object was deleted from storage after replacement (public URL no longer 200)  [{"status":200,"type":"image/png","size":70}]
+PASS  new GIF object is reachable (200, image/gif)  [{"status":200,"type":"image/gif","size":42}]
+PASS  http:// media URL rejected
+PASS  video preview embeds youtube-nocookie (sandboxed iframe)
+FAIL  old GIF object deleted after switching media to a video URL  [{"status":200,"type":"image/gif","size":42}]
+PASS  duplicate title gets a unique slug automatically (-2)  [مقال-اختبار-p4-الأول-2]
+PASS  manual slug that already exists is refused with a suggestion
+PASS  slug with spaces / ? is refused
+PASS  deleted test post #1 (after confirm)  [تم حذف المقال.]
+PASS  deleted test post #2 (after confirm)  [تم حذف المقال.]
+PASS  XSS post in editor/preview is inert (no script/img elements, window.__xss undefined)
+PASS  trainee browser: no console errors  [[]]
+PASS  admin browser: no console errors  [[]]
+
+== 37 passed, 2 failed ==
