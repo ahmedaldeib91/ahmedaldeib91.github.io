@@ -1,0 +1,104 @@
+# =====================================================================
+# نشر الموقع تلقائيًا على GitHub Pages عبر GitHub Actions
+# ---------------------------------------------------------------------
+# متى يعمل هذا الملف؟
+#   - عند كل حفظ (Commit) على الفرع main، سواء من github.com أو من GitHub Desktop.
+#   - أو يدويًا: تبويب Actions ثم اختيار هذا الـ workflow ثم زر Run workflow.
+#
+# ماذا يفعل؟
+#   1) يبني الموقع بالأمر  node build.mjs  من مجلد site (بلا npm install).
+#   2) يتأكد أن الملف dist/index.html وُلِد فعلًا.
+#   3) يرفع مجلد dist وينشره على GitHub Pages.
+#
+# حماية الموقع من الأخطاء:
+#   إن كان في الملفات خطأ (JSON خاطئ، قيمة status غير صحيحة، شارة ناقصة، ...)
+#   يتوقف البناء بخروج غير صفري ويطبع رسالة عربية واضحة في سجل Actions، فتفشل
+#   مرحلة build ولا تبدأ مرحلة deploy أبدًا، ويبقى الموقع المنشور على نسخته
+#   السابقة السليمة. أي تعديل خاطئ لا يصل إلى الزوّار.
+#
+# إعداد لمرة واحدة (يقوم به صاحب المستودع بنفسه):
+#   Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+# =====================================================================
+
+# الاسم الذي يظهر في تبويب Actions.
+name: "نشر الموقع على GitHub Pages"
+
+on:
+  # عند أي Commit على الفرع الرئيسي main (هو الفرع الافتراضي لهذا المستودع).
+  # إن صار الفرع الافتراضي باسم آخر فأضف اسمه إلى هذه القائمة.
+  push:
+    branches: ["main"]
+
+  # يتيح التشغيل اليدوي من تبويب Actions (زر Run workflow).
+  workflow_dispatch:
+
+# أقل الصلاحيات اللازمة للنشر على Pages.
+permissions:
+  contents: read     # قراءة ملفات المستودع فقط
+  pages: write       # السماح بالنشر على GitHub Pages
+  id-token: write    # يلزم لإثبات أن النشر قادم من هذا المستودع (OIDC)
+
+# نشر واحد في كل مرة. لا نلغي نشرًا جاريًا حتى يكتمل، وتنتظر التشغيلات الأخرى دورها.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # ===================================================================
+  # المرحلة 1: بناء الموقع. إن فشلت هذه المرحلة لا تبدأ مرحلة النشر.
+  # ===================================================================
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # تنزيل ملفات المستودع إلى جهاز التشغيل.
+      - name: "تنزيل ملفات المستودع"
+        uses: actions/checkout@v4
+
+      # تجهيز Node.js الإصدار 22 (يكفي لتشغيل build.mjs؛ لا حاجة لأي حزم).
+      - name: "تجهيز Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # حذف أي مجلد dist قديم مرفوع على GitHub، حتى لا يُنشر شيء لم يُبنَ الآن.
+      - name: "حذف أي نسخة dist قديمة"
+        run: rm -rf dist
+
+      # البناء الفعلي. ينتج مجلد dist في جذر المستودع (بجانب مجلد site).
+      # عند أي خطأ في البيانات يخرج السكربت برمز غير صفري مع رسالة عربية في السجل.
+      - name: "بناء الموقع (node build.mjs)"
+        working-directory: site
+        run: node build.mjs
+
+      # شبكة أمان: إن لم يوجد dist/index.html تفشل المرحلة بوضوح ولا يُنشر شيء.
+      - name: "التحقق من أن البناء أنتج dist/index.html"
+        run: |
+          if [ ! -f dist/index.html ]; then
+            echo "::error title=فشل التحقق من البناء::لم يُنتج البناء الملف dist/index.html. أُوقف النشر وبقي الموقع على نسخته السابقة. راجع رسالة الخطأ العربية في خطوة بناء الموقع أعلاه."
+            exit 1
+          fi
+          echo "تم إنتاج dist/index.html بنجاح. عدد ملفات dist: $(find dist -type f | wc -l)"
+
+      # تجهيز إعدادات GitHub Pages (تفشل برسالة واضحة إن لم يُضبط Source على GitHub Actions).
+      - name: "ضبط GitHub Pages"
+        uses: actions/configure-pages@v5
+
+      # تغليف مجلد dist ورفعه ليكون ما سيُنشر.
+      - name: "رفع مجلد dist للنشر"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  # ===================================================================
+  # المرحلة 2: النشر. لا تعمل إلا بعد نجاح البناء.
+  # ===================================================================
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: "نشر على GitHub Pages"
+        id: deployment
+        uses: actions/deploy-pages@v4

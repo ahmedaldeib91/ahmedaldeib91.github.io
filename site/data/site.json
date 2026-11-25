@@ -12,8 +12,8 @@
     "tiktok": "https://www.tiktok.com/@ahmed.aldeib",
     "youtube": "https://youtube.com/@ahmedaldeibpmp"
   },
-  "domain": "https://ahmedaldeib91.github.io/Ahmed-aldeib-platform",
-  "basePath": "/Ahmed-aldeib-platform",
+  "domain": "https://ahmedaldeib91.github.io",
+  "basePath": "",
   "year": 2026,
   "atpBadge": "atp-2026.png",
   "supabase": {
