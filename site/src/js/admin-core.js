@@ -603,14 +603,68 @@
     return A.nameOf(id) || (A.known(id) ? 'بدون اسم' : 'مستخدم محذوف');
   };
 
-  /* اشتراكات: منح (يعيد صفًا ملغى إلى نشط، ويتخطى النشط) وإلغاء. النتيجة 'added' | 'reactivated' | 'exists' */
-  A.grantEnrollment = async function (userId, courseId) {
+  /* بريد الترحيب بعد منح اشتراك جديد (وظيفة send-mail، الإجراء welcome). A.welcomeMail لا ترمي أبدًا ولا تمسّ الاشتراك:
+     تعيد {mailed, why} حيث why سبب مقروء لعدم الإرسال. يُسمح بثلاثة طلبات بريد متزامنة كحدّ أقصى، فمنح جماعي لعدد كبير
+     لا يفتح عشرات اتصالات SMTP دفعة واحدة. */
+  const MAIL_WHY = {
+    mail_not_configured: 'لم يتم إعداد البريد بعد',
+    mail_failed: 'فشل الإرسال من خدمة البريد',
+    trainee_has_no_email: 'لا يوجد بريد إلكتروني للمتدرب',
+    no_active_enrollment: 'لم يُعثر على اشتراك نشط للمتدرب',
+    rate_limited: 'تجاوز الحد المسموح به مؤقتًا',
+    forbidden: 'ليست لديك صلاحية إرسال البريد',
+    auth_required: 'انتهت جلسة الدخول',
+    invalid_token: 'انتهت جلسة الدخول',
+    network: 'تعذّر الاتصال بخدمة البريد'
+  };
+  const MAIL_MAX = 3;
+  let mailActive = 0;
+  const mailQueue = [];
+  const mailAcquire = function () {
+    return new Promise(function (resolve) {
+      if (mailActive < MAIL_MAX) { mailActive += 1; resolve(); } else mailQueue.push(resolve);
+    });
+  };
+  const mailRelease = function () {
+    const next = mailQueue.shift();
+    if (next) next(); else mailActive -= 1;
+  };
+  A.welcomeMail = async function (userId, courseId) {
+    await mailAcquire();
+    try {
+      const r = await P.mail.send({ action: 'welcome', user_id: userId, course_id: courseId });
+      if (r.ok && r.mailed) return { mailed: true, why: '' };
+      const key = r.ok ? r.reason : r.error;
+      return { mailed: false, why: Object.prototype.hasOwnProperty.call(MAIL_WHY, key) ? MAIL_WHY[key] : 'خطأ غير متوقع' };
+    } catch (e) {
+      return { mailed: false, why: 'خطأ غير متوقع' };
+    } finally {
+      mailRelease();
+    }
+  };
+  /* جملة تُضاف إلى تنبيه نجاح الاشتراك: m نتيجة A.welcomeMail */
+  A.mailNote = function (m) {
+    return m.mailed ? 'تم إرسال بريد ترحيب إلى المتدرب.' : 'لكن تعذّر إرسال البريد (' + m.why + ').';
+  };
+
+  /* اشتراكات: منح (يعيد صفًا ملغى إلى نشط، ويتخطى النشط) وإلغاء. النتيجة 'added' | 'reactivated' | 'exists'.
+     بعد منح جديد ('added' أو 'reactivated') يُطلب بريد ترحيب للمتدرب دون انتظاره هنا، ولا يؤثر فشله في الاشتراك أبدًا.
+     نتيجة البريد وعد لا يُرفض ({mailed, why} من A.welcomeMail) يُوضع في o.mail إن مُرِّر الكائن الاختياري o: ينتظره المستدعي
+     حين يريد عرض النتيجة، أو يجمع وعود عدة منح وينتظرها معًا فيعرض تنبيهًا واحدًا (المنح الجماعي). من لم يمرّر o يظهر له
+     تنبيه عند فشل البريد فقط. 'exists' لا يرسل بريدًا ولا يضع o.mail. */
+  A.grantEnrollment = async function (userId, courseId, o) {
+    const welcomed = function (result) {
+      const mail = A.welcomeMail(userId, courseId);
+      if (o && typeof o === 'object') o.mail = mail;
+      else mail.then(function (m) { if (!m.mailed) A.toast('info', 'تم الاشتراك ' + A.mailNote(m)); });
+      return result;
+    };
     const cur = await P.rest.select('enrollments', { select: 'id,status', user_id: 'eq.' + userId, course_id: 'eq.' + courseId });
     if (cur.length && cur[0].status === 'active') return 'exists';
     if (cur.length) {
       const up = await P.rest.update('enrollments', { id: 'eq.' + cur[0].id }, { status: 'active' });
       if (!up.length) throw A.noRows();
-      return 'reactivated';
+      return welcomed('reactivated');
     }
     try {
       const rows = await P.rest.insert('enrollments', { user_id: userId, course_id: courseId, status: 'active' });
@@ -619,7 +673,7 @@
       if (err instanceof P.ApiError && err.code === '23505') return 'exists'; /* سباق مع تبويب آخر */
       throw err;
     }
-    return 'added';
+    return welcomed('added');
   };
   A.revokeEnrollment = async function (id) {
     const rows = await P.rest.update('enrollments', { id: 'eq.' + id }, { status: 'revoked' });

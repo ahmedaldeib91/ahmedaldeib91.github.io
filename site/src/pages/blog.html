@@ -1,4 +1,22 @@
-<!--page: slug=blog; title=المدونة | م. أحمد الديب; desc=مدونة م. أحمد الديب: المقالات قريبًا.; nav=blog-->
-<main class="page on" id="main">
-  <div class="soonbox rv"><img src="/assets/badges/atp-2026.png" alt=""><h1>المدونة</h1><p class="sub" style="margin:12px auto">قريبًا</p><div class="ph-line">[المقالات تُضاف لاحقًا من ملفات نصية بسيطة]</div></div>
+<!--page: slug=blog; title=المدونة | م. أحمد الديب; desc=مدونة م. أحمد الديب: مقالات في إدارة المشاريع وشهادات PMI.; nav=blog-->
+<link rel="stylesheet" href="{{root}}/assets/css/blog.css">
+<main class="page on" id="main" data-sb-url="{{site.supabase.url}}" data-sb-key="{{site.supabase.key}}">
+  <div class="bl">
+    <div class="phead" id="bl-head">
+      <div class="eyebrow rv">مدونة م. أحمد الديب</div>
+      <h1 class="rv" tabindex="-1">المدونة</h1>
+      <p class="sub rv">مقالات في إدارة المشاريع وشهادات PMI.</p>
+    </div>
+    <noscript><div class="callout">تحتاج المدونة إلى تفعيل JavaScript في المتصفح لعرض المقالات.</div></noscript>
+    <div class="bl-state" id="bl-loading" role="status"><span class="bl-spin" aria-hidden="true"></span><span>جارٍ تحميل المقالات…</span></div>
+    <div class="bl-state bl-fail" id="bl-error" role="alert" hidden>
+      <p id="bl-error-text">تعذّر تحميل المقالات الآن. حاول مرة أخرى بعد قليل.</p>
+      <div class="btns"><button type="button" class="btn s" id="bl-retry">إعادة المحاولة</button></div>
+    </div>
+    <div class="soonbox" id="bl-empty" hidden><img src="{{root}}/assets/badges/{{site.atpBadge}}" alt=""><h2>لا توجد مقالات بعد</h2><p class="sub">قريبًا</p></div>
+    <div class="bl-list" id="bl-list" hidden></div>
+    <article class="bl-post" id="bl-post" hidden></article>
+  </div>
+  <script src="{{root}}/assets/js/platform-api.js" defer></script>
+  <script src="{{root}}/assets/js/blog.js" defer></script>
 </main>

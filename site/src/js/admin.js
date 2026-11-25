@@ -10,7 +10,7 @@
    - انتهاء الجلسة نهائيًا ← /account/?reason=expired . الخروج ← يُفرَّغ المحتوى أولًا ثم يُبطَل التوكن ثم /account/?reason=out
      (وكذلك عند الخروج من تبويب آخر أو عودة الصفحة من الذاكرة السريعة بلا جلسة).
 
-   التوجيه (hash): #stats #trainees #trainees/<uuid> #enrollments #courses #courses/<id>[/videos|/questions] #messages[/<uuid>]
+   التوجيه (hash): #stats #trainees #trainees/<uuid> #enrollments #subscribers #courses #courses/<id>[/videos|/questions] #messages[/<uuid>]
    #blog #blog/new #blog/<uuid> #settings. قائمة الأقسام روابط <nav aria-label> مع aria-current="page" (والتبويبات الداخلية
    في الدورات بـ ARIA tablist)، وبعد كل انتقال يُنقل التركيز إلى عنوان القسم ويُعلَن للقارئ الشاشي.
    ===================================================================== */
@@ -35,6 +35,7 @@
     ['stats', 'الإحصاءات', 'chart'],
     ['trainees', 'المتدربون', 'users'],
     ['enrollments', 'الاشتراكات', 'userplus'],
+    ['subscribers', 'المشتركون', 'file'],
     ['courses', 'الدورات', 'book'],
     ['messages', 'الرسائل', 'mail'],
     ['blog', 'المدونة', 'pen'],
