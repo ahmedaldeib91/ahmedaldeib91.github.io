@@ -769,8 +769,7 @@ function main() {
     fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), sitemapXml(pages, origin), 'utf8');
     fs.writeFileSync(path.join(DIST_DIR, 'robots.txt'), robotsTxt(origin), 'utf8');
   });
-  checkReferences(pages);
-
+checkReferences(pages, data.site.basePath || '');
   /* الملخص */
   log('');
   log('تم البناء بنجاح.');
