@@ -108,7 +108,7 @@
          {{#each courses.courses}}
            <li data-id="{{this.id}}" class="{{this.status}}">
              {{@number}}. {{this.titleAr}} ({{@statusAr}})
-             {{#if this.page}}<a href="/courses/{{this.page}}/">{{@ctaShortAr}}</a>
+             {{#if this.page}}<a href="{{root}}/courses/{{this.page}}/">{{@ctaShortAr}}</a>
              {{else}}<a href="{{site.whatsapp}}">{{@ctaAr}}</a>{{/if}}
            </li>
          {{/each}}
