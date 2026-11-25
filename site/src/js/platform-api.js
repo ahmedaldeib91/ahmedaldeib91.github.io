@@ -290,13 +290,31 @@ const callbackUrl = () => win.location.origin +
       if (!res.ok) throw toError(res.status, res.json);
     },
     /* تبنّي جلسة جاءت من رابط التأكيد: نتحقق من التوكن عند الخادم ثم نحفظه */
-    async adopt(t) {
-      const user = await auth.getUser(t.access_token);
-      const exp = Number(t.expires_at) || (nowSec() + (Number(t.expires_in) || 3600));
-      const s = { access_token: t.access_token, refresh_token: t.refresh_token, expires_at: exp, user: user };
-      if (!saveSession(s)) throw new ApiError('storage', MSG.storage, 0, 'storage');
-      return s;
-    },
+async adopt(t) {
+  if (
+    !t ||
+    typeof t.access_token !== 'string' || !t.access_token ||
+    typeof t.refresh_token !== 'string' || !t.refresh_token
+  ) {
+    throw sessionError();
+  }
+
+  const user = await auth.getUser(t.access_token);
+  const exp = Number(t.expires_at) || (nowSec() + (Number(t.expires_in) || 3600));
+
+  const s = {
+    access_token: t.access_token,
+    refresh_token: t.refresh_token,
+    expires_at: exp,
+    user: user
+  };
+
+  if (!saveSession(s)) {
+    throw new ApiError('storage', MSG.storage, 0, 'storage');
+  }
+
+  return s;
+},
     /* خروج: إبطال الجلسة عند الخادم (محاولة بلا انتظار طويل) ثم مسح التخزين دائمًا */
     async signOut() {
       const s = loadSession();
