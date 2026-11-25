@@ -34,26 +34,26 @@
   var root = doc.documentElement;
 
   var KEY = 'portal';
-  var HOLD = 650;       /* ms: the "in" phase (.6s in shared-extra.css) before the browser is sent to the new page */
-  var SAFETY = 3000;    /* ms: still on this page after that: drop the cover */
-  var OUT_MS = 500;     /* ms: the "out" phase, equal to .portal.out in shared-extra.css */
-  var FONT_WAIT = 350;  /* ms: the new page waits this long at most for its web fonts (font-display:swap would show a swap under the opening circle) */
-  var BADGES = '/assets/badges/';
+  var HOLD = 650;
+  var SAFETY = 3000;
+  var OUT_MS = 500;
+  var FONT_WAIT = 350;
+  var BASE = root.getAttribute('data-base-path') || '';
+  var BADGES = BASE + '/assets/badges/';
   var REDUCE_Q = '(prefers-reduced-motion: reduce)';
 
   /* destination page -> [image in /assets/badges, Arabic title, class of the image: pn = pulsing badge, pl = white card] */
-  var PAGES = {
-    '/': ['nav-home.png', 'الرئيسية', 'pn'],
-    '/about/': ['nav-about.png', 'عن الموقع', 'pn'],
-    '/pmi/': ['pmi-logo.jpg', 'معهد إدارة المشاريع PMI', 'pl'],
-    '/trainer/': ['nav-trainer.png', 'م. أحمد الديب', 'pn'],
-    '/courses/': ['nav-courses.png', 'الدورات', 'pn'],
-    '/courses/capm/': ['badge-capm.webp', 'CAPM®', 'pn'],
-    '/courses/pmp/': ['badge-pmp.png', 'PMP®', 'pn'],
-    '/blog/': ['nav-blog.png', 'المدونة', 'pn'],
-    '/faq/': ['nav-faq.png', 'الأسئلة الشائعة', 'pn'],
-    '/contact/': ['nav-contact.png', 'تواصل معنا', 'pn']
-  };
+var PAGES = {};
+PAGES[BASE + '/'] = ['nav-home.png', 'الرئيسية', 'pn'];
+PAGES[BASE + '/about/'] = ['nav-about.png', 'عن الموقع', 'pn'];
+PAGES[BASE + '/pmi/'] = ['pmi-logo.jpg', 'معهد إدارة المشاريع PMI', 'pl'];
+PAGES[BASE + '/trainer/'] = ['nav-trainer.png', 'م. أحمد الديب', 'pn'];
+PAGES[BASE + '/courses/'] = ['nav-courses.png', 'الدورات', 'pn'];
+PAGES[BASE + '/courses/capm/'] = ['badge-capm.webp', 'CAPM®', 'pn'];
+PAGES[BASE + '/courses/pmp/'] = ['badge-pmp.png', 'PMP®', 'pn'];
+PAGES[BASE + '/blog/'] = ['nav-blog.png', 'المدونة', 'pn'];
+PAGES[BASE + '/faq/'] = ['nav-faq.png', 'الأسئلة الشائعة', 'pn'];
+PAGES[BASE + '/contact/'] = ['nav-contact.png', 'تواصل معنا', 'pn'];
 
   var portal = doc.getElementById('cur');
   var pimg = doc.getElementById('pimg');
@@ -157,12 +157,26 @@
   }
   /* head.html copies the hand-off into the portal as the parser creates it; this only repairs a page where that did not happen */
   function syncHandoff() {
-    var p = win.__portalIn;
-    if (!p) return;
-    if (/^\/assets\/badges\/[\w.-]+$/.test(p.img) && pimg.getAttribute('src') !== p.img) pimg.src = p.img;
-    if (/^(pn|pl|ph)$/.test(p.cls) && pimg.className !== p.cls) pimg.className = p.cls;
-    if (ptitle.textContent !== String(p.t || '')) ptitle.textContent = String(p.t || '');
+  var p = win.__portalIn;
+  if (!p) return;
+
+  if (
+    typeof p.img === 'string' &&
+    p.img.indexOf(BADGES) === 0 &&
+    /^[\w.-]+$/.test(p.img.slice(BADGES.length)) &&
+    pimg.getAttribute('src') !== p.img
+  ) {
+    pimg.src = p.img;
   }
+
+  if (/^(pn|pl|ph)$/.test(p.cls) && pimg.className !== p.cls) {
+    pimg.className = p.cls;
+  }
+
+  if (ptitle.textContent !== String(p.t || '')) {
+    ptitle.textContent = String(p.t || '');
+  }
+}
   function arrive() {
     if (!root.classList.contains('portal-pending')) return;
     syncHandoff();
