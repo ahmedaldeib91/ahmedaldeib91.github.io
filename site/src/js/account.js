@@ -109,8 +109,8 @@
       ui.msg(out, 'err', errText(err));
       return false;
     }
-    window.location.assign('/dashboard/');
-    return true; /* يبقى الزر معطّلًا حتى تنتقل الصفحة */
+window.location.assign(BASE + '/dashboard/');
+     return true; /* يبقى الزر معطّلًا حتى تنتقل الصفحة */
   });
 
   /* ---------- نسيت كلمة المرور ---------- */
@@ -155,8 +155,8 @@
     $('f-reset').reset();
     try {
       await P.auth.adopt(tokens);
-      window.location.assign('/dashboard/');
-      return true;
+window.location.assign(BASE + '/dashboard/');
+       return true;
     } catch (err) {
       showTabs('login', true);
       note('ok', 'تم تغيير كلمة المرور. سجّل الدخول بها الآن.');
@@ -190,7 +190,7 @@
       } else {
         if (!cb.refresh_token) throw new P.ApiError('auth', P.MSG.other, 0, 'no_refresh');
         await P.auth.adopt(cb);
-        window.location.replace('/dashboard/');
+  window.location.replace(BASE + '/dashboard/');
       }
     } catch (err) {
       showTabs('login');
