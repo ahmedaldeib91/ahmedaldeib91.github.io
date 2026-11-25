@@ -212,8 +212,11 @@
     if (res.ok) {
       const ns = toSession(res.json);
       if (!ns) throw new ApiError('server', MSG.server, res.status, 'bad_response');
-      saveSession(ns);
-      return ns;
+      if (!saveSession(ns)) {
+  clearSession();
+  throw new ApiError('storage', MSG.storage, 0, 'storage');
+}
+return ns;
     }
     const cur = loadSession();
     if (cur && cur.refresh_token !== s.refresh_token) return cur; /* تبويب آخر بدّل التوكن أثناء انتظارنا */
