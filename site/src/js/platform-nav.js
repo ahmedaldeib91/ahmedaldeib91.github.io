@@ -10,9 +10,11 @@
 (function () {
   'use strict';
 
-  var KEY = 'plat_session'; /* المفتاح نفسه في platform-api.js */
-  var OFF = { text: 'التسجيل / الدخول', href: '/account/' };
-  var ON = { text: 'لوحتي', href: '/dashboard/' };
+  var KEY = 'plat_session';
+  var BASE = document.documentElement.getAttribute('data-base-path') || '';
+
+  var OFF = { text: 'التسجيل / الدخول', href: BASE + '/account/' };
+  var ON = { text: 'لوحتي', href: BASE + '/dashboard/' };
 
   function signedIn() {
     try {
