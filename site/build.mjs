@@ -669,7 +669,6 @@ function sitemapXml(pages, origin) {
 }
 const robotsTxt = (origin) => `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
 
-/** يفحص الملفات المشار إليها من HTML داخل dist (تنبيهات فقط). */
 
 /** يفحص الملفات المشار إليها من HTML داخل dist (تنبيهات فقط). */
 function checkReferences(pages, basePath = '') {
