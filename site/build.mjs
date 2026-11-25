@@ -612,20 +612,19 @@ function markCurrentNav(html, nav) {
 }
 
 function renderPage(page, data, partials) {
-  const ctx = {
-    data,
-    partials,
-vars: { root: data.site.basePath || '', title: page.title, desc: page.desc, canonical: page.canonical, slug: page.slug, nav: page.nav, url: page.urlPath },  };
-  let html;
-  if (page.isFull) {
-    html = render(page.body, page.label, ctx, [], page.lineBase);
-  } else {
-    const frame = 'build.mjs (هيكل الصفحة الافتراضي)';
-    html = render('{{> head}}\n{{> header}}\n', frame, ctx, [], 0)
-      + render(page.body, page.label, ctx, [], page.lineBase)
-      + render('{{> footer}}\n', frame, ctx, [], 0)
-      + '</body>\n</html>\n';
-  }
+ const ctx = {
+  data,
+  partials,
+  vars: {
+    root: data.site.basePath || '',
+    title: page.title,
+    desc: page.desc,
+    canonical: page.canonical,
+    slug: page.slug,
+    nav: page.nav,
+    url: page.urlPath
+  },
+};
   html = markCurrentNav(html, page.nav);
 
   /* فحوص سلامة المستند الناتج */
