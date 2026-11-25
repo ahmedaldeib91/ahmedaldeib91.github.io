@@ -54,8 +54,10 @@
    ---------------------------------------------------------------------
      {{> name}}            يُدرج src/layout/name.html (وإن لم يوجد فـ name.svg).
                            تُسمح القطع المتداخلة (مثل {{> icons}} داخل header.html).
-     {{root}}              نص فارغ دائمًا: نستعمل روابط تبدأ بـ / مثل /assets/… و /pmi/
-     {{title}} {{desc}}    من ترويسة الصفحة
+{{root}}              بادئة مسارات الموقع الداخلية والأصول. تكون /Ahmed-aldeib-platform
+                       على GitHub Pages، وفارغة عند النشر على جذر النطاق.
+                       اكتب الروابط هكذا: {{root}}/assets/... و {{root}}/pmi/
+                       {{title}} {{desc}}    من ترويسة الصفحة
      {{canonical}}         النطاق من site.json + رابط الصفحة، مثل https://example.com/pmi/
      {{slug}} {{nav}} {{url}}   الـ slug ومفتاح التنقل ومسار الصفحة (/pmi/)
      {{site.whatsapp}}     أي مفتاح من data/site.json (والمتداخل بنقاط: {{site.socials.linkedin}})
