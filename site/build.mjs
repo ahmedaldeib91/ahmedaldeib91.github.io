@@ -612,20 +612,60 @@ function markCurrentNav(html, nav) {
 }
 
 function renderPage(page, data, partials) {
- const ctx = {
-  data,
-  partials,
-  vars: {
-    root: data.site.basePath || '',
-    title: page.title,
-    desc: page.desc,
-    canonical: page.canonical,
-    slug: page.slug,
-    nav: page.nav,
-    url: page.urlPath
-  },
-};
+  const ctx = {
+    data,
+    partials,
+    vars: {
+      root: data.site.basePath || '',
+      title: page.title,
+      desc: page.desc,
+      canonical: page.canonical,
+      slug: page.slug,
+      nav: page.nav,
+      url: page.urlPath
+    },
+  };
+
+  const source = page.isFull
+    ? page.body
+    : '{{> head}}\n{{> header}}\n' +
+      page.body +
+      '\n{{> footer}}\n</body></html>';
+
+  let html = render(source, page.label, ctx, [], page.lineBase);
+
   html = markCurrentNav(html, page.nav);
+
+  /* فحوص سلامة المستند الناتج */
+  const loc = `الصفحة: ${page.label}`;
+  const count = (re) => (html.match(re) || []).length;
+
+  if (!/^(?:\s|<!--[\s\S]*?-->)*<!doctype html>/i.test(html)) {
+    fail('المستند الناتج لا يبدأ بـ <!doctype html>', loc, 'تأكد أن القطعة head.html تبدأ به وأن {{> head}} أول شيء في الصفحة.');
+  }
+
+  if (count(/<!doctype/gi) !== 1) {
+    fail('وُجد أكثر من <!doctype> واحد في المستند الناتج', loc, 'غالبًا استُدعيت {{> head}} مرتين، أو كُتب <!doctype> داخل صفحة تُلفّ تلقائيًا.');
+  }
+
+  if (count(/<\/html>/gi) !== 1) {
+    fail('المستند الناتج يجب أن ينتهي بـ </html> مرة واحدة فقط', loc, 'في نمط المستند الكامل اختم الصفحة بـ </body></html>.');
+  }
+
+  const stray = /\{\{\s*[>\w]/.exec(html);
+
+  if (stray) {
+    fail('علامة قالب غير مكتملة أو خاطئة ظلّت في الناتج', loc, `قرب: ${html.slice(stray.index, stray.index + 40).replace(/\s+/g, ' ')}`, 'الصيغ الصحيحة: {{> name}} و {{site.key}} بلا مسافات داخل الاسم.');
+  }
+
+  const h1 = count(/<h1[\s>]/gi);
+
+  if (h1 !== 1) {
+    warn(`في الصفحة ${page.label} عدد عناوين h1 هو ${h1} (المطلوب واحد بالضبط).`);
+  }
+
+  return html;
+}
 
   /* فحوص سلامة المستند الناتج */
   const loc = `الصفحة: ${page.label}`;
