@@ -246,8 +246,8 @@
   }
 
   /* ---------- 5) Auth ---------- */
-  const callbackUrl = () => win.location.origin + '/account/';
-
+const callbackUrl = () => win.location.origin +
+  (doc.documentElement.getAttribute('data-base-path') || '') + '/account/';
   const auth = {
     /* دخول بكلمة المرور؛ يحفظ الجلسة ويعيدها */
     async signIn(email, password) {
