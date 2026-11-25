@@ -615,8 +615,7 @@ function renderPage(page, data, partials) {
   const ctx = {
     data,
     partials,
-    vars: { root: '', title: page.title, desc: page.desc, canonical: page.canonical, slug: page.slug, nav: page.nav, url: page.urlPath },
-  };
+vars: { root: data.site.basePath || '', title: page.title, desc: page.desc, canonical: page.canonical, slug: page.slug, nav: page.nav, url: page.urlPath },  };
   let html;
   if (page.isFull) {
     html = render(page.body, page.label, ctx, [], page.lineBase);
