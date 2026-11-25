@@ -668,36 +668,71 @@ function sitemapXml(pages, origin) {
 const robotsTxt = (origin) => `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
 
 /** يفحص الملفات المشار إليها من HTML داخل dist (تنبيهات فقط). */
-function checkReferences(pages) {
-  const missing = new Map(); // رابط -> مجموعة صفحات
+
+/** يفحص الملفات المشار إليها من HTML داخل dist (تنبيهات فقط). */
+function checkReferences(pages, basePath = '') {
+  const missing = new Map();
   const relative = new Map();
   const add = (map, url, page) => (map.get(url) ?? map.set(url, new Set()).get(url)).add(page.slug);
+
+  const base = String(basePath || '').replace(/\/+$/, '');
+
   for (const page of pages) {
     for (const tag of page.html.match(TAG_RE) || []) {
       const attrs = new RegExp(ATTR_RE_SRC, 'g');
       let m;
+
       while ((m = attrs.exec(tag))) {
         const name = m[1].toLowerCase();
         const value = (m[2] ?? m[3] ?? m[4] ?? '').trim();
-        const urls = name === 'srcset' ? value.split(',').map((s) => s.trim().split(/\s+/)[0]) : REF_ATTRS.has(name) ? [value] : [];
+        const urls = name === 'srcset'
+          ? value.split(',').map((s) => s.trim().split(/\s+/)[0])
+          : REF_ATTRS.has(name) ? [value] : [];
+
         for (const u of urls) {
           if (!u || /^[a-z][a-z0-9+.-]*:/i.test(u) || u.startsWith('//') || u.startsWith('#') || u.startsWith('?')) continue;
-          if (!u.startsWith('/')) { add(relative, u, page); continue; }
+          if (!u.startsWith('/')) {
+            add(relative, u, page);
+            continue;
+          }
+
           let p = u.split(/[?#]/)[0];
           try { p = decodeURIComponent(p); } catch { /* يبقى كما هو */ }
+
+          if (base && (p === base || p.startsWith(base + '/'))) {
+            p = p.slice(base.length) || '/';
+          }
+
           const segs = p.split('/').filter(Boolean);
           const target = path.join(DIST_DIR, ...segs.filter((s) => s !== '..'));
-          const ok = !segs.includes('..') && (p.endsWith('/') || segs.length === 0
-            ? exists(path.join(target, 'index.html'))
-            : exists(target) && (fs.statSync(target).isFile() || exists(path.join(target, 'index.html'))));
+
+          const ok = !segs.includes('..') && (
+            p.endsWith('/') || segs.length === 0
+              ? exists(path.join(target, 'index.html'))
+              : exists(target) && (
+                  fs.statSync(target).isFile() ||
+                  exists(path.join(target, 'index.html'))
+                )
+          );
+
           if (!ok) add(missing, u, page);
         }
       }
     }
   }
-  const where = (set) => { const l = [...set]; return `${l.length} صفحة: ${l.slice(0, 3).join('، ')}${l.length > 3 ? '، …' : ''}`; };
-  for (const [u, set] of missing) warn(`ملف أو صفحة مُشار إليها غير موجودة في dist: ${u} (مذكورة في ${where(set)})`);
-  for (const [u, set] of relative) warn(`رابط نسبي لا يبدأ بـ / وسيتعطل داخل المجلدات الفرعية: ${u} (مذكور في ${where(set)})`);
+
+  const where = (set) => {
+    const l = [...set];
+    return `${l.length} صفحة: ${l.slice(0, 3).join('، ')}${l.length > 3 ? '، …' : ''}`;
+  };
+
+  for (const [u, set] of missing) {
+    warn(`ملف أو صفحة مُشار إليها غير موجودة في dist: ${u} (مذكورة في ${where(set)})`);
+  }
+
+  for (const [u, set] of relative) {
+    warn(`رابط نسبي لا يبدأ بـ / وسيتعطل داخل المجلدات الفرعية: ${u} (مذكور في ${where(set)})`);
+  }
 }
 
 /* ---------- 6) البرنامج ---------- */
