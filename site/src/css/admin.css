@@ -325,3 +325,61 @@ th[aria-sort=ascending] .ad-sort,th[aria-sort=descending] .ad-sort{color:var(--t
   .ad-kv{grid-template-columns:minmax(0,1fr)}
   .ad-kv dd{margin-bottom:8px}
 }
+
+/* ---------- بنك الأسئلة (admin-qbank*.js) ---------- */
+.ad-qb-bar{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.ad-qb-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
+.ad-qb-chips:empty{display:none}
+.ad-qb-chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding-block:2px;padding-inline:14px 6px;border-radius:99px;border:1px solid var(--bd);background:var(--glass);font:600 14.5px var(--fd);overflow-wrap:anywhere}
+.ad-qb-chipx{display:inline-grid;place-items:center;flex:none;width:32px;height:32px;border-radius:50%;color:var(--mut);transition:background .2s,color .2s}
+.ad-qb-chipx:hover{background:var(--pf-errbg);color:var(--pf-err)}
+.ad-qb-chipx .pf-ic{width:16px;height:16px}
+.ad-qb-tagbox{margin-top:8px}
+.ad-qb-tagbox .ad-tools{margin-bottom:8px}
+
+/* قائمة الأسئلة: ثمانية أعمدة في عرض المحتوى (٩٣٨ بكسل) فتُضغط الحشوة وتُخفى المعرّف والإصدار وآخر تعديل تحت ١١٨٠ بكسل (hide-md)،
+   وتبقى كلها في بطاقات الجوال. أزرار الإجراءات داخل الخلية الأولى تحت نص السؤال. */
+.ad-qb-off{opacity:.78}
+.ad-qb-id{font:500 12.5px var(--fn);direction:ltr;unicode-bidi:isolate;color:var(--mut)}
+.ad-qb-path{display:block;min-width:0;color:var(--mut);font-size:13.5px;line-height:1.7}
+.ad-qb-acts{margin-top:8px}
+@media(min-width:901px){
+  .ad-qbt .ad-table th,.ad-qbt .ad-table td{padding:10px 6px}
+  .ad-qbt .ad-table th.ad-first,.ad-qbt .ad-table td.ad-first{min-width:230px}
+  .ad-qbt .ad-ibtn{width:38px;height:38px;border-radius:12px}
+  .ad-qbt .ad-ibtn .pf-ic{width:18px;height:18px}
+}
+.ad-qb-modal{width:min(720px,calc(100vw - 32px))}
+.ad-qb-pv .pf-qlist{gap:0}
+.ad-qb-pv .pf-q{padding:16px}
+
+/* التصنيف والوسوم والفريق */
+.ad-qb-tree{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ad-qb-node .ad-qb-tree{margin-top:8px;margin-inline-start:18px;padding-inline-start:14px;border-inline-start:2px dashed var(--bd)}
+.ad-qb-nodehead,.ad-qb-staffhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;padding:10px 14px;border-radius:16px;border:1px solid var(--bd);background:var(--glass)}
+.ad-qb-nodet{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0;flex:1 1 220px;overflow-wrap:anywhere}
+.ad-qb-nodet b{font:600 16px/1.7 var(--fd)}
+.ad-qb-nodet small{color:var(--mut);font-size:13px}
+.ad-qb-node>.pf-msg,.ad-qb-node>.ad-edit,.ad-qb-staff>.pf-msg,.ad-qb-staff>.ad-edit,.ad-qb-tagrow>.pf-msg,.ad-qb-tagrow>.ad-edit{margin-top:8px}
+.ad-qb-tagrow{padding:10px 14px;border-radius:16px;border:1px solid var(--bd);background:var(--glass)}
+.ad-qb-tagmain{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ad-qb-tagmain b{flex:1 1 160px;min-width:0;overflow-wrap:anywhere;font:600 15.5px var(--fd)}
+.ad-qb-staff{display:grid;gap:6px}
+.ad-qb-staffperm{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:0 4px}
+.ad-qb-perms{display:grid;gap:2px 16px;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));margin:0 0 10px}
+
+/* محرر السؤال */
+.ad-qb-formcol{display:grid;gap:18px;min-width:0}
+.ad-qb-opts{display:grid;gap:10px;margin:0 0 10px}
+.ad-qb-opt{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:start;padding:12px;border-radius:18px;border:1px solid var(--bd);background:var(--glass)}
+.ad-qb-opt.ok{border-color:var(--pf-okbd);background:var(--pf-okbg)}
+.ad-qb-ocheck{padding-top:12px}
+.ad-qb-ocheck input{width:22px;height:22px;accent-color:#9B6BFF;cursor:pointer}
+.ad-qb-obody{display:grid;gap:6px;min-width:0}
+.ad-qb-obody .pf-ferr{margin:0}
+.ad-qb-obtns{display:flex;gap:6px}
+.ad-qb-multi{margin-top:12px}
+@media(max-width:560px){
+  .ad-qb-opt{grid-template-columns:auto minmax(0,1fr)}
+  .ad-qb-obtns{grid-column:1/-1;justify-content:flex-end}
+}
