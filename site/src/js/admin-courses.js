@@ -40,7 +40,7 @@
   /* ================================================================== قائمة الدورات */
   async function renderList(root, token) {
     const refresh = A.btn('تحديث', { icon: 'refresh', small: true });
-    root.appendChild(A.head('الدورات', 'اختر دورة لإدارة إعداداتها وملفاتها وفيديوهاتها وأسئلتها المحاكية.', [refresh]));
+    root.appendChild(A.head('الدورات', 'اختر دورة لإدارة اشتراكاتها وملفاتها وفيديوهاتها وبنك أسئلتها ومجلداته واختباراتها. كل دورة منفصلة عن غيرها.', [refresh]));
     const body = h('div');
     root.appendChild(body);
 
@@ -91,8 +91,10 @@
   }
 
   /* ================================================================== صفحة الدورة */
-  async function renderCourse(root, token, id, tabArg) {
-    const tab = tabArg === 'videos' || tabArg === 'questions' ? tabArg : 'files';
+  const HUB_TABS = ['subs', 'files', 'videos', 'questions', 'exams', 'groups'];
+  const Q_SUBS = ['bank', 'folders', 'team', 'quick'];
+  async function renderCourse(root, token, id, tabArg, subArg, extraArg) {
+    const tab = HUB_TABS.indexOf(tabArg) !== -1 ? tabArg : 'subs';
     root.appendChild(h('div', { class: 'ad-crumb' }, A.link('العودة إلى الدورات', '#courses', { icon: 'back', small: true })));
     const headBox = h('div');
     root.appendChild(headBox);
@@ -641,30 +643,106 @@
       return { el: wrap, paint: paint };
     }
 
-    const panels = { files: itemsPanel('file'), videos: itemsPanel('video'), questions: questionsPanel() };
+    /* ================= مركز الدورة: أقسام الدورة الواحدة =================
+       الاشتراكات | الملفات | الفيديوهات | الأسئلة (بنك الأسئلة، المجلدات، الفريق، الأسئلة السريعة) | الاختبارات | المجموعات.
+       الأقسام الثقيلة تُحمَّل عند أول فتح فقط. كل قسم يخص هذه الدورة وحدها. المسار: #courses/<id>/<قسم>[/<فرعي>[/<إضافي>]] */
+    const panels = { files: itemsPanel('file'), videos: itemsPanel('video'), quick: questionsPanel() };
     const tabLabels = {};
-    function tabButton(name, label, ic) {
+    function tabButton(prefix, name, label, ic, withCount) {
       const c = h('span', { class: 'pf-count' });
-      tabLabels[name] = c;
-      return h('button', { type: 'button', role: 'tab', id: 'ctab-' + name, 'data-tab': name, 'aria-controls': 'cpanel-' + name, 'aria-selected': 'false', tabindex: '-1' }, A.icon(ic), label, c);
+      if (withCount) tabLabels[name] = c;
+      return h('button', { type: 'button', role: 'tab', id: prefix + 'tab-' + name, 'data-tab': name, 'aria-controls': prefix + 'panel-' + name, 'aria-selected': 'false', tabindex: '-1' }, A.icon(ic), label, withCount ? c : null);
     }
     function counts() {
       tabLabels.files.textContent = '(' + D.items.filter(function (i) { return i.kind === 'file'; }).length + ')';
       tabLabels.videos.textContent = '(' + D.items.filter(function (i) { return i.kind === 'video'; }).length + ')';
-      tabLabels.questions.textContent = '(' + D.questions.length + ')';
+      if (tabLabels.quick) tabLabels.quick.textContent = '(' + D.questions.length + ')'; /* يوجد بعد فتح قسم الأسئلة */
     }
-    const tabsEl = h('div', { class: 'pf-tabs ad-tabbar', role: 'tablist', 'aria-label': 'محتوى الدورة' },
-      tabButton('files', 'الملفات', 'file'), tabButton('videos', 'الفيديوهات', 'video'), tabButton('questions', 'الأسئلة المحاكية', 'quiz'));
+    const MAIN = [['subs', 'الاشتراكات', 'userplus'], ['files', 'الملفات', 'file', true], ['videos', 'الفيديوهات', 'video', true],
+      ['questions', 'الأسئلة', 'quiz'], ['exams', 'الاختبارات', 'check'], ['groups', 'المجموعات', 'users']];
+    const tabsEl = h('div', { class: 'pf-tabs ad-tabbar', role: 'tablist', 'aria-label': 'أقسام الدورة' },
+      MAIN.map(function (t) { return tabButton('c', t[0], t[1], t[2], t[3]); }));
+    const holders = {};
+    HUB_TABS.forEach(function (n) { holders[n] = h('div'); });
+    holders.files.appendChild(panels.files.el);
+    holders.videos.appendChild(panels.videos.el);
+    holders.groups.appendChild(A.empty('المجموعات التدريبية', 'تُضاف قريبًا: مجموعات هذه الدورة، وتسجيل الحضور، والتقييم القبلي والبعدي.'));
     A.clear(body);
     body.appendChild(settingsCard());
     body.appendChild(tabsEl);
-    ['files', 'videos', 'questions'].forEach(function (n) { body.appendChild(h('div', { role: 'tabpanel', id: 'cpanel-' + n, 'aria-labelledby': 'ctab-' + n, hidden: true }, panels[n].el)); });
+    HUB_TABS.forEach(function (n) { body.appendChild(h('div', { role: 'tabpanel', id: 'cpanel-' + n, 'aria-labelledby': 'ctab-' + n, hidden: true }, holders[n])); });
     panels.files.paint();
     panels.videos.paint();
-    panels.questions.paint();
+    panels.quick.paint();
     counts();
+
+    /* تحميل كسول مع بطاقة خطأ وإعادة محاولة */
+    const mounted = {};
+    function lazy(key, box, fn) {
+      if (mounted[key]) return;
+      mounted[key] = true;
+      const run = function () {
+        A.clear(box);
+        let p;
+        try { p = Promise.resolve(fn()); } catch (e) { p = Promise.reject(e); }
+        p.catch(function (err) {
+          if (A.stale(token)) return;
+          if (A.isSession(err)) { A.lost('expired'); return; }
+          A.clear(box);
+          box.appendChild(A.fail(A.errText(err), run));
+        });
+      };
+      run();
+    }
+
+    /* الأسئلة: أقسام فرعية. بنك الأسئلة/المجلدات/الفريق من وحدات بنك الأسئلة؛ «الأسئلة السريعة» أسئلة المحاكاة الحالية في لوحة المتدرب */
+    const Q_NAMES = { bank: 'بنك الأسئلة', folders: 'المجلدات', team: 'الفريق', quick: 'الأسئلة السريعة' };
+    const Q_ICONS = { bank: 'quiz', folders: 'book', team: 'users', quick: 'file' };
+    const Q_MOD = { bank: 'list', folders: 'taxonomy', team: 'staff' };
+    let qSub = Q_SUBS.indexOf(subArg) !== -1 ? subArg : 'bank';
+    function mountQuestions() {
+      if (mounted.questions) return;
+      mounted.questions = true;
+      const qTabs = h('div', { class: 'pf-tabs ad-tabbar', role: 'tablist', 'aria-label': 'أقسام الأسئلة' },
+        Q_SUBS.map(function (n) { return tabButton('cq', n, Q_NAMES[n], Q_ICONS[n], n === 'quick'); }));
+      const qHold = {};
+      Q_SUBS.forEach(function (n) { qHold[n] = h('div', { role: 'tabpanel', id: 'cqpanel-' + n, 'aria-labelledby': 'cqtab-' + n, hidden: true }); });
+      qHold.quick.appendChild(panels.quick.el);
+      holders.questions.appendChild(h('p', { class: 'ad-note', text: 'بنك أسئلة هذه الدورة منفصل عن بقية الدورات. أنشئ المجلدات والمجلدات الفرعية من «المجلدات»، ثم أضف أسئلتك ووزّعها عليها من «بنك الأسئلة».' }));
+      holders.questions.appendChild(qTabs);
+      Q_SUBS.forEach(function (n) { holders.questions.appendChild(qHold[n]); });
+      counts();
+      const qctl = ui.tabs(qTabs, {
+        onSelect: function (name) {
+          qSub = name;
+          try { window.history.replaceState(null, '', '#courses/' + id + '/questions/' + name); } catch (e) { /* تجاهل */ }
+          if (name === 'quick') return;
+          lazy('q-' + name, qHold[name], function () {
+            const QB = A.qb;
+            if (!QB || !QB.mods[Q_MOD[name]]) throw new P.ApiError('other', 'تعذّر تحميل قسم بنك الأسئلة. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
+            return QB.mods[Q_MOD[name]].render(qHold[name], { course: id, token: token, extra: name === 'bank' ? (extraArg || '') : '' });
+          });
+        }
+      });
+      qctl.select(qSub, false);
+    }
+
     const ctl = ui.tabs(tabsEl, {
-      onSelect: function (name) { try { window.history.replaceState(null, '', '#courses/' + id + (name === 'files' ? '' : '/' + name)); } catch (e) { /* تجاهل */ } }
+      onSelect: function (name) {
+        if (name === 'questions') {
+          mountQuestions();
+          try { window.history.replaceState(null, '', '#courses/' + id + '/questions/' + qSub); } catch (e) { /* تجاهل */ }
+          return;
+        }
+        try { window.history.replaceState(null, '', '#courses/' + id + '/' + name); } catch (e) { /* تجاهل */ }
+        if (name === 'subs') lazy('subs', holders.subs, function () { return A.enrollRender(holders.subs, [], token, { course: id }); });
+        else if (name === 'exams') {
+          lazy('exams', holders.exams, function () {
+            if (!A.ex || !A.ex.renderList) throw new P.ApiError('other', 'تعذّر تحميل قسم الاختبارات. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
+            return A.ex.renderList(holders.exams, id, token);
+          });
+        }
+      }
     });
     ctl.select(tab, false);
   }
@@ -672,7 +750,7 @@
   A.register('courses', {
     label: 'الدورات',
     render: async function (root, args, token) {
-      if (args[0]) await renderCourse(root, token, args[0], args[1]); else await renderList(root, token);
+      if (args[0]) await renderCourse(root, token, args[0], args[1], args[2], args[3]); else await renderList(root, token);
     }
   });
 })();

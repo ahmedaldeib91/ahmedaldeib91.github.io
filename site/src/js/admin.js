@@ -36,15 +36,14 @@
   const NAV = [
     ['stats', 'الإحصاءات', 'chart'],
     ['trainees', 'المتدربون', 'users'],
-    ['enrollments', 'الاشتراكات', 'userplus'],
     ['subscribers', 'المشتركون', 'file'],
     ['courses', 'الدورات', 'book'],
-    ['qbank', 'بنك الأسئلة', 'quiz'],
-    ['exams', 'الاختبارات', 'check'],
     ['messages', 'الرسائل', 'mail'],
     ['blog', 'المدونة', 'pen'],
     ['settings', 'الإعدادات', 'gear']
   ];
+  /* أقسام بلا عنصر في القائمة: صارت داخل مركز الدورة، وتبقى مساراتها صالحة (المحررات وتحويل الروابط القديمة) */
+  const HIDDEN = { qbank: 'courses', exams: 'courses', enrollments: 'courses' };
   let first = true;
 
   /* ---------- حالة الصفحة ---------- */
@@ -122,12 +121,12 @@
   function route() {
     if (!S.me) return;
     const r = parseHash();
-    const known = NAV.some(function (n) { return n[0] === r.name; });
+    const known = NAV.some(function (n) { return n[0] === r.name; }) || Object.prototype.hasOwnProperty.call(HIDDEN, r.name);
     if (!known) { try { window.history.replaceState(null, '', '#stats'); } catch (e) { /* تجاهل */ } r.name = 'stats'; r.args = []; }
     const sec = A.sections[r.name];
     const root = $('ad-view');
     const token = ++S.nav;
-    markNav(r.name);
+    markNav(HIDDEN[r.name] || r.name);
     A.clear(root);
     if (!sec) { root.appendChild(A.fail('تعذّر تحميل هذا القسم. حدّث الصفحة ثم أعد المحاولة.')); return; }
     document.title = sec.label + ' | لوحة المدرب';
