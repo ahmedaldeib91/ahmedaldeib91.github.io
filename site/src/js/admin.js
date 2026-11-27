@@ -11,7 +11,8 @@
      (وكذلك عند الخروج من تبويب آخر أو عودة الصفحة من الذاكرة السريعة بلا جلسة).
 
    التوجيه (hash): #stats #trainees #trainees/<uuid> #enrollments #subscribers #courses #courses/<id>[/videos|/questions] #messages[/<uuid>]
-   #blog #blog/new #blog/<uuid> #settings #qbank[/<course>/questions|taxonomy|staff|new|edit/<uuid>|copy/<uuid>] (انظر admin-qbank.js).
+   #blog #blog/new #blog/<uuid> #settings #qbank[/<course>/questions|taxonomy|staff|new|edit/<uuid>|copy/<uuid>] (انظر admin-qbank.js)
+   #exams[/<course>/list|new|edit/<uuid>] (انظر admin-exams.js).
    قائمة الأقسام روابط <nav aria-label> مع aria-current="page" (والتبويبات الداخلية
    في الدورات بـ ARIA tablist)، وبعد كل انتقال يُنقل التركيز إلى عنوان القسم ويُعلَن للقارئ الشاشي.
    ===================================================================== */
@@ -39,6 +40,7 @@
     ['subscribers', 'المشتركون', 'file'],
     ['courses', 'الدورات', 'book'],
     ['qbank', 'بنك الأسئلة', 'quiz'],
+    ['exams', 'الاختبارات', 'check'],
     ['messages', 'الرسائل', 'mail'],
     ['blog', 'المدونة', 'pen'],
     ['settings', 'الإعدادات', 'gear']

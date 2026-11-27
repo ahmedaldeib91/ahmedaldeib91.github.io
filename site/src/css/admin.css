@@ -383,3 +383,9 @@ th[aria-sort=ascending] .ad-sort,th[aria-sort=descending] .ad-sort{color:var(--t
   .ad-qb-opt{grid-template-columns:auto minmax(0,1fr)}
   .ad-qb-obtns{grid-column:1/-1;justify-content:flex-end}
 }
+
+/* M3b: قواعد السحب العشوائي في محرر الاختبار */
+.ad-qb-rule{padding:12px 14px;margin:0 0 12px;border:1px solid var(--bd);border-radius:16px;background:var(--glass)}
+.ad-qb-rule strong{display:block;margin:0 0 8px}
+.ad-qb-pick{min-width:min(560px,86vw)}
+.ad-qb-pick .pf-check{display:flex;margin:0 0 8px}
