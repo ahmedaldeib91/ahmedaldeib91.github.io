@@ -206,6 +206,7 @@
       s.type = t;
       if (SINGLE.indexOf(t) !== -1) s.correct = s.correct.slice(0, 1);
       while ((SINGLE.indexOf(t) !== -1 || t === 'multi_response') && s.options.length < 2) s.options.push(mkOpt(newOptId(s.options)));
+      if (QB.tb) QB.tb.ensure(s, t);
       paintTypeBox();
       paintMedia();
       changed();
@@ -500,10 +501,11 @@
     });
 
     function paintTypeBox() {
-      Object.keys(F).forEach(function (k) { if (/^(opt|optx|lt|ltx|rt|pair)-\d+$|^(min|max|scoring|tfTrue|tfFalse|tfExplTrue|tfExplFalse)$/.test(k)) delete F[k]; });
+      Object.keys(F).forEach(function (k) { if (/^(opt|optx|lt|ltx|rt|pair)-\d+$|^(min|max|scoring|tfTrue|tfFalse|tfExplTrue|tfExplFalse)$|^tb/.test(k)) delete F[k]; });
       ['options', 'correct', 'tf', 'left', 'right'].forEach(function (k) { delete G[k]; });
       A.clear(typeBox);
-      typeBox.appendChild(s.type === 'true_false' ? tfBlock() : (s.type === 'matching' ? matchBlock() : optsBlock()));
+      if (QB.tb && QB.tb.has(s.type)) typeBox.appendChild(QB.tb.block(s.type, { s: s, F: F, gerr: gerr, lblInput: lblInput, lblArea: lblArea, changed: changed, repaint: paintTypeBox, stemEl: stem }));
+      else typeBox.appendChild(s.type === 'true_false' ? tfBlock() : (s.type === 'matching' ? matchBlock() : optsBlock()));
       if (typeSel.value !== s.type) typeSel.value = s.type;
     }
 
@@ -580,7 +582,11 @@
     function paintPreview() {
       const p = { stem: { text: s.stem } };
       if (s.type === 'true_false') p.labels = { 'true': s.tfTrue.trim(), 'false': s.tfFalse.trim() };
-      else if (s.type === 'matching') {
+      else if (QB.tb && QB.tb.has(s.type)) {
+        const pq = { payload: {}, key: {}, oe: {} };
+        QB.tb.build(s, pq.payload, pq.key, pq.oe);
+        Object.assign(p, pq.payload);
+      } else if (s.type === 'matching') {
         p.left = s.left.map(function (o) { return { id: o.id, text: o.text }; });
         p.right = s.right.map(function (o) { return { id: o.id, text: o.text }; });
       } else {

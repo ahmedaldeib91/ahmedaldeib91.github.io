@@ -233,7 +233,7 @@
     root.appendChild(h('section', { class: 'pf-block' }, h('h2', { text: 'محاولاتي' }),
       h('ul', { class: 'ex-attempts' }, atts.map(function (a) {
         const txt = '#' + a.attempt_no + ' — ' + (STATUS[a.status] || a.status) + (a.submitted_at ? ' — ' + P.fmtDate(a.submitted_at) : '') +
-          (a.result_visible && a.percent != null ? ' — ' + a.percent + '%' : '');
+          (a.result_visible && a.percent != null ? ' — ' + a.percent + '%' : '') + (a.grading_pending ? ' — بانتظار التصحيح' : '');
         return h('li', null, h('span', { text: txt }), ' ',
           a.status === 'in_progress' ? h('a', { class: 'btn p', href: '#attempt=' + a.attempt_id }, 'تابع') : h('a', { class: 'btn s', href: '#result=' + a.attempt_id }, 'النتيجة'));
       }))));
@@ -351,7 +351,7 @@
     onCleanup(function () { Object.keys(T.saveTimers).forEach(function (k) { clearTimeout(T.saveTimers[k]); }); });
 
     /* ---------- رسم السؤال ---------- */
-    const hasAnswer = function (it) { return !!it && !!it.response && Object.keys(it.response).length > 0 && (it.response.choice || (it.response.choices && it.response.choices.length) || (it.response.pairs && Object.keys(it.response.pairs).length)); };
+    const hasAnswer = function (it) { return !!it && !!it.response && Object.keys(it.response).length > 0 && (it.response.choice || (it.response.choices && it.response.choices.length) || (it.response.pairs && Object.keys(it.response.pairs).length) || it.response.text || it.response.value || (it.response.order && it.response.order.length) || (it.response.answers && Object.keys(it.response.answers).length)); };
     function paintNav() {
       clear(navEl);
       for (let p = 1; p <= T.n; p++) {
@@ -399,6 +399,65 @@
       const nm = 'q' + it.position + '-' + Math.random().toString(36).slice(2, 7);
       const t = it.type_code;
       const box = h('div', { class: 'pf-opts' });
+      if (t === 'short_answer' || t === 'numerical') {
+        const num = t === 'numerical';
+        const cur = it.response ? (num ? it.response.value : it.response.text) : '';
+        const inp = h('input', { class: 'pf-in' + (num ? ' ltr' : ''), type: 'text', id: nm, autocomplete: 'off', maxlength: String(num ? 40 : (it.max_chars || 500)), 'aria-label': 'إجابتك', dir: num ? 'ltr' : 'auto' });
+        if (num) inp.setAttribute('inputmode', 'decimal');
+        inp.value = cur == null ? '' : String(cur);
+        inp.addEventListener('input', function () { const v = inp.value.trim(); setResp(it, v ? (num ? { value: v } : { text: v }) : {}); });
+        return h('div', { class: 'pf-numrow' }, inp, num && it.unit ? h('span', { class: 'pf-unit', text: it.unit }) : null);
+      }
+      if (t === 'essay') {
+        const ta = h('textarea', { class: 'pf-in ex-essay', id: nm, rows: '10', maxlength: '20000', 'aria-label': 'إجابتك المقالية', dir: 'auto' });
+        ta.value = it.response && it.response.text ? it.response.text : '';
+        const cnt = h('p', { class: 'pf-hint', role: 'status' });
+        const words = function () { const m = ta.value.trim().match(/\S+/g); return m ? m.length : 0; };
+        const paint = function () {
+          const w = words();
+          cnt.textContent = 'عدد الكلمات: ' + w + (it.min_words ? ' · الحد الأدنى ' + it.min_words : '') + (it.max_words ? ' · الحد الأقصى ' + it.max_words : '');
+          cnt.classList.toggle('err', !!(it.max_words && w > it.max_words));
+        };
+        ta.addEventListener('input', function () { paint(); const v = ta.value.trim(); setResp(it, v ? { text: v } : {}); });
+        paint();
+        return h('div', null, ta, cnt);
+      }
+      if (t === 'ordering') {
+        const byId = {};
+        (it.items || []).forEach(function (x) { byId[x.id] = x; });
+        let order = it.response && Array.isArray(it.response.order) ? it.response.order.filter(function (x) { return byId[x]; }) : [];
+        if (order.length !== (it.items || []).length) order = (it.items || []).map(function (x) { return x.id; });
+        const list = h('ol', { class: 'pf-ord' });
+        const paint = function (focusIdx) {
+          clear(list);
+          order.forEach(function (oid, i) {
+            const mv = function (d) { return function () { const j = i + d; if (j < 0 || j >= order.length) return; order.splice(j, 0, order.splice(i, 1)[0]); setResp(it, { order: order.slice() }); paint(j); }; };
+            const up = h('button', { type: 'button', class: 'btn s sm', 'aria-label': 'تحريك «' + byId[oid].text + '» لأعلى' }, '↑');
+            const dn = h('button', { type: 'button', class: 'btn s sm', 'aria-label': 'تحريك «' + byId[oid].text + '» لأسفل' }, '↓');
+            up.disabled = i === 0; dn.disabled = i === order.length - 1;
+            up.addEventListener('click', mv(-1)); dn.addEventListener('click', mv(1));
+            list.appendChild(h('li', { class: 'pf-orditem' }, h('span', { class: 'qn', text: String(i + 1) }), h('span', { class: 'pf-ot', dir: 'auto', text: byId[oid].text }), h('span', { class: 'pf-ordbtns' }, up, dn)));
+          });
+          if (typeof focusIdx === 'number') { const b = list.querySelectorAll('li')[focusIdx]; const x = b && b.querySelector('button:not(:disabled)'); if (x) x.focus(); }
+        };
+        paint();
+        const ok = h('button', { type: 'button', class: 'btn s sm' }, 'اعتمد الترتيب المعروض');
+        ok.addEventListener('click', function () { setResp(it, { order: order.slice() }); });
+        return h('div', null, list, h('div', { class: 'pf-act' }, ok));
+      }
+      if (t === 'fill_blank') {
+        const ans = Object.assign({}, it.response && it.response.answers ? it.response.answers : {});
+        const parts = String(it.stem || '').split(/\{\{([a-z0-9_-]{1,16})\}\}/);
+        const row = h('p', { class: 'pf-fillrow', dir: 'auto' });
+        parts.forEach(function (tx, i) {
+          if (i % 2 === 0) { row.appendChild(doc.createTextNode(tx)); return; }
+          const inp = h('input', { class: 'pf-in pf-blank', type: 'text', size: '12', maxlength: '200', autocomplete: 'off', 'aria-label': 'الفراغ ' + ((i + 1) / 2) });
+          inp.value = ans[tx] || '';
+          inp.addEventListener('input', function () { const v = inp.value.trim(); if (v) ans[tx] = v; else delete ans[tx]; setResp(it, Object.keys(ans).length ? { answers: Object.assign({}, ans) } : {}); });
+          row.appendChild(inp);
+        });
+        return row;
+      }
       if (t === 'matching') {
         const rights = it.right || [];
         const cur = (it.response && it.response.pairs) || {};
@@ -455,10 +514,12 @@
         const mn = it.min_select; const mx = it.max_select;
         hint = h('p', { class: 'pf-hint', text: mn && mx ? 'اختر من ' + mn + ' إلى ' + mx + ' إجابات.' : mn ? 'اختر ' + mn + ' إجابات على الأقل.' : mx ? 'اختر ' + mx + ' إجابات على الأكثر.' : 'اختر كل الإجابات الصحيحة.' });
       } else if (it.type_code === 'matching') hint = h('p', { class: 'pf-hint', text: 'طابق كل عنصر بالخيار المناسب (لا يتكرر خيار).' });
+      else if (it.type_code === 'ordering') hint = h('p', { class: 'pf-hint', text: 'رتّب العناصر بالترتيب الصحيح بأزرار الأسهم.' });
+      else if (it.type_code === 'essay') hint = h('p', { class: 'pf-hint', text: 'سؤال مقالي: يصحّحه المدرب بعد التسليم.' });
       const clr = h('button', { type: 'button', class: 'btn s sm' }, 'مسح الإجابة');
       clr.addEventListener('click', function () { setResp(it, {}); renderQ(); });
       qBox.appendChild(h('fieldset', { class: 'pf-q' },
-        h('legend', null, h('span', { class: 'qn', text: String(it.position) }), h('span', { class: 'pf-qtext', dir: 'auto', text: it.stem || '' }), h('small', { class: 'ex-pts', text: ' (' + Number(it.points) + ' درجة)' })),
+        h('legend', null, h('span', { class: 'qn', text: String(it.position) }), h('span', { class: 'pf-qtext', dir: 'auto', text: it.type_code === 'fill_blank' ? 'املأ الفراغات في الجملة التالية:' : (it.stem || '') }), h('small', { class: 'ex-pts', text: ' (' + Number(it.points) + ' درجة)' })),
         it.media && it.media.length ? await mediaNodes(it) : null, hint, controls(it), h('div', { class: 'pf-act' }, clr)));
       paintFeedback(it);
       paintNav();
@@ -585,7 +646,8 @@
     clear(root);
     root.appendChild(h('div', { class: 'pf-fade' }, backLink()));
     const head = h('section', { class: 'pf-block' }, h('h1', { text: 'نتيجة الاختبار' }));
-    if (r.status === 'voided') head.appendChild(h('p', { class: 'pf-msg err', role: 'status', text: 'أُلغيت هذه المحاولة لانتهاء وقتها دون تسليم، ولا تُحسب لك درجة.' }));
+    if (r.grading_pending) head.appendChild(h('p', { class: 'pf-msg', role: 'status', text: 'تم تسليم إجاباتك. في الاختبار أسئلة مقالية بانتظار تصحيح المدرب؛ ستظهر نتيجتك هنا بعد اكتمال التصحيح.' }));
+    else if (r.status === 'voided') head.appendChild(h('p', { class: 'pf-msg err', role: 'status', text: 'أُلغيت هذه المحاولة لانتهاء وقتها دون تسليم، ولا تُحسب لك درجة.' }));
     else if (r.result_visible) {
       head.appendChild(h('p', { class: 'ex-score' }, h('b', { text: Number(r.score) + ' / ' + Number(r.max_score) }), '  ', h('span', { text: '(' + r.percent + '%)' })));
       if (r.passed === true) head.appendChild(h('span', { class: 'st ok', text: 'ناجح' }));
@@ -604,7 +666,34 @@
     const resp = it.response || {};
     const mark = Number(it.final_score) >= Number(it.points) ? 'good' : (Number(it.final_score) > 0 ? 'part' : 'bad');
     const body = h('div');
-    if (it.type_code === 'matching') {
+    if (it.type_code === 'short_answer' || it.type_code === 'numerical' || it.type_code === 'essay') {
+      const t = it.type_code;
+      const mineTxt = t === 'numerical' ? resp.value : resp.text;
+      body.appendChild(h('div', { class: 'pf-opt' }, h('span', { class: 'pf-ot', dir: 'auto', text: 'إجابتك: ' + (mineTxt ? mineTxt : 'بلا إجابة') })));
+      if (t === 'short_answer' && Array.isArray(ca.answers)) body.appendChild(h('div', { class: 'pf-opt good' }, h('span', { class: 'pf-ot', dir: 'auto', text: 'الإجابات المقبولة: ' + ca.answers.join('، ') })));
+      if (t === 'numerical' && ca.value !== undefined) body.appendChild(h('div', { class: 'pf-opt good' }, h('span', { class: 'pf-ot', dir: 'auto', text: 'الإجابة الصحيحة: ' + ca.value + (ca.tolerance ? ' (±' + ca.tolerance + (ca.mode === 'percent' ? '%' : '') + ')' : '') + (it.unit ? ' ' + it.unit : '') })));
+      if (t === 'essay') {
+        if (it.grader_note) body.appendChild(h('p', { class: 'ex-expl' }, h('b', { text: 'ملاحظة المصحّح: ' }), it.grader_note));
+        if (ca.model_answer) body.appendChild(h('div', { class: 'ex-expl' }, h('b', { text: 'إجابة نموذجية: ' }), ca.model_answer));
+      }
+    } else if (it.type_code === 'ordering') {
+      const txt = {};
+      (it.items || []).forEach(function (x) { txt[x.id] = x.text; });
+      const mine = Array.isArray(resp.order) ? resp.order : [];
+      const right = Array.isArray(ca.order) ? ca.order : [];
+      body.appendChild(h('p', { class: 'pf-hint', text: 'ترتيبك:' }));
+      body.appendChild(h('ol', { class: 'pf-ord' }, (mine.length ? mine : []).map(function (oid, i) { return h('li', { class: 'pf-orditem ' + (right[i] === oid ? 'good' : 'bad') }, h('span', { class: 'qn', text: String(i + 1) }), h('span', { dir: 'auto', text: txt[oid] || '—' })); })));
+      if (!mine.length) body.appendChild(h('p', { class: 'pf-hint', text: 'بلا إجابة.' }));
+      body.appendChild(h('p', { class: 'pf-hint', text: 'الترتيب الصحيح:' }));
+      body.appendChild(h('ol', { class: 'pf-ord' }, right.map(function (oid, i) { return h('li', { class: 'pf-orditem good' }, h('span', { class: 'qn', text: String(i + 1) }), h('span', { dir: 'auto', text: txt[oid] || '—' })); })));
+    } else if (it.type_code === 'fill_blank') {
+      const kb = ca.blanks || {};
+      const mineA = resp.answers || {};
+      Object.keys(kb).forEach(function (id) {
+        const ok = mineA[id] !== undefined;
+        body.appendChild(h('div', { class: 'pf-opt' }, h('span', { class: 'pf-ot', dir: 'auto', text: 'الفراغ ' + id + ': ' + (ok ? mineA[id] : 'بلا إجابة') + '  ←  المقبول: ' + (kb[id] || []).join('، ') })));
+      });
+    } else if (it.type_code === 'matching') {
       const rtxt = {};
       (it.right || []).forEach(function (x) { rtxt[x.id] = x.text; });
       (it.left || []).forEach(function (l) {
@@ -623,7 +712,7 @@
       });
     }
     return h('li', { class: 'pf-q ex-rv ' + mark }, h('fieldset', null,
-      h('legend', null, h('span', { class: 'qn', text: String(it.position) }), h('span', { class: 'pf-qtext', dir: 'auto', text: it.stem || '' }), h('small', { class: 'ex-pts', text: ' (' + Number(it.final_score) + ' / ' + Number(it.points) + ')' })),
+      h('legend', null, h('span', { class: 'qn', text: String(it.position) }), h('span', { class: 'pf-qtext', dir: 'auto', text: it.type_code === 'fill_blank' ? String(it.stem || '').replace(/\{\{[^{}]*\}\}/g, '_____') : (it.stem || '') }), h('small', { class: 'ex-pts', text: ' (' + (it.final_score == null ? '—' : Number(it.final_score)) + ' / ' + Number(it.points) + ')' })),
       body,
       it.feedback ? h('p', { class: 'pf-hint', text: it.feedback }) : null,
       it.explanation ? h('div', { class: 'ex-expl' }, h('b', { text: 'الشرح: ' }), it.explanation) : null));

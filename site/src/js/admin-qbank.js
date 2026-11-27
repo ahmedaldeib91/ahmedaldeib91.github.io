@@ -272,6 +272,7 @@
     })) : null;
     const hidden = ids.length - shown.length;
     const mediaNote = hidden > 0 ? h('p', { class: 'pf-hint', text: 'يحتوي السؤال على ' + hidden + ' مرفق لا يُعرض في هذه المعاينة.' }) : null;
+    if (QB.tb && QB.tb.has(type)) return QB.tb.preview(type, payload, stem, figs, mediaNote);
     if (type === 'matching') {
       const right = Array.isArray(payload.right) ? payload.right : [];
       const left = Array.isArray(payload.left) ? payload.left : [];

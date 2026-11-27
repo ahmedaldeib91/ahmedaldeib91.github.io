@@ -413,3 +413,5 @@ th[aria-sort=ascending] .ad-sort,th[aria-sort=descending] .ad-sort{color:var(--t
 .ad-pairrow .pf-in{flex:1 1 0;min-width:0}
 .ad-ok{color:#2e9e6b}
 .ad-err{color:#d6455d}
+.ad-essay{white-space:pre-wrap;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--glass);margin:6px 0}
+.ad-qstem{white-space:pre-line;font-weight:600}
