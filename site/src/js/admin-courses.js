@@ -666,7 +666,6 @@
     HUB_TABS.forEach(function (n) { holders[n] = h('div'); });
     holders.files.appendChild(panels.files.el);
     holders.videos.appendChild(panels.videos.el);
-    holders.groups.appendChild(A.empty('المجموعات التدريبية', 'تُضاف قريبًا: مجموعات هذه الدورة، وتسجيل الحضور، والتقييم القبلي والبعدي.'));
     A.clear(body);
     body.appendChild(settingsCard());
     body.appendChild(tabsEl);
@@ -735,7 +734,12 @@
           return;
         }
         try { window.history.replaceState(null, '', '#courses/' + id + '/' + name); } catch (e) { /* تجاهل */ }
-        if (name === 'subs') lazy('subs', holders.subs, function () { return A.enrollRender(holders.subs, [], token, { course: id }); });
+        if (name === 'groups') {
+          lazy('groups', holders.groups, function () {
+            if (!A.groups) throw new P.ApiError('other', 'تعذّر تحميل قسم المجموعات. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
+            return A.groups.render(holders.groups, id, token, { group: subArg, section: extraArg });
+          });
+        } else if (name === 'subs') lazy('subs', holders.subs, function () { return A.enrollRender(holders.subs, [], token, { course: id }); });
         else if (name === 'exams') {
           lazy('exams', holders.exams, function () {
             if (!A.ex || !A.ex.renderList) throw new P.ApiError('other', 'تعذّر تحميل قسم الاختبارات. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
