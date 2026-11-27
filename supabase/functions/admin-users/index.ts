@@ -7,7 +7,8 @@
 // Guard rails (enforced here, not only in the UI):
 //   * set_password / set_email: only on non-admin accounts or on the caller himself
 //   * ban / unban / delete_user: never on admins, never on the caller
-//   * set_role: never on the caller; promoting to admin and delete_user need { confirm: true }
+//   * set_role: only trainee -> admin (needs { confirm: true }); never on the caller, never on an admin (no API demotion)
+//   * delete_user needs { confirm: true }
 // See README.md in this folder for the API contract and the deploy steps.
 
 import { createClient } from "npm:@supabase/supabase-js@2.49.1";
@@ -171,6 +172,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
       await audit({});
     } else if (action === "set_role") {
       if (self) fail("forbidden_on_self");
+      // an admin can never be demoted through the API: otherwise one admin could demote another and then
+      // reset that account's password/e-mail (account takeover). Demotion stays a deliberate database operation.
+      if (targetIsAdmin) fail("forbidden_on_admin");
       const role = body.role === "admin" || body.role === "trainee" ? body.role : "";
       if (!role) fail("invalid_role", 400);
       if (role === "admin" && body.confirm !== true) fail("confirm_required", 400);

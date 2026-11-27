@@ -16,7 +16,7 @@ Account controls for the trainer panel that need the Auth Admin API. **Admin onl
 | `confirm_email` | – | marks the e-mail confirmed |
 | `set_email` | `email` | only non-admin targets or the caller; marks confirmed |
 | `ban` / `unban` | – | blocks / allows sign-in; never admins, never the caller |
-| `set_role` | `role: admin|trainee`, `confirm: true` for admin | never the caller |
+| `set_role` | `role: admin`, `confirm: true` | promote a trainee only; never the caller, never an existing admin (demotion is a database operation by design) |
 | `delete_user` | `confirm: true` | never admins, never the caller |
 
 Responses: `{ ok: true, data }` or `{ ok: false, error: <code> }` (codes: auth_required, invalid_token, forbidden, rate_limited, invalid_action, invalid_user_id, user_not_found, account_has_no_email, mail_failed, weak_password, invalid_email, email_taken, forbidden_on_admin, forbidden_on_self, confirm_required, invalid_role, no_change, server_error).

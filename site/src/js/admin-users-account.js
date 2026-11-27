@@ -218,17 +218,17 @@
           return r;
         }));
       }
-      /* الدور */
-      if (!self) {
-        row.appendChild(act(isAdmin ? 'تحويل إلى متدرب' : 'ترقية إلى مدير', { small: true, kind: isAdmin ? undefined : 'danger', icon: 'users' }, async function () {
+      /* الدور: الترقية إلى مدير فقط؛ لا يُسحب دور مدير من الواجهة (يتم من قاعدة البيانات عمدًا) */
+      if (!self && !isAdmin) {
+        row.appendChild(act('ترقية إلى مدير', { small: true, kind: 'danger', icon: 'users' }, async function () {
           const ok = await A.confirm({
-            title: (isAdmin ? 'سحب صلاحية المدير من «' : 'ترقية «') + name + (isAdmin ? '»؟' : '» إلى مدير؟'),
-            message: isAdmin ? 'سيفقد الوصول إلى لوحة المدرب ويصير متدربًا عاديًا.' : 'سيرى كل بيانات المنصة ويتحكم بكل الحسابات والدورات والأسئلة. امنحها لمن تثق به تمامًا.',
-            detail: 'يُسجَّل الإجراء في سجل التدقيق.', ok: isAdmin ? 'تحويل إلى متدرب' : 'ترقية إلى مدير', danger: !isAdmin
+            title: 'ترقية «' + name + '» إلى مدير؟',
+            message: 'سيرى كل بيانات المنصة ويتحكم بكل الحسابات والدورات والأسئلة، ولن تستطيع سحب هذه الصلاحية منه من الواجهة. امنحها لمن تثق به تمامًا.',
+            detail: 'يُسجَّل الإجراء في سجل التدقيق.', ok: 'ترقية إلى مدير', danger: true
           });
           if (!ok) return null;
-          const r = await call('set_role', id, { role: isAdmin ? 'trainee' : 'admin', confirm: true });
-          if (r.ok) { A.toast('ok', isAdmin ? 'تحوّل إلى متدرب.' : 'رُقّي إلى مدير.'); await reload(); }
+          const r = await call('set_role', id, { role: 'admin', confirm: true });
+          if (r.ok) { A.toast('ok', 'رُقّي إلى مدير.'); await reload(); }
           return r;
         }));
       }
