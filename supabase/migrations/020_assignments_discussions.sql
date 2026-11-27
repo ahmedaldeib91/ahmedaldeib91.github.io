@@ -156,8 +156,11 @@ create policy p20_asg_files_insert on storage.objects for insert to authenticate
               and private.has_course_access((storage.foldername(name))[1])
               and exists (select 1 from public.asg_assignments a
                           where a.id::text = (storage.foldername(name))[2] and a.course_id = (storage.foldername(name))[1] and a.published));
+-- the owner may delete only objects that no submitted/graded submission references (evidence of a submission cannot be destroyed)
 create policy p20_asg_files_delete on storage.objects for delete to authenticated
-  using (bucket_id = 'assignment-files' and (storage.foldername(name))[3] = (select auth.uid())::text);
+  using (bucket_id = 'assignment-files' and (storage.foldername(name))[3] = (select auth.uid())::text
+         and not exists (select 1 from public.asg_files f join public.asg_submissions sb on sb.id = f.submission_id
+                         where f.storage_path = name and sb.status in ('submitted', 'graded')));
 
 -- ================================================================ 5. assignments RPCs
 create or replace function private.asg_save_submission(p_assignment_id uuid, p_body text, p_files jsonb default '[]'::jsonb, p_submit boolean default false)
@@ -227,7 +230,8 @@ begin
     raise exception 'nothing to submit' using errcode = '22023';
   end if;
   v_late := a.due_at is not null and now() > a.due_at;
-  if p_submit and v_late and not a.allow_late then
+  -- past the deadline with late work refused: no save of any kind (draft or edit of a submitted one); a returned one may be fixed
+  if v_late and not a.allow_late and (s.id is null or s.status <> 'returned') then
     raise exception 'assignment is closed' using errcode = '55000';
   end if;
 
@@ -241,7 +245,7 @@ begin
        set body = v_body,
            status = case when p_submit then 'submitted' else x.status end,
            submitted_at = case when p_submit then now() else x.submitted_at end,
-           is_late = case when p_submit then v_late else x.is_late end,
+           is_late = case when p_submit then v_late else (x.is_late or (x.status = 'submitted' and v_late)) end,  -- content changed after the deadline
            score = case when p_submit then null else x.score end,
            graded_by = case when p_submit then null else x.graded_by end,
            graded_at = case when p_submit then null else x.graded_at end
