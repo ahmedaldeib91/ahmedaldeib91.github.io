@@ -57,7 +57,11 @@
     feedback_needs_review: 'عرض الملاحظات أو الشرح بعد التسليم يتطلب السماح بمراجعة الإجابات.'
   };
 
-  EX.href = function (course, view, extra) { return '#exams/' + encodeURIComponent(course) + '/' + view + (extra ? '/' + encodeURIComponent(extra) : ''); };
+  /* قائمة الاختبارات داخل مركز الدورة؛ المحرر (new/edit) صفحة كاملة على #exams */
+  EX.href = function (course, view, extra) {
+    if (view === 'list') return '#courses/' + encodeURIComponent(course) + '/exams';
+    return '#exams/' + encodeURIComponent(course) + '/' + view + (extra ? '/' + encodeURIComponent(extra) : '');
+  };
   EX.label = function (list, v) { return QB.labelOf(list, v); };
   EX.num = function (n) { const x = Number(n); return Number.isFinite(x) ? A.num(Math.round(x * 100) / 100) : '—'; };
 
@@ -295,14 +299,9 @@
       await m.render(root, { course: course, mode: view, id: args[2] || '', token: token });
       return;
     }
-    root.appendChild(A.head('الاختبارات', 'ابنِ اختبارات كل دورة من أسئلة بنكها: أسئلة ثابتة و/أو سحب عشوائي بقواعد، ثم انشرها بإصدار مجمَّد.', []));
-    const sel = A.select(courses.map(function (c) { return [c.id, c.title_ar + (c.published ? '' : ' (غير منشورة)')]; }), course);
-    sel.addEventListener('change', function () { window.location.hash = EX.href(sel.value, 'list'); });
-    root.appendChild(h('div', { class: 'ad-tools' }, A.field('الدورة', sel, 'اختبارات كل دورة منفصلة عن غيرها.')));
-    const panel = h('div');
-    root.appendChild(panel);
-    await renderList(panel, course, token);
+    window.location.replace(EX.href(course, 'list')); /* القائمة صارت في مركز الدورة */
   }
 
+  EX.renderList = renderList; /* يستعمله مركز الدورة: A.ex.renderList(panel, course, token) */
   A.register('exams', { label: 'الاختبارات', render: render });
 })();

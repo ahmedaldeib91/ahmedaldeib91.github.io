@@ -17,14 +17,16 @@
   const PAGE = 25;
   const nameOr = function (p) { return (p && p.full_name) || 'بدون اسم'; };
 
-  async function render(root, args, token) {
+  async function render(root, args, token, opts) {
+    const lock = (opts && opts.course) || ''; /* داخل مركز الدورة: الدورة مثبّتة ولا يظهر اختيارها */
     const refresh = A.btn('تحديث', { icon: 'refresh', small: true });
-    root.appendChild(A.head('الاشتراكات', 'أضف دورة لمتدرب أو لعدة متدربين دفعة واحدة، وراجع كل الاشتراكات النشطة.', [refresh]));
+    if (lock) root.appendChild(h('div', { class: 'ad-qb-bar' }, refresh));
+    else root.appendChild(A.head('الاشتراكات', 'أضف دورة لمتدرب أو لعدة متدربين دفعة واحدة، وراجع كل الاشتراكات النشطة.', [refresh]));
     const body = h('div');
     root.appendChild(body);
     let dir = null;
     const sel = new Set(); /* المتدربون المحدّدون للاشتراك */
-    const st = { course: '', q: '', fCourse: 'all', fq: '', sort: 'date', dir: 'desc', page: 1, summary: null };
+    const st = { course: lock, q: '', fCourse: lock || 'all', fq: '', sort: 'date', dir: 'desc', page: 1, summary: null };
 
     const trainees = function () { return dir.profiles.filter(function (p) { return p.role === 'trainee'; }); };
     const emailOf = function (id) { return dir.emails[id] ? dir.emails[id].email : ''; };
@@ -44,7 +46,7 @@
     /* ---------- بطاقة الإضافة ---------- */
     function addCard() {
       const courseSel = A.select(A.S.courses.map(function (c) { return [c.id, c.title_ar]; }), st.course || (A.S.courses[0] && A.S.courses[0].id));
-      st.course = courseSel.value;
+      if (!lock) st.course = courseSel.value;
       const search = A.input({ type: 'search', max: 120, placeholder: 'اسم، بريد أو هاتف (أو اتركه فارغًا لعرض الأحدث)' });
       search.value = st.q;
       const list = h('ul', { class: 'ad-picks', 'aria-label': 'نتائج البحث عن المتدربين' });
@@ -84,7 +86,7 @@
         });
         sync();
       }
-      courseSel.addEventListener('change', function () { st.course = courseSel.value; paint(); });
+      if (!lock) courseSel.addEventListener('change', function () { st.course = courseSel.value; paint(); });
       search.addEventListener('input', A.debounce(function () { st.q = search.value; paint(); }, 160));
       all.addEventListener('click', function () {
         const enrolled = activeIn(st.course);
@@ -128,8 +130,8 @@
       }));
       paint();
       return A.card('إضافة اشتراك', [
-        h('p', { class: 'ad-sub', text: 'اختر الدورة، ثم ابحث وحدّد المتدربين. يُعرض أحدث ٢٠ مطابقًا.' }),
-        h('div', { class: 'ad-tools' }, A.field('الدورة', courseSel), A.field('بحث عن متدرب', search)),
+        h('p', { class: 'ad-sub', text: lock ? 'ابحث وحدّد المتدربين لاشتراكهم في هذه الدورة. يُعرض أحدث ٢٠ مطابقًا.' : 'اختر الدورة، ثم ابحث وحدّد المتدربين. يُعرض أحدث ٢٠ مطابقًا.' }),
+        h('div', { class: 'ad-tools' }, lock ? null : A.field('الدورة', courseSel), A.field('بحث عن متدرب', search)),
         h('div', { class: 'ad-act' }, all, none, info),
         list,
         h('div', { class: 'ad-act' }, submit, out)
@@ -206,10 +208,10 @@
         if (pg) box.appendChild(pg);
         if (focusKey) { const b = box.querySelector('.ad-sort[data-key="' + focusKey + '"]'); if (b) b.focus(); }
       }
-      fCourse.addEventListener('change', function () { st.fCourse = fCourse.value; st.page = 1; paint(); });
+      if (!lock) fCourse.addEventListener('change', function () { st.fCourse = fCourse.value; st.page = 1; paint(); });
       fSearch.addEventListener('input', A.debounce(function () { st.fq = fSearch.value; st.page = 1; paint(); }, 160));
       paint();
-      return A.card('الاشتراكات النشطة', [h('div', { class: 'ad-tools' }, A.field('الدورة', fCourse), A.field('بحث', fSearch), count), out, box]);
+      return A.card('الاشتراكات النشطة', [h('div', { class: 'ad-tools' }, lock ? null : A.field('الدورة', fCourse), A.field('بحث', fSearch), count), out, box]);
     }
 
     function build() {
@@ -243,5 +245,6 @@
     await load();
   }
 
+  A.enrollRender = render; /* يستعمله مركز الدورة: A.enrollRender(panel, [], token, {course}) */
   A.register('enrollments', { label: 'الاشتراكات', render: render });
 })();

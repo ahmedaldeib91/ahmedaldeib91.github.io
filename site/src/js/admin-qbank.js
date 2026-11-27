@@ -54,8 +54,12 @@
     for (let i = 0; i < list.length; i++) if (list[i][0] === value) return list[i][1];
     return fallback === undefined ? String(value == null ? '' : value) : fallback;
   };
+  /* قوائم بنك الأسئلة داخل مركز الدورة (#courses/<c>/questions/<فرعي>)؛ المحرر (new/edit/copy) صفحة كاملة على #qbank */
+  const HUB_SUB = { questions: 'bank', taxonomy: 'folders', staff: 'team' };
   QB.href = function (course, view, extra) {
-    return '#qbank/' + encodeURIComponent(course) + '/' + view + (extra ? '/' + encodeURIComponent(extra) : '');
+    const c = encodeURIComponent(course);
+    if (Object.prototype.hasOwnProperty.call(HUB_SUB, view)) return '#courses/' + c + '/questions/' + HUB_SUB[view] + (extra ? '/' + encodeURIComponent(extra) : '');
+    return '#qbank/' + c + '/' + view + (extra ? '/' + encodeURIComponent(extra) : '');
   };
   QB.nextSort = function (list) { return list.reduce(function (m, x) { return Math.max(m, Number(x.sort) || 0); }, 0) + 10; };
   QB.len = function (s) { return Array.from(String(s == null ? '' : s)).length; }; /* عدد المحارف كما يعدّها Postgres (نقاط ترميز لا وحدات UTF-16) */
@@ -372,7 +376,7 @@
       return;
     }
     if (view !== 'questions' && view !== 'taxonomy' && view !== 'staff') view = 'questions';
-    renderTabs(root, courses, course, view, args[2] || '', token);
+    window.location.replace(QB.href(course, view, args[2] || '')); /* القوائم صارت في مركز الدورة */
   }
 
   function renderTabs(root, courses, course, view, extra, token) {
