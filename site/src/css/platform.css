@@ -159,6 +159,28 @@ html:not([data-theme=light]) select.pf-in{color-scheme:dark}
 .pf-del{margin-top:18px}
 .pf-del p{margin:0 0 12px}
 
+/* طلب الاشتراك (dashboard.js): منطقة تحت الزر تظهر (بإزالة hidden) أثناء الإرسال وبعده، فيها رسالة الحالة أو الخطأ
+   واللوحة التي تحمل الرسالة الجاهزة للنسخ بعد نجاح الطلب أو رابط واتساب الاحتياطي بعد فشله */
+.pf-int{display:grid;gap:10px;min-width:0;text-align:start}
+.pf-int .pf-msg{margin:0}
+.pf-empty .pf-int{margin-top:14px}
+.pf-int-extra{min-width:0}
+.pf-int-extra:empty{display:none}
+.pf-int-panel{display:grid;gap:12px;min-width:0;padding:16px;border-radius:18px;background:var(--pf-okbg);border:1px solid var(--pf-okbd);text-align:start}
+.pf-int .pf-int-h{display:flex;align-items:center;gap:8px;margin:0;color:var(--pf-ok);font:700 16px/1.7 var(--fd)}
+.pf-int-h:focus{outline:none}
+/* داخل .pf-empty (صندوق «غير مفعّلة») تنطبق قواعد أيقونته الكبيرة وهامش أزراره على اللوحة أيضًا، فنعيدها لحجمها الطبيعي */
+.pf-empty .pf-int .pf-int-h .pf-ic{display:inline-block;width:1.2em;height:1.2em;margin:0;color:inherit}
+.pf-empty .pf-int .btn{margin-top:0}
+.pf-int .pf-int-sub{margin:0;max-width:none;color:var(--mut);font-size:14.5px;line-height:1.9}
+.pf-int-ta{min-height:140px;resize:vertical;font-size:15px;line-height:1.9;white-space:pre-wrap}
+.pf-int-ta[readonly]{opacity:1;cursor:text}
+.pf-int .pf-int-state{margin:0;min-height:1.7em;font-size:14px;line-height:1.7;color:var(--pf-ok)}
+.pf-int .pf-int-state.err{color:var(--pf-err)}
+.pf-int-act{display:flex;flex-wrap:wrap;gap:10px}
+.pf-int-act .btn{flex:1 1 auto;padding:10px 14px;font-size:14.5px;white-space:nowrap}
+.pf-int-fb{display:grid;gap:8px}
+
 /* ---------- عرض الدورة ---------- */
 .pf-crumb{margin:26px 0 8px}
 .pf-cbody{margin-top:18px}

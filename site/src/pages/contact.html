@@ -1,5 +1,7 @@
 <!--page: slug=contact; title=تواصل معنا | م. أحمد الديب; desc=بنقرة واحدة على واتساب: احجز مقعدك في الدورات المتاحة، أو سجّل اهتمامك بالدورات القادمة، وتواصل عبر حسابات التواصل الاجتماعي أو ادخل إلى المنصة التعليمية.; nav=contact-->
-<main class="page on" id="main">
+<link rel="stylesheet" href="{{root}}/assets/css/platform.css">
+<link rel="stylesheet" href="{{root}}/assets/css/contact.css">
+<main class="page on" id="main" data-sb-url="{{site.supabase.url}}" data-sb-key="{{site.supabase.key}}" data-wa="{{site.whatsapp}}">
   <section style="padding-top:70px;text-align:center">
     <div class="eyebrow rv">تواصل معنا</div><h1 class="rv" style="margin-top:8px">بنقرة واحدة على <em class="g">واتساب</em></h1>
     <p class="sub rv" style="margin:14px auto 28px">احجز مقعدك في الدورات المتاحة، أو سجّل اهتمامك بالدورات القادمة.</p>
@@ -7,4 +9,50 @@
     <div class="chips rv"><a href="{{site.socials.linkedin}}" target="_blank" rel="noopener" style="--bc:#0A66C2"><svg class="si" aria-hidden="true"><use href="#i-in"/></svg>LinkedIn</a><a href="{{site.socials.facebook}}" target="_blank" rel="noopener" style="--bc:#1877F2"><svg class="si" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</a><a href="{{site.socials.instagram}}" target="_blank" rel="noopener" style="--bc:#D6249F"><svg class="si" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</a><a href="{{site.socials.tiktok}}" target="_blank" rel="noopener" style="--bc:#FE2C55"><svg class="si" aria-hidden="true"><use href="#i-tk"/></svg>TikTok</a><a href="{{site.socials.youtube}}" target="_blank" rel="noopener" style="--bc:#FF0000"><svg class="si" aria-hidden="true"><use href="#i-yt"/></svg>YouTube</a></div>
     <div class="chips" style="margin-top:14px"><a href="{{site.login}}" target="_blank" rel="noopener">دخول المنصة التعليمية</a></div>
   </section>
+  <section class="pf-sec ct-sec" aria-labelledby="ct-title">
+    <div class="pf-wrap">
+      <noscript><div class="callout">يحتاج نموذج الرسالة إلى تفعيل JavaScript في المتصفح. يمكنك التواصل معنا مباشرة عبر واتساب من الزر أعلاه.</div></noscript>
+      <div class="pf-app">
+        <div class="pf-card ct-card">
+          <h2 id="ct-title">أو أرسل لنا رسالة</h2>
+          <p class="ct-lead">اكتب استفسارك وسيرد عليك المدرب على بريدك الإلكتروني. لا يلزم تسجيل الدخول.</p>
+          <form id="ct-form" class="pf-form" method="post" action="{{root}}/contact/" novalidate>
+            <div class="pf-field">
+              <label for="ct-name">الاسم <span class="ct-opt">(اختياري)</span></label>
+              <input class="pf-in" id="ct-name" name="name" type="text" autocomplete="name" maxlength="100" aria-describedby="ct-name-err">
+              <p class="pf-ferr" id="ct-name-err" hidden></p>
+            </div>
+            <div class="pf-field">
+              <label for="ct-email">البريد الإلكتروني<span class="pf-req" aria-hidden="true">*</span></label>
+              <input class="pf-in ltr" dir="ltr" id="ct-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="name@example.com" required aria-describedby="ct-email-hint ct-email-err">
+              <p class="pf-hint" id="ct-email-hint">سيصلك الرد على هذا البريد.</p>
+              <p class="pf-ferr" id="ct-email-err" hidden></p>
+            </div>
+            <div class="pf-field">
+              <label for="ct-subject">الموضوع <span class="ct-opt">(اختياري)</span></label>
+              <input class="pf-in" id="ct-subject" name="subject" type="text" autocomplete="off" maxlength="150" aria-describedby="ct-subject-err">
+              <p class="pf-ferr" id="ct-subject-err" hidden></p>
+            </div>
+            <div class="pf-field">
+              <label for="ct-message">وصف الاستفسار<span class="pf-req" aria-hidden="true">*</span></label>
+              <textarea class="pf-in ct-ta" id="ct-message" name="message" rows="6" maxlength="2000" required aria-describedby="ct-message-hint ct-count ct-message-err"></textarea>
+              <div class="ct-meta">
+                <p class="pf-hint" id="ct-message-hint">اكتب ما تحتاجه بوضوح (١٠ أحرف على الأقل).</p>
+                <p class="ct-count" id="ct-count" dir="ltr">0 / 2000</p>
+              </div>
+              <p class="pf-ferr" id="ct-message-err" hidden></p>
+            </div>
+            <div class="pf-hp" aria-hidden="true">
+              <label for="ct-site">الموقع الإلكتروني (اتركه فارغًا)</label>
+              <input id="ct-site" name="website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <div class="ct-live" aria-live="polite" aria-atomic="true"><div class="pf-msg" id="ct-status" tabindex="-1" hidden></div></div>
+            <button type="submit" class="btn p pf-submit" id="ct-submit">إرسال الرسالة</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="{{root}}/assets/js/platform-api.js" defer></script>
+  <script src="{{root}}/assets/js/contact.js" defer></script>
 </main>

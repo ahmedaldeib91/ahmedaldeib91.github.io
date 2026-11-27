@@ -14,6 +14,9 @@
 | `migrations/004_rls_policies_grants.sql` | صلاحيات الجداول لكل دور (حتى على مستوى الأعمدة) وسياسات RLS الصريحة لكل جدول وكل عملية. |
 | `migrations/005_storage.sql` | دلوا التخزين `course-files` (خاص) و`blog-media` (عام القراءة) وسياسات `storage.objects`. |
 | `migrations/006_admin_user_emails.sql` | (أُضيف مع لوحة المدرب P4) الدالة `public.admin_user_emails()` التي تعيد للمدير فقط بريد كل مستخدم وتأكيده وآخر دخول من `auth.users` (انظر القسم 7). طبقتان: `private.admin_user_emails()` بصلاحية `SECURITY DEFINER` تتحقق من `is_admin()` وتحجب غير المدير بخطأ `42501`، وغلاف عام `SECURITY INVOKER` للـREST. التنفيذ لـ`authenticated` فقط. |
+| `migrations/007_interest_messages_and_subscribers_report.sql` | يضيف لـ`contact_messages` الأعمدة `kind` (`contact`/`interest`) و`course_id` و`user_id` (تكتبها وظيفة `send-mail` بمفتاح الخادم فقط، ولا يملك الزائر/المتدرب صلاحية إدخالها)، والدالة `public.admin_subscribers_report()` للمدير فقط (متدرب لكل صف: الاسم، البريد، الهاتف، الدولة، الحالة، تاريخ التسجيل، آخر دخول، عدد الدورات النشطة، والدورات JSON). سياسات RLS للجدول لم تتغير. |
+| `functions/send-mail/` | وظيفة Edge لإرسال البريد (تواصل، اهتمام بدورة، ترحيب بعد التفعيل). انظر `functions/send-mail/README.md`. |
+| `migrations/008_contact_messages_trusted_edge_insert.sql` | **مطبَّق على القاعدة الفعلية (2026-11-25)**: يجعل مشغّل التواصل يقبل تجزئة IP التي ترسلها وظيفة `send-mail` (بدور `service_role` فقط). بدونه تشترك كل رسائل الوظيفة في حد واحد 5/ساعة. |
 | `tests/rls_security_tests.sql` | اختبارات الأمان (111 حالة) داخل معاملة واحدة تنتهي بـ`ROLLBACK`، فلا يبقى منها أي أثر. |
 
 ## 2. الجداول باختصار

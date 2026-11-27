@@ -2,7 +2,8 @@
    admin-enrollments.js — قسم «الاشتراكات» (#enrollments) في لوحة المدرب
    (١) إضافة اشتراك: اختر الدورة ثم ابحث عن المتدربين بالاسم أو البريد أو الهاتف وحدّد واحدًا أو أكثر واضغط «اشتراك المحدّدين».
        تُنفَّذ الطلبات واحدًا بعد الآخر (كل منح يُسجَّل في سجل التدقيق)؛ من كان مشتركًا يُتخطى، ومن كان اشتراكه ملغى يُعاد تفعيله،
-       وتظهر خلاصة بالأعداد وبأي فشل. الدورة المختارة تبقى بين العمليات لتسريع الإضافة المتتابعة.
+       وتظهر خلاصة بالأعداد وبأي فشل. ولكل اشتراك جديد يُرسَل بريد ترحيب للمتدرب (وظيفة send-mail) أثناء متابعة بقية المنح، وتدخل
+       نتيجته في الخلاصة نفسها (أُرسل كذا وتعذّر كذا)، ولا يُفشل البريدُ الاشتراكَ أبدًا. الدورة المختارة تبقى بين العمليات لتسريع الإضافة المتتابعة.
    (٢) الاشتراكات النشطة: كل الاشتراكات النشطة مع تصفية بالدورة والبحث وترتيب وصفحات، وإلغاء بنافذة تأكيد.
    ===================================================================== */
 (function () {
@@ -96,22 +97,32 @@
         const ids = Array.from(sel);
         const course = st.course;
         const title = A.courseTitle(course);
-        const res = { added: 0, reactivated: 0, exists: 0, failed: [] };
+        const res = { added: 0, reactivated: 0, exists: 0, failed: [], mails: [] };
         for (let i = 0; i < ids.length; i++) {
           if (A.stale(token)) return;
-          try { res[await A.grantEnrollment(ids[i], course)] += 1; } catch (err) {
+          const info = {};
+          try { res[await A.grantEnrollment(ids[i], course, info)] += 1; } catch (err) {
             if (A.isSession(err)) { A.lost('expired'); return; }
             if (A.isForbidden(err)) { A.hooks.forbidden(); }
             res.failed.push(nameOr(dir.byId[ids[i]]));
           }
+          if (info.mail) res.mails.push(info.mail); /* بريد الترحيب يُرسَل أثناء متابعة بقية المنح؛ ننتظرها كلها بعد الحلقة ونعرض تنبيهًا واحدًا */
         }
+        const mails = await Promise.all(res.mails); /* وعود لا تُرفض أبدًا: {mailed, why} */
+        if (A.stale(token)) return;
+        const unsent = mails.filter(function (m) { return !m.mailed; });
         const parts = [];
         if (res.added) parts.push('أُضيف ' + res.added);
         if (res.reactivated) parts.push('أُعيد تفعيل ' + res.reactivated);
         if (res.exists) parts.push('كان مشتركًا ' + res.exists);
         if (res.failed.length) parts.push('تعذّر ' + res.failed.length + ' (' + res.failed.join('، ') + ')');
+        if (mails.length) {
+          const why = unsent.map(function (m) { return m.why; }).filter(function (w, i, all) { return all.indexOf(w) === i; });
+          parts.push('بريد الترحيب: أُرسل ' + (mails.length - unsent.length) + (unsent.length ? ' وتعذّر ' + unsent.length + ' (' + why.join('، ') + ')' : ''));
+        }
         sel.clear();
-        st.summary = { kind: res.failed.length ? 'err' : 'ok', text: 'الدورة «' + title + '»: ' + parts.join(' — ') + '.' };
+        /* فشل البريد وحده لا يُفشل الاشتراك: يظهر التنبيه محايدًا (info) لا أحمر */
+        st.summary = { kind: res.failed.length ? 'err' : unsent.length ? 'info' : 'ok', text: 'الدورة «' + title + '»: ' + parts.join(' — ') + '.' };
         A.announce(st.summary.text);
         await reloadData(); /* يعيد بناء البطاقة فتُعرض الخلاصة (st.summary) في الرسالة الجديدة */
       }));

@@ -320,8 +320,10 @@
                 await A.revokeEnrollment(e.id);
                 A.toast('ok', 'تم إلغاء الاشتراك.');
               } else {
-                const r = await A.grantEnrollment(d.profile.id, e.course_id);
-                A.toast('ok', r === 'exists' ? 'الاشتراك نشط مسبقًا.' : 'تمت إعادة تفعيل الاشتراك.');
+                const info = {};
+                const r = await A.grantEnrollment(d.profile.id, e.course_id, info);
+                const m = info.mail ? await info.mail : null; /* بريد الترحيب: لا يرمي ولا يُفشل الاشتراك */
+                A.toast(m && !m.mailed ? 'info' : 'ok', (r === 'exists' ? 'الاشتراك نشط مسبقًا.' : 'تمت إعادة تفعيل الاشتراك.') + (m ? ' ' + A.mailNote(m) : ''));
               }
               await reload();
             }));
@@ -342,8 +344,10 @@
         const add = A.btn('إضافة الاشتراك', { kind: 'p', small: true, icon: 'plus' });
         add.addEventListener('click', A.run(add, out, async function () {
           ui.clearMsg(out);
-          const r = await A.grantEnrollment(d.profile.id, sel.value);
-          A.toast('ok', r === 'reactivated' ? 'تمت إعادة تفعيل الاشتراك.' : r === 'exists' ? 'الاشتراك نشط مسبقًا.' : 'تمت إضافة الاشتراك، ويظهر الآن في «دوراتي» عند المتدرب.');
+          const info = {};
+          const r = await A.grantEnrollment(d.profile.id, sel.value, info);
+          const m = info.mail ? await info.mail : null; /* بريد الترحيب: لا يرمي ولا يُفشل الاشتراك */
+          A.toast(m && !m.mailed ? 'info' : 'ok', (r === 'reactivated' ? 'تمت إعادة تفعيل الاشتراك.' : r === 'exists' ? 'الاشتراك نشط مسبقًا.' : 'تمت إضافة الاشتراك، ويظهر الآن في «دوراتي» عند المتدرب.') + (m ? ' ' + A.mailNote(m) : ''));
           await reload();
         }));
         kids.push(h('div', { class: 'ad-addenr' }, A.field('إضافة دورة للمتدرب', sel), add));

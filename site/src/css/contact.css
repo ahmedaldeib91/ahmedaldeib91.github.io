@@ -1,0 +1,27 @@
+/* ==========================================================================
+   contact.css — أنماط نموذج «أرسل لنا رسالة» في صفحة /contact/ وحدها، وتحمّلها الصفحة بوسم <link> داخلها بعد platform.css.
+   تعتمد على أصناف platform.css (.pf-sec .pf-wrap .pf-card .pf-form .pf-field .pf-in .pf-hint .pf-ferr .pf-msg .pf-hp .pf-submit)
+   وعلى متغيّرات tokens.css، فتتبدّل مع الوضع الفاتح/الداكن تلقائيًا. كل الأصناف الجديدة تبدأ بـ ct- كي لا تتعارض مع بقية الموقع.
+   ========================================================================== */
+
+.ct-sec{padding-top:44px;padding-bottom:30px}
+.ct-card h2{margin:0 0 8px}
+.ct-lead{margin:0 0 22px}
+
+/* «(اختياري)» بجوار تسمية الحقل */
+.ct-opt{color:var(--mut);font-weight:400;font-size:.92em}
+
+/* وصف الاستفسار: ارتفاع مريح ويتمدّد رأسيًا فقط */
+.ct-ta{min-height:150px;resize:vertical;line-height:1.9}
+
+/* التلميح ومعدّاد الأحرف على سطر واحد، ويلتفّان على الشاشات الضيقة */
+.ct-meta{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:4px 16px}
+.ct-meta .pf-hint{flex:1 1 220px}
+.ct-count{flex:none;margin:0;font:500 13px/1.7 var(--fn);color:var(--mut);direction:ltr}
+
+/* منطقة الحالة الحيّة (aria-live) فوق زر الإرسال: دائمة الوجود وفارغة، والرسالة داخلها تظهر عند الحاجة */
+.ct-live{margin:0}
+.ct-live .pf-msg{margin:0 0 16px}
+.ct-live .pf-msg:focus{outline:none}
+.ct-live .pf-msg a{color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ct-wa{display:block;margin-top:6px}

@@ -16,6 +16,12 @@
    5) (P4) إضافات لوحة المدرب /admin/: rest.upsert/remove/rpc/count، وstorage.upload (XMLHttpRequest لأنه الوحيد الذي يعطي تقدّم الرفع)
       وstorage.remove/publicUrl/publicPath، وvideoEmbed (انتقلت إلى هنا من dashboard.js لتتشارك فيها اللوحتان)، وconfig.url.
       كلها تمر بالجلسة نفسها (تجديد تلقائي وإعادة محاولة)، والصلاحية الحقيقية تقررها سياسات RLS في القاعدة لا هذا الملف.
+   6) (P5) المدونة العامة /blog/: rest.selectPublic، قراءة بلا جلسة بالمفتاح العام وحده (دور anon) فلا تحتاج تسجيل دخول ولا تحوّل إلى /account/.
+      الصلاحية الحقيقية لسياسات RLS (posts_select_anon: المنشور فقط)، وهي للصفحات العامة وحدها؛ بيانات المستخدم تبقى تمر بـ select.
+   7) (P6) البريد: mail.send(payload) يستدعي وظيفة Supabase المنشورة send-mail (POST /functions/v1/send-mail) بأحد ثلاثة إجراءات:
+        contact (زائر بلا جلسة، بلا Authorization) وinterest (متدرب مسجّل) وwelcome (مدير). الإجراءان الأخيران يحملان توكن المستخدم
+        (يُجدَّد تلقائيًا، وعند 401 مرة واحدة ثم يُعاد الطلب). send لا ترمي أبدًا: كل رد (حتى غير 2xx) وكل عطل شبكة يصير كائنًا عاديًا
+        {ok, status, error, mailed, reason, message}؛ وmail.text(res) تحوّل رمز الخطأ إلى رسالة عربية جاهزة للعرض.
    ===================================================================== */
 (function () {
   'use strict';
@@ -350,6 +356,14 @@ async adopt(t) {
       const r = await authed('GET', '/rest/v1/' + table, { query: query });
       return Array.isArray(r.json) ? r.json : [];
     },
+    /* (P5) قراءة عامة بلا جلسة: المفتاح العام وحده (دور anon)، بلا Authorization ولا تجديد ولا تحويل إلى الدخول.
+       الصلاحية الفعلية لسياسات RLS (مثل posts_select_anon: المنشور فقط). للصفحات العامة وحدها؛ بيانات المستخدم تمر بـ select */
+    async selectPublic(table, query) {
+      if (!TABLE_RE.test(table)) throw new ApiError('other', MSG.other, 0, 'bad_table');
+      const res = await request('GET', '/rest/v1/' + table, { query: query });
+      if (!res.ok) throw toError(res.status, res.json);
+      return Array.isArray(res.json) ? res.json : [];
+    },
     async insert(table, row) {
       if (!TABLE_RE.test(table)) throw new ApiError('other', MSG.other, 0, 'bad_table');
       const r = await authed('POST', '/rest/v1/' + table, { body: row, headers: { Prefer: 'return=representation' } });
@@ -489,6 +503,89 @@ async adopt(t) {
     const r = await authed('DELETE', '/storage/v1/object/' + bucket, { body: { prefixes: paths } });
     return Array.isArray(r.json) ? r.json : [];
   }
+
+  /* ---------- 7ب) (P6) البريد: وظيفة send-mail (Supabase Edge Function) ----------
+     الطلب: POST /functions/v1/send-mail بجسم JSON والرأس apikey دائمًا. الإجراءان interest وwelcome يحملان توكن المستخدم
+     (Authorization: Bearer)، أما contact فللزوار بلا جلسة ولا Authorization. الصلاحية الحقيقية تقررها الوظيفة نفسها لا هذا الملف.
+     النتيجة كائن عادي دائمًا ولا يُرمى خطأ (حتى مع ردود غير 2xx وانقطاع الشبكة): {ok, status, error, mailed, reason, message}
+       ok       نجح الطلب (2xx والجسم {ok:true})        error    رمز الخطأ حين ok=false: من الخادم، أو network | config | auth_required ...
+       mailed   أُرسل البريد فعلًا (الرسالة محفوظة في القاعدة حتى لو لم تُرسَل)               reason   سبب عدم الإرسال (mail_not_configured | mail_failed | duplicate ...)
+       message  نص الرسالة الجاهزة للنسخ (إجراء interest فقط)
+     لا تُعرَض للمستخدم أي نصوص من الخادم: mail.text(res) تعيد رسالة عربية جاهزة من رمز الخطأ. */
+  const MAIL_PATH = '/functions/v1/send-mail';
+  const MAIL_TIMEOUT_MS = 30000; /* الوظيفة تحفظ ثم ترسل عبر SMTP، فقد تتجاوز المهلة العامة (٢٠ ثانية) أحيانًا */
+  const MAIL_AUTH = { contact: false, interest: true, welcome: true }; /* الإجراء ← هل يحتاج جلسة مستخدم */
+  const MAIL_CODE = /^[a-z][a-z0-9_]{1,39}$/;
+  const MAIL_KIND = { session: 'auth_required', network: 'network', config: 'config', storage: 'storage', rate: 'rate_limited', forbidden: 'forbidden' }; /* ApiError.kind ← رمز النتيجة */
+  const MAIL_TEXT = {
+    network: MSG.network,
+    config: MSG.config,
+    storage: MSG.storage,
+    auth_required: MSG.session,
+    invalid_token: MSG.session,
+    forbidden: MSG.forbidden,
+    server_error: MSG.server,
+    rate_limited: 'وصل عدد الطلبات إلى الحد المسموح به مؤقتًا. حاول لاحقًا بعد قليل.',
+    account_suspended: 'حسابك موقوف حاليًا. تواصل مع المدرب لمعرفة السبب.',
+    account_has_no_email: 'حسابك لا يحمل بريدًا إلكترونيًا فتعذّر إرسال الطلب. تواصل مع المدرب لتحديث بيانات حسابك.',
+    invalid_email: 'اكتب بريدًا إلكترونيًا صحيحًا، مثل ⁦name@example.com⁩.',
+    invalid_name: 'الاسم طويل جدًا (الحد الأقصى ١٠٠ حرف).',
+    invalid_subject: 'الموضوع طويل جدًا (الحد الأقصى ١٥٠ حرفًا).',
+    invalid_message: 'اكتب وصفًا لاستفسارك بين ١٠ و٢٠٠٠ حرف.',
+    invalid_course_id: 'هذه الدورة غير متاحة الآن. حدّث الصفحة ثم أعد المحاولة.',
+    unknown_course: 'هذه الدورة غير متاحة الآن. حدّث الصفحة ثم أعد المحاولة.',
+    no_active_enrollment: 'لا يوجد اشتراك نشط لهذا المتدرب في هذه الدورة.',
+    invalid_user_id: 'معرّف المتدرب غير صالح.',
+    other: 'تعذّر إرسال الطلب الآن. حاول مرة أخرى بعد قليل.'
+  };
+  /* رمز بديل حين لا يحمل الرد رمزًا مقروءًا (ردّ بوابة أو وكيل بلا JSON) */
+  const mailCodeOf = function (status) {
+    if (status === 401) return 'auth_required';
+    if (status === 403) return 'forbidden';
+    if (status === 429) return 'rate_limited';
+    if (status >= 500) return 'server_error';
+    return 'request_failed';
+  };
+  const mailFail = function (error, status) { return { ok: false, status: status || 0, error: error, mailed: false, reason: '', message: '' }; };
+  /* ردّ الخادم ← كائن موحّد: لا يمر منه إلا ما نعرفه (رموز قصيرة بصيغة محددة ونص الرسالة الجاهزة) */
+  function mailResult(status, j) {
+    const o = j && typeof j === 'object' && !Array.isArray(j) ? j : {};
+    const good = status >= 200 && status < 300;
+    if (good && o.ok === true) {
+      return {
+        ok: true, status: status, error: '', mailed: o.mailed === true,
+        reason: typeof o.reason === 'string' && MAIL_CODE.test(o.reason) ? o.reason : '',
+        message: typeof o.message === 'string' ? o.message.slice(0, 4000) : ''
+      };
+    }
+    if (typeof o.error === 'string' && MAIL_CODE.test(o.error)) return mailFail(o.error, status);
+    return mailFail(good ? 'bad_response' : mailCodeOf(status), status);
+  }
+  const mail = {
+    /* payload: {action:'contact', name?, email, subject?, message, website:''} أو {action:'interest', course_id}
+       أو {action:'welcome', user_id, course_id}. لا ترمي أبدًا (انظر الوصف أعلاه). */
+    async send(payload) {
+      if (!payload || typeof payload !== 'object' || !Object.prototype.hasOwnProperty.call(MAIL_AUTH, payload.action)) return mailFail('invalid_action', 0);
+      try {
+        const o = { body: payload, timeout: MAIL_TIMEOUT_MS };
+        if (MAIL_AUTH[payload.action]) o.token = await accessToken();
+        let res = await request('POST', MAIL_PATH, o);
+        if (res.status === 401 && o.token) { /* التوكن رُفض: نجدّده مرة واحدة ثم نعيد الطلب (كما في authed) */
+          o.token = (await refreshSession(o.token)).access_token;
+          res = await request('POST', MAIL_PATH, o);
+        }
+        return mailResult(res.status, res.json);
+      } catch (e) {
+        if (e instanceof ApiError) return mailFail(MAIL_KIND[e.kind] || 'server_error', e.status);
+        return mailFail('server_error', 0);
+      }
+    },
+    /* رسالة عربية جاهزة للعرض لنتيجة فاشلة (res.error) */
+    text(res) {
+      const code = res && typeof res.error === 'string' ? res.error : '';
+      return Object.prototype.hasOwnProperty.call(MAIL_TEXT, code) ? MAIL_TEXT[code] : MAIL_TEXT.other;
+    }
+  };
 
   /* ---------- 8) أدوات مشتركة ---------- */
   const COUNTRIES = ['السعودية', 'الإمارات', 'الكويت', 'قطر', 'البحرين', 'عُمان', 'اليمن', 'العراق', 'سوريا', 'لبنان', 'الأردن', 'فلسطين',
@@ -807,6 +904,7 @@ win.location.replace(base + '/account/' + (reason ? '?reason=' + encodeURICompon
     auth: Object.freeze(auth),
     rest: Object.freeze(rest),
     storage: Object.freeze({ signedUrl: signedUrl, upload: upload, remove: removeObjects, publicUrl: publicUrl, publicPath: publicPath }),
+    mail: Object.freeze(mail),
     COUNTRIES: COUNTRIES,
     ui: Object.freeze({ h: h, clear: clear, icon: icon, waIcon: waIcon, msg: msg, clearMsg: clearMsg, fieldError: fieldError, setBusy: setBusy, check: check, guard: guard, tabs: tabs, bindStrength: bindStrength, bindReveal: bindReveal }),
     v: Object.freeze(v),

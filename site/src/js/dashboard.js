@@ -12,6 +12,10 @@
      فتقرر سياسات RLS في قاعدة البيانات ما يراه (المحتوى لا يظهر إلا لمن له اشتراك نشط).
    - المسارات بـ hash: «#» = الرئيسية، و«#course=<id>» أو «#course=<id>&tab=files|videos|quiz» = عرض الدورة. تعمل أزرار
      الرجوع والتقدّم في المتصفح، وتُحفظ الدورة المفتوحة عند التحديث.
+   - طلب الاشتراك: زر «اشترك» أو «سجّل اهتمامك» (في بطاقة الدورة وفي صندوق «غير مفعّلة») يستدعي Platform.mail.send({action:'interest'})
+     فيحفظ الخادم الطلب ويبلّغ المدرب بالبريد ويعيد نص رسالة جاهزة. تظهر لوحة تأكيد فيها الرسالة في مربع للقراءة فقط وزر «نسخ الرسالة»
+     وزر «تواصل مع المدرب» (رابط واتساب الشخصي لا يقبل نصًا جاهزًا في الرابط، ولذلك زر النسخ). عند أي عطل غير انتهاء الجلسة تبقى
+     الطريقة القديمة: رابط واتساب برسالة جاهزة (subscribeText)، فلا يعلق المتدرب. الزر يُعطَّل أثناء الإرسال فلا يتكرر الطلب.
    - الخروج: تُفرَّغ الواجهة أولًا (فلا يبقى شيء من البيانات في لقطة الذاكرة السريعة bfcache)، ثم POST /auth/v1/logout
      ويُمسح التخزين، ثم تحويل بـ replace إلى /account/?reason=out. وعند عودة الصفحة من bfcache (pageshow) أو خروج في
      تبويب آخر (حدث storage) أو عودة التبويب إلى الظهور بلا جلسة: تُفرَّغ الواجهة ويُحوَّل إلى /account/.
@@ -42,6 +46,10 @@
   const canOpen = function (id) { return !!S.enrolled[id] && !!S.profile && S.profile.status === 'active'; };
   const courseById = function (id) { return S.courses.filter(function (c) { return c.id === id; })[0] || null; };
   const subscribeText = function (c) { return 'السلام عليكم، أرغب بالاشتراك في دورة «' + c.title_ar + '». بريدي في المنصة: ' + S.email; };
+  const TRAINER_WA = 'https://wa.me/message/WFY6JB3E3WVLL1'; /* احتياطي إن خلا data-wa من الإعداد: صفحة تواصل المدرب الشخصية على واتساب */
+  const trainerUrl = function () { return P.safeUrl(P.config.whatsapp || TRAINER_WA); };
+  const interestLabel = function (c) { return c.status !== 'available' ? 'سجّل اهتمامك' : 'اشترك'; };
+  let intSeq = 0; /* يميّز معرّفات عناصر لوحات الطلب المتعددة في الصفحة */
 
   /* ---------- مكوّنات صغيرة ---------- */
   function loadingBlock(text) {
@@ -103,6 +111,109 @@
     Array.prototype.forEach.call(form.querySelectorAll('.pf-in'), function (inp) {
       inp.addEventListener('input', function () { if (inp.getAttribute('aria-invalid')) ui.fieldError(inp, ''); });
     });
+  }
+
+  /* ---------- طلب الاشتراك / تسجيل الاهتمام (وظيفة send-mail، الإجراء interest) ---------- */
+  /* نسخ نص إلى الحافظة: واجهة الحافظة الحديثة أولًا (تحتاج سياقًا آمنًا: https أو localhost)، ثم تحديد النص وexecCommand بديلًا.
+     عند فشل الاثنين يبقى النص محدّدًا في المربع فينسخه المتدرب يدويًا. */
+  async function copyText(text, ta) {
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (e) { /* ممنوع أو غير مدعوم: ننتقل إلى البديل */ }
+    try {
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      return !!document.execCommand('copy');
+    } catch (e) { return false; }
+  }
+
+  /* يعيد {btn, slot}: الزر يوضع حيث يريد المستدعي، وslot (الحالة واللوحة) يوضع بعده مباشرة وهو مخفي حتى يوجد ما يُعرض.
+     رسائل الحالة والخطأ بـ ui.msg (role=status للتقدّم وrole=alert للخطأ كبقية الصفحة)، ولوحة النجاح تأخذ التركيز فتُقرأ فورًا. */
+  function interestControl(c) {
+    const live = h('div', { class: 'pf-msg', hidden: true });
+    const extra = h('div', { class: 'pf-int-extra' });
+    const slot = h('div', { class: 'pf-int', hidden: true }, live, extra);
+    const btn = h('button', { type: 'button', class: 'btn p' }, ui.waIcon(), interestLabel(c));
+    const say = function (kind, text) {
+      slot.hidden = false;
+      ui.msg(live, kind, text);
+    };
+
+    /* الطريق القديم عند الفشل: رابط واتساب برسالة جاهزة، كي لا يعلق المتدرب */
+    function showFallback() {
+      const wa = P.waLink(subscribeText(c));
+      if (!wa) return;
+      extra.appendChild(h('div', { class: 'pf-int-fb' },
+        h('p', { class: 'pf-int-sub', text: 'يمكنك مراسلة المدرب مباشرة برسالة جاهزة على واتساب:' }),
+        h('div', { class: 'pf-int-act' }, h('a', { class: 'btn s', href: wa, target: '_blank', rel: 'noopener noreferrer' }, ui.waIcon(), 'اكتب للمدرب عبر واتساب'))));
+    }
+
+    function showResult(res) {
+      const n = ++intSeq;
+      const headId = 'int-h-' + n;
+      const taId = 'int-ta-' + n;
+      const sub = res.mailed
+        ? 'لتسريع الاتفاق أرسل للمدرب الرسالة نفسها عبر واتساب: انسخها ثم افتح المحادثة والصقها.'
+        : res.reason === 'duplicate'
+          ? 'سبق أن أرسلتَ طلبًا لهذه الدورة قبل قليل فلم نكرّره. يمكنك نسخ الرسالة وإرسالها للمدرب عبر واتساب.'
+          : 'حُفظ طلبك لدينا. وللتأكد من وصوله أرسل للمدرب الرسالة نفسها عبر واتساب: انسخها ثم افتح المحادثة والصقها.';
+      const head = h('p', { class: 'pf-int-h', id: headId, tabindex: '-1' }, icon('check'), res.mailed ? 'تم إرسال طلبك إلى المدرب' : 'تم حفظ طلبك');
+      /* النص يأتي جاهزًا من الخادم (value لا HTML)؛ وإن غاب نركّب الرسالة القديمة محليًا */
+      const ta = h('textarea', { class: 'pf-in pf-int-ta', id: taId, readonly: true, rows: 6, 'aria-describedby': headId });
+      ta.value = res.message || subscribeText(c);
+      const state = h('p', { class: 'pf-int-state', role: 'status', 'aria-live': 'polite' });
+      const copy = h('button', { type: 'button', class: 'btn s' }, 'نسخ الرسالة');
+      copy.addEventListener('click', async function () {
+        const ok = await copyText(ta.value, ta);
+        state.className = 'pf-int-state' + (ok ? '' : ' err');
+        state.textContent = ok ? 'تم نسخ الرسالة. الصقها في محادثة واتساب مع المدرب.' : 'تعذّر النسخ تلقائيًا. الرسالة محدّدة الآن، فانسخها يدويًا.';
+      });
+      const wa = trainerUrl();
+      const contact = wa ? h('a', { class: 'btn p', href: wa, target: '_blank', rel: 'noopener noreferrer' }, ui.waIcon(), 'تواصل مع المدرب') : null;
+      const close = h('button', { type: 'button', class: 'btn s' }, 'إغلاق');
+      close.addEventListener('click', function () {
+        clear(extra);
+        slot.hidden = true;
+        btn.hidden = false;
+        try { btn.focus(); } catch (e) { /* تجاهل */ }
+      });
+      ui.clearMsg(live);
+      clear(extra);
+      slot.hidden = false;
+      extra.appendChild(h('div', { class: 'pf-int-panel', role: 'group', 'aria-labelledby': headId },
+        head,
+        h('p', { class: 'pf-int-sub', text: sub }),
+        h('label', { class: 'pf-lab', for: taId, text: 'نص الرسالة الجاهز' }),
+        ta, state,
+        h('div', { class: 'pf-int-act' }, copy, contact, close)));
+      btn.hidden = true;
+      ta.style.height = 'auto'; /* يتمدّد المربع ليظهر النص كاملًا بلا شريط تمرير داخلي (بحدّ أقصى) ويبقى قابلًا للسحب رأسيًا */
+      ta.style.height = Math.min(ta.scrollHeight + 2, 360) + 'px';
+      try { head.focus(); } catch (e) { /* تجاهل */ }
+    }
+
+    const send = ui.guard(btn, live, async function () {
+      clear(extra);
+      say('info', 'جارٍ إرسال طلبك إلى المدرب…');
+      const res = await P.mail.send({ action: 'interest', course_id: c.id });
+      if (!slot.isConnected) return false; /* تبدّل العرض أو خرج المتدرب أثناء الطلب */
+      if (res.ok) { showResult(res); return false; }
+      if (res.error === 'auth_required' || res.error === 'invalid_token') { wipe(); P.goLogin('expired'); return false; }
+      say('err', P.mail.text(res));
+      showFallback();
+      return false;
+    });
+    btn.addEventListener('click', async function (e) {
+      await send(e); /* بعد انتهاء المعالج يكون الزر قد فُكّ تعطيله */
+      if (!slot.isConnected || btn.hidden) return;
+      const a = document.activeElement;
+      if (!a || a === document.body) { try { btn.focus(); } catch (err) { /* تجاهل */ } } /* التعطيل يُسقط التركيز: نعيده لمن يستعمل لوحة المفاتيح */
+    });
+    return { btn: btn, slot: slot };
   }
 
   /* خطأ أثناء عملية: انتهاء الجلسة يحوّل إلى الدخول، وغيره يظهر في عنصر الرسالة */
@@ -200,17 +311,20 @@
     const enrolled = !!S.enrolled[c.id];
     const soon = c.status !== 'available';
     let act = null;
+    let slot = null; /* حالة طلب الاشتراك ولوحة الرسالة الجاهزة (تظهر تحت الزر) */
     if (enrolled) act = h('a', { class: 'btn p', href: '#course=' + c.id }, 'افتح الدورة');
     else {
-      const wa = P.waLink(subscribeText(c));
-      if (wa) act = h('a', { class: 'btn p', href: wa, target: '_blank', rel: 'noopener noreferrer' }, ui.waIcon(), soon ? 'سجّل اهتمامك' : 'اشترك');
+      const ctl = interestControl(c);
+      act = ctl.btn;
+      slot = ctl.slot;
     }
     return h('article', { class: 'card pf-course' },
       h('div', { class: 'pf-ct' },
         h('h3', { text: c.title_ar }),
         enrolled ? h('span', { class: 'st ok', text: 'مشترك' }) : h('span', { class: soon ? 'st soon' : 'st ok', text: soon ? 'قريبًا' : 'متاحة الآن' })),
       h('div', { class: 'pf-en', text: c.title_en }),
-      h('div', { class: 'pf-act' }, act));
+      h('div', { class: 'pf-act' }, act),
+      slot);
   }
 
   function sectionMine() {
@@ -228,7 +342,7 @@
   function sectionAvail() {
     const sec = h('section', { class: 'pf-block', id: 'sec-avail', 'aria-labelledby': 'h-avail' },
       h('h2', { id: 'h-avail', text: 'الدورات المتاحة' }),
-      h('p', { class: 'sub', text: 'اضغط «اشترك» لفتح محادثة واتساب مع المدرب برسالة جاهزة تحمل اسم الدورة وبريدك، وبعد الاتفاق يفعّل الدورة في حسابك.' }));
+      h('p', { class: 'sub', text: 'اضغط «اشترك» أو «سجّل اهتمامك» فيصل طلبك إلى المدرب مع رسالة جاهزة تنسخها وترسلها له عبر واتساب، وبعد الاتفاق يفعّل الدورة في حسابك.' }));
     if (!S.courses.length) sec.appendChild(emptyBox('لا توجد دورات متاحة حاليًا', 'ستظهر هنا الدورات فور نشرها.'));
     else sec.appendChild(h('div', { class: 'pf-grid' }, S.courses.map(cardAvail)));
     return sec;
@@ -379,14 +493,15 @@
   /* ---------- عرض الدورة ---------- */
   function lockedBox(c) {
     const suspended = S.profile.status !== 'active';
-    const wa = P.waLink(subscribeText(c));
+    const ctl = suspended ? null : interestControl(c);
     return h('div', { class: 'pf-empty' },
       icon('lock'),
       h('b', { text: suspended ? 'حسابك موقوف حاليًا' : 'هذه الدورة غير مفعّلة في حسابك' }),
       h('p', { text: suspended
         ? 'تواصل مع المدرب لمعرفة السبب وإعادة تفعيل حسابك.'
-        : 'للاشتراك فيها تواصل مع المدرب عبر واتساب، وبعد الاتفاق يفعّلها في حسابك فتظهر لك ملفاتها وفيديوهاتها وأسئلتها المحاكية.' }),
-      !suspended && wa ? h('a', { class: 'btn p', href: wa, target: '_blank', rel: 'noopener noreferrer' }, ui.waIcon(), 'اشترك عبر واتساب') : null);
+        : 'للاشتراك فيها اضغط «' + interestLabel(c) + '» فيصل طلبك إلى المدرب مع رسالة جاهزة ترسلها له عبر واتساب، وبعد الاتفاق يفعّلها في حسابك فتظهر لك ملفاتها وفيديوهاتها وأسئلتها المحاكية.' }),
+      ctl ? ctl.btn : null,
+      ctl ? ctl.slot : null);
   }
 
   function fileItem(it) {

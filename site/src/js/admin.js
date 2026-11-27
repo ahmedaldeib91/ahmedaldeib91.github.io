@@ -10,8 +10,9 @@
    - انتهاء الجلسة نهائيًا ← /account/?reason=expired . الخروج ← يُفرَّغ المحتوى أولًا ثم يُبطَل التوكن ثم /account/?reason=out
      (وكذلك عند الخروج من تبويب آخر أو عودة الصفحة من الذاكرة السريعة بلا جلسة).
 
-   التوجيه (hash): #stats #trainees #trainees/<uuid> #enrollments #courses #courses/<id>[/videos|/questions] #messages[/<uuid>]
-   #blog #blog/new #blog/<uuid> #settings. قائمة الأقسام روابط <nav aria-label> مع aria-current="page" (والتبويبات الداخلية
+   التوجيه (hash): #stats #trainees #trainees/<uuid> #enrollments #subscribers #courses #courses/<id>[/videos|/questions] #messages[/<uuid>]
+   #blog #blog/new #blog/<uuid> #settings #qbank[/<course>/questions|taxonomy|staff|new|edit/<uuid>|copy/<uuid>] (انظر admin-qbank.js).
+   قائمة الأقسام روابط <nav aria-label> مع aria-current="page" (والتبويبات الداخلية
    في الدورات بـ ARIA tablist)، وبعد كل انتقال يُنقل التركيز إلى عنوان القسم ويُعلَن للقارئ الشاشي.
    ===================================================================== */
 (function () {
@@ -35,7 +36,9 @@
     ['stats', 'الإحصاءات', 'chart'],
     ['trainees', 'المتدربون', 'users'],
     ['enrollments', 'الاشتراكات', 'userplus'],
+    ['subscribers', 'المشتركون', 'file'],
     ['courses', 'الدورات', 'book'],
+    ['qbank', 'بنك الأسئلة', 'quiz'],
     ['messages', 'الرسائل', 'mail'],
     ['blog', 'المدونة', 'pen'],
     ['settings', 'الإعدادات', 'gear']
@@ -195,7 +198,13 @@
     P.goLogin('out');
   });
 
-  window.addEventListener('hashchange', route);
+  /* حارس مغادرة اختياري (A.leaveGuard) يضعه من يملك تغييرات غير محفوظة (محرر السؤال): يُستدعى قبل كل توجيه ناتج عن تغيّر الـhash ويعيد true لإيقافه.
+     استدعاءات A.route() المباشرة لا يعترضها. لا نعتمد على ترتيب مستمعي hashchange الأخرى. */
+  A.leaveGuard = null;
+  window.addEventListener('hashchange', function () {
+    if (typeof A.leaveGuard === 'function' && A.leaveGuard() === true) return;
+    route();
+  });
   window.addEventListener('storage', function (e) { /* خروج في تبويب آخر */
     if ((e.key === P.session.key || e.key === null) && !P.session.has()) { wipe(); P.goLogin('out'); }
   });
