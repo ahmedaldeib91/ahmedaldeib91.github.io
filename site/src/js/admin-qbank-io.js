@@ -21,9 +21,9 @@
   const norm = function (t) { return String(t == null ? '' : t).replace(/\r\n?/g, '\n').replace(/^﻿/, ''); };
   const clip = function (t, n) { const a = Array.from(String(t || '').replace(/\s+/g, ' ').trim()); return a.length > n ? a.slice(0, n).join('') + '…' : a.join(''); };
   const UNSUPPORTED = {
-    shortanswer: 'إجابة قصيرة', essay: 'مقالي', numerical: 'رقمي', multianswer: 'ملء الفراغات (Cloze)', cloze: 'ملء الفراغات (Cloze)',
+    multianswer: 'ملء الفراغات (Cloze)', cloze: 'ملء الفراغات (Cloze)',
     ddmatch: 'مطابقة بالسحب', ddwtos: 'سحب كلمات', ddimageortext: 'سحب على صورة', ddmarker: 'نقر على صورة', gapselect: 'اختيار فراغات',
-    calculated: 'محسوب', calculatedmulti: 'محسوب متعدد', calculatedsimple: 'محسوب', match: 'مطابقة قديمة', ordering: 'ترتيب'
+    calculated: 'محسوب', calculatedmulti: 'محسوب متعدد', calculatedsimple: 'محسوب', match: 'مطابقة قديمة'
   };
 
   /* ---------- بناء حالة سؤال ---------- */
@@ -48,6 +48,17 @@
       (o.pairs || []).forEach(function (p, i) { r++; const id = 'r' + r; s.right.push(M.mkOpt(id, p[1])); s.pairs['l' + (i + 1)] = id; });
       (o.extraRight || []).forEach(function (t) { r++; s.right.push(M.mkOpt('r' + r, t)); });
       s.scoring = o.scoring || 'all_or_nothing';
+    } else if (o.type === 'short_answer') {
+      s.tbAnswers = (o.answers || []).join('\n'); s.tbCase = !!o.cs;
+    } else if (o.type === 'numerical') {
+      s.tbValue = String(o.value); s.tbTol = o.tol == null ? '' : String(o.tol); s.tbMode = 'absolute'; s.tbUnit = o.unit || '';
+    } else if (o.type === 'essay') {
+      s.tbMinw = o.minw == null ? '' : String(o.minw); s.tbMaxw = o.maxw == null ? '' : String(o.maxw); s.tbRubric = o.rubric || ''; s.tbModel = o.model || '';
+    } else if (o.type === 'ordering') {
+      s.options = (o.options || []).map(function (t, i) { return M.mkOpt(LETTERS.charAt(i) || ('o' + i), t, (o.expls || [])[i] || ''); });
+      s.scoring = o.scoring || 'all_or_nothing';
+    } else if (o.type === 'fill_blank') {
+      s.tbFill = o.fill || {}; s.tbCase = !!o.cs; s.scoring = o.scoring || 'all_or_nothing';
     } else {
       s.options = (o.options || []).map(function (t, i) { return M.mkOpt(LETTERS.charAt(i) || ('o' + i), t, (o.expls || [])[i] || ''); });
       s.correct = (o.correct || []).map(function (i) { return LETTERS.charAt(i); });
@@ -156,8 +167,18 @@
       const gi = body.indexOf('####');
       if (gi >= 0) { general = unesc(body.slice(gi + 4)).trim(); body = body.slice(0, gi); }
       const b = body.trim();
-      if (!b) return unsupported(it, 'مقالي (كتلة إجابات فارغة)');
-      if (b.charAt(0) === '#') return unsupported(it, 'رقمي');
+      if (!b) return done(it, { type: 'essay', stem: stem, expl: general });
+      if (b.charAt(0) === '#') {
+        const body2 = b.slice(1).replace(/^=/, '').split(/\s*=\s*/)[0].replace(/#[\s\S]*$/, '').trim();
+        const nn = function (x) { return A.latinDigits(String(x)).replace(/[٫,]/g, '.').trim(); };
+        let val; let tol = null;
+        const rg = /^(\S+)\s*\.\.\s*(\S+)$/.exec(body2);
+        if (rg) { const lo = Number(nn(rg[1])); const hi = Number(nn(rg[2])); if (Number.isFinite(lo) && Number.isFinite(hi) && hi >= lo) { val = (lo + hi) / 2; tol = (hi - lo) / 2; } }
+        else { const cm = /^([^:]+)(?::(.+))?$/.exec(body2); if (cm) { val = Number(nn(cm[1])); tol = cm[2] ? Number(nn(cm[2])) : null; } }
+        if (!Number.isFinite(val) || (tol !== null && !Number.isFinite(tol)) || tol < 0) { it.errs.push('تعذّرت قراءة الإجابة الرقمية.'); return; }
+        if (b.indexOf('=', 1) > 0) it.warns.push('عدة إجابات رقمية: اعتُمدت الأولى فقط.');
+        return done(it, { type: 'numerical', stem: stem, value: val, tol: tol, expl: general });
+      }
       const tf = /^(TRUE|FALSE|T|F)\s*((?:#[\s\S]*)?)$/i.exec(b);
       if (tf) {
         const fbs = tf[2] ? tf[2].split('#').slice(1).map(function (x) { return unesc(x).trim(); }) : [];
@@ -198,7 +219,7 @@
         if (pairs.length < 2) { it.errs.push('المطابقة تحتاج زوجين على الأقل.'); return; }
         return done(it, { type: 'matching', stem: stem, pairs: pairs, extraRight: extra, expl: general });
       }
-      if (parts.every(function (p) { return p.k === '='; })) return unsupported(it, 'إجابة قصيرة');
+      if (parts.every(function (p) { return p.k === '='; })) return done(it, { type: 'short_answer', stem: stem, answers: parts.map(function (p) { return unesc(p.raw).trim(); }).filter(Boolean), expl: general });
       const texts = parts.map(function (p) { return unesc(p.raw).trim(); });
       const correct = [];
       let weighted = false;
@@ -245,7 +266,7 @@
       it.title = clip(name || stem, 60);
       if (type === 'description') { it.errs.push('نص وصفي (ليس سؤالًا): تُجوهل.'); return; }
       if (UNSUPPORTED[type]) return unsupported(it, UNSUPPORTED[type]);
-      if (['multichoice', 'truefalse', 'matching'].indexOf(type) === -1) return unsupported(it, type || 'غير معروف');
+      if (['multichoice', 'truefalse', 'matching', 'shortanswer', 'numerical', 'essay'].indexOf(type) === -1) return unsupported(it, type || 'غير معروف');
       if (!stem) { it.errs.push('نص السؤال فارغ.'); return; }
       const general = txt(first(q, 'generalfeedback'), imgs);
       const fbOk = txt(first(q, 'correctfeedback'), imgs);
@@ -274,6 +295,19 @@
         const v = right ? txt(right, imgs).toLowerCase() : '';
         if (v !== 'true' && v !== 'false') { it.errs.push('تعذّر تحديد الإجابة (true/false).'); return; }
         return done(it, Object.assign(base, { type: 'true_false', tf: v }));
+      }
+      if (type === 'essay') return done(it, Object.assign(base, { type: 'essay', rubric: txt(first(q, 'graderinfo'), imgs) }));
+      if (type === 'shortanswer') {
+        const answers = kids(q, 'answer').filter(function (a) { return Number(a.getAttribute('fraction')) > 0; }).map(function (a) { return txt(a, imgs); }).filter(Boolean);
+        if (!answers.length) { it.errs.push('لا توجد إجابة مقبولة (fraction موجب).'); return; }
+        return done(it, Object.assign(base, { type: 'short_answer', answers: answers, cs: ((first(q, 'usecase') || {}).textContent || '').trim() === '1' }));
+      }
+      if (type === 'numerical') {
+        const best = kids(q, 'answer').filter(function (a) { return Number(a.getAttribute('fraction')) > 0; })[0];
+        const vv = best ? Number(A.latinDigits(txt(best, imgs)).replace(/[٫,]/g, '.')) : NaN;
+        if (!Number.isFinite(vv)) { it.errs.push('تعذّرت قراءة القيمة الرقمية.'); return; }
+        const tl = best ? Number(((first(best, 'tolerance') || {}).textContent || '').trim()) : NaN;
+        return done(it, Object.assign(base, { type: 'numerical', value: vv, tol: Number.isFinite(tl) ? tl : null }));
       }
       /* matching */
       const pairs = [];
@@ -320,7 +354,9 @@
     mcq_single: 'mcq_single', single: 'mcq_single', mcq: 'mcq_single', 'اختيار واحد': 'mcq_single', 'اختيار من متعدد': 'mcq_single',
     multi_response: 'multi_response', multiple: 'multi_response', multi: 'multi_response', 'اختيار متعدد': 'multi_response',
     true_false: 'true_false', tf: 'true_false', truefalse: 'true_false', 'صح/خطأ': 'true_false', 'صح أو خطأ': 'true_false',
-    matching: 'matching', match: 'matching', 'مطابقة': 'matching'
+    matching: 'matching', match: 'matching', 'مطابقة': 'matching',
+    short_answer: 'short_answer', short: 'short_answer', 'إجابة قصيرة': 'short_answer', numerical: 'numerical', numeric: 'numerical', 'رقمي': 'numerical',
+    essay: 'essay', 'مقالي': 'essay', ordering: 'ordering', order: 'ordering', 'ترتيب': 'ordering', fill_blank: 'fill_blank', fill: 'fill_blank', 'ملء الفراغات': 'fill_blank'
   };
   const DIFF_ALIAS = { easy: 'easy', medium: 'medium', hard: 'hard', 'سهل': 'easy', 'متوسط': 'medium', 'صعب': 'hard' };
   const TF_ALIAS = { true: 'true', t: 'true', '1': 'true', yes: 'true', 'صح': 'true', 'صحيح': 'true', false: 'false', f: 'false', '0': 'false', no: 'false', 'خطأ': 'false', 'خطا': 'false' };
@@ -338,7 +374,7 @@
     const optCols = [];
     head.forEach(function (h, i) { const m = /^(?:option|choice|opt)_?([a-o])$/.exec(h) || /^([a-o])$/.exec(h); if (m) optCols.push({ i: i, k: m[1] }); });
     optCols.sort(function (a, b) { return a.k < b.k ? -1 : 1; });
-    if (ci.q < 0 || !optCols.length) { const it = item(1, '', 'csv'); it.errs.push('أعمدة غير صحيحة: المطلوب على الأقل question وoption_a وoption_b (راجع القالب).'); return [it]; }
+    if (ci.q < 0 || (!optCols.length && ci.type < 0)) { const it = item(1, '', 'csv'); it.errs.push('أعمدة غير صحيحة: المطلوب على الأقل question وoption_a وoption_b (راجع القالب).'); return [it]; }
     const cell = function (r, i) { return i >= 0 && i < r.length ? String(r[i]).trim() : ''; };
     const out = [];
     for (let ri = 1; ri < rows.length; ri++) {
@@ -349,6 +385,7 @@
       it.title = clip(stem, 60);
       if (!stem) { it.errs.push('نص السؤال فارغ.'); continue; }
       const opts = optCols.map(function (c) { return cell(r, c.i); }).filter(Boolean);
+      const optsAll = optCols.map(function (c) { return cell(r, c.i); });
       const corr = cell(r, ci.correct);
       const tRaw = cell(r, ci.type).toLowerCase();
       let type = tRaw ? TYPE_ALIAS[tRaw] : '';
@@ -364,7 +401,27 @@
       const common = { type: type, stem: stem, expl: cell(r, ci.expl), fbOk: cell(r, ci.fbOk), fbBad: cell(r, ci.fbBad), difficulty: diff || undefined };
       const ps = cell(r, ci.pts);
       if (ps) { const v = M.decimal(ps); if (!(v > 0)) { it.errs.push('الدرجة غير صالحة: «' + ps + '».'); continue; } common.points = v; }
-      if (type === 'true_false') {
+      if (type === 'short_answer') {
+        if (!opts.length) { it.errs.push('اكتب الإجابات المقبولة في أعمدة الخيارات (إجابة في كل عمود).'); continue; }
+        done(it, Object.assign(common, { answers: opts, cs: /^(1|true|yes)$/i.test(corr) }));
+      } else if (type === 'numerical') {
+        const vv = Number(A.latinDigits(opts[0] || corr).replace(/[٫,]/g, '.'));
+        const tt = opts[1] ? Number(A.latinDigits(opts[1]).replace(/[٫,]/g, '.')) : null;
+        if (!Number.isFinite(vv) || (tt !== null && (!Number.isFinite(tt) || tt < 0))) { it.errs.push('الرقمي: القيمة في option_a والهامش (اختياري) في option_b كأرقام.'); continue; }
+        done(it, Object.assign(common, { value: vv, tol: tt, unit: opts[2] || '' }));
+      } else if (type === 'essay') {
+        done(it, Object.assign(common, { rubric: opts[0] || '', model: opts[1] || '' }));
+      } else if (type === 'ordering') {
+        if (opts.length < 2) { it.errs.push('الترتيب يحتاج عنصرين على الأقل بالترتيب الصحيح في أعمدة الخيارات.'); continue; }
+        done(it, Object.assign(common, { options: opts, scoring: /^partial$/i.test(corr) ? 'partial' : 'all_or_nothing' }));
+      } else if (type === 'fill_blank') {
+        const ids = [];
+        String(stem).replace(/\{\{([a-z0-9_-]{1,16})\}\}/g, function (m, id) { ids.push(id); return m; });
+        if (!ids.length) { it.errs.push('ملء الفراغات: ضع علامات {{b1}} {{b2}} في نص السؤال.'); continue; }
+        const fill = {};
+        ids.forEach(function (id, i) { fill[id] = String(optsAll[i] || '').split('|').map(function (x) { return x.trim(); }).filter(Boolean).join('\n'); });
+        done(it, Object.assign(common, { fill: fill, scoring: /^partial$/i.test(corr) ? 'partial' : 'all_or_nothing' }));
+      } else if (type === 'true_false') {
         const v = TF_ALIAS[corr.toLowerCase()];
         if (!v) { it.errs.push('الإجابة الصحيحة لصح/خطأ: true أو false (أو صح/خطأ).'); continue; }
         done(it, Object.assign(common, { tf: v }));
@@ -438,6 +495,9 @@
   const correctIds = function (s) { return s.type === 'true_false' ? [s.tf] : s.correct; };
   function giftEsc(t) { return txtOf(t).replace(/\\/g, '\\\\').replace(/([~=#{}:])/g, '\\$1').replace(/\n/g, '\\n'); }
 
+  const splitLines = function (t) { return String(t == null ? '' : t).split('\n').map(function (x) { return x.trim(); }).filter(Boolean); };
+  const numStr = function (t) { return A.latinDigits(String(t == null ? '' : t)).replace(/[٫,]/g, '.').replace(/\s+/g, '').trim(); };
+  const uniqIds = function (stem) { const out = []; String(stem || '').replace(/\{\{([a-z0-9_-]{1,16})\}\}/g, function (m, id) { if (out.indexOf(id) === -1) out.push(id); return m; }); return out; };
   function toAiken(states) {
     const out = [];
     let skipped = 0;
@@ -475,6 +535,15 @@
           const ok = s.correct.indexOf(o.id) !== -1;
           return '~%' + (ok ? w : (s.scoring === 'partial' ? '0' : '-100')) + '%' + giftEsc(o.text) + (o.expl ? '#' + giftEsc(o.expl) : '');
         }).join(' ');
+      } else if (s.type === 'short_answer') {
+        body = splitLines(s.tbAnswers).map(function (a) { return '=' + giftEsc(a); }).join(' ');
+      } else if (s.type === 'numerical') {
+        const v = Number(numStr(s.tbValue));
+        const tl = s.tbTol.trim() === '' ? 0 : Number(numStr(s.tbTol));
+        const abs = s.tbMode === 'percent' ? Math.abs(v) * tl / 100 : tl;
+        body = '#' + v + (abs ? ':' + abs : '');
+      } else if (s.type === 'essay') {
+        body = '';
       } else if (s.type === 'matching') {
         body = s.left.map(function (l) { const r = s.right.filter(function (x) { return x.id === s.pairs[l.id]; })[0]; return '=' + giftEsc(l.text) + ' -> ' + giftEsc(r ? r.text : ''); }).join(' ');
       } else { skipped++; return; }
@@ -507,6 +576,15 @@
         out.push(parts.join('') + '</question>');
       } else if (s.type === 'true_false') {
         out.push(head.replace('TYPE', 'truefalse') + '<answer fraction="' + (s.tf === 'true' ? '100' : '0') + '" format="moodle_auto_format"><text>true</text>' + fb(s.tfExplTrue) + '</answer><answer fraction="' + (s.tf === 'false' ? '100' : '0') + '" format="moodle_auto_format"><text>false</text>' + fb(s.tfExplFalse) + '</answer></question>');
+      } else if (s.type === 'short_answer') {
+        out.push(head.replace('TYPE', 'shortanswer') + '<usecase>' + (s.tbCase ? '1' : '0') + '</usecase>' + splitLines(s.tbAnswers).map(function (a) { return '<answer fraction="100" format="plain_text"><text>' + xe(a) + '</text>' + fb('') + '</answer>'; }).join('') + '</question>');
+      } else if (s.type === 'numerical') {
+        const v = Number(numStr(s.tbValue));
+        const tl = s.tbTol.trim() === '' ? 0 : Number(numStr(s.tbTol));
+        const abs = s.tbMode === 'percent' ? Math.abs(v) * tl / 100 : tl;
+        out.push(head.replace('TYPE', 'numerical') + '<answer fraction="100" format="plain_text"><text>' + v + '</text><tolerance>' + abs + '</tolerance>' + fb('') + '</answer><unitgradingtype>0</unitgradingtype><unitpenalty>0.1</unitpenalty><showunits>3</showunits><unitsleft>0</unitsleft></question>');
+      } else if (s.type === 'essay') {
+        out.push(head.replace('TYPE', 'essay') + '<responseformat>editor</responseformat><responserequired>1</responserequired><responsefieldlines>15</responsefieldlines><attachments>0</attachments><graderinfo format="html">' + cd(s.tbRubric ? html(s.tbRubric) : '') + '</graderinfo></question>');
       } else if (s.type === 'matching') {
         const parts = [head.replace('TYPE', 'matching'), '<shuffleanswers>true</shuffleanswers>'];
         s.left.forEach(function (l) { const r = s.right.filter(function (x) { return x.id === s.pairs[l.id]; })[0]; parts.push('<subquestion format="html">' + cd(html(l.text)) + '<answer>' + cd(r ? r.text : '') + '</answer></subquestion>'); });
@@ -526,6 +604,11 @@
       let opts = [];
       if (s.type === 'true_false') { row.correct = s.tf; }
       else if (s.type === 'matching') { opts = s.left.map(function (l) { const r = s.right.filter(function (x) { return x.id === s.pairs[l.id]; })[0]; return l.text + '=>' + (r ? r.text : ''); }); s.right.forEach(function (r) { if (s.left.every(function (l) { return s.pairs[l.id] !== r.id; })) opts.push('=>' + r.text); }); }
+      else if (s.type === 'short_answer') { opts = splitLines(s.tbAnswers); row.correct = s.tbCase ? 'true' : ''; }
+      else if (s.type === 'numerical') { opts = [numStr(s.tbValue), s.tbTol.trim() === '' ? '' : (s.tbMode === 'percent' ? String(Math.abs(Number(numStr(s.tbValue))) * Number(numStr(s.tbTol)) / 100) : numStr(s.tbTol)), s.tbUnit]; }
+      else if (s.type === 'essay') { opts = [s.tbRubric, s.tbModel]; }
+      else if (s.type === 'ordering') { opts = s.options.map(function (o) { return o.text; }); row.correct = s.scoring; }
+      else if (s.type === 'fill_blank') { opts = uniqIds(s.stem).map(function (id) { return splitLines(s.tbFill[id]).join('|'); }); row.correct = s.scoring; }
       else if (s.type === 'mcq_single' || s.type === 'multi_response') {
         opts = s.options.map(function (o) { return o.text; });
         row.correct = s.options.map(function (o, i) { return s.correct.indexOf(o.id) !== -1 ? String.fromCharCode(65 + i) : ''; }).filter(Boolean).join(';');
