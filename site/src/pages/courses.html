@@ -5,7 +5,7 @@
     <div class="stagebox"><div class="arc" id="arcC"></div><div class="cinfo" id="infoC"></div><div class="ctl" id="ctlC"></div></div>
     <h2 style="margin-top:60px" class="reveal">كل الدورات</h2>
     <div class="clist" id="clist">
-{{#each courses.courses}}<div class="cl reveal"><img src="/assets/badges/{{this.badge}}" alt=""><div><h3>{{this.titleAr}}</h3><small>{{this.subtitleEn}}</small><span class="st {{#ifeq this.status "available"}}ok{{else}}soon{{/ifeq}}">{{@statusAr}}</span><br><a class="btn s" target="_blank" rel="noopener" href="{{site.whatsapp}}">{{@ctaShortAr}}</a>{{#if this.page}} <a class="btn s" href="/courses/{{this.page}}/">تفاصيل الدورة</a>{{/if}}</div></div>
+{{#each courses.courses}}<div class="cl reveal"><img src="/assets/badges/{{this.badge}}" alt=""><div><h3>{{this.titleAr}}</h3><small>{{this.subtitleEn}}</small><span class="st {{#ifeq this.status "available"}}ok{{else}}soon{{/ifeq}}">{{@statusAr}}</span><br>{{#if this.payUrl}}<a class="btn p" target="_blank" rel="noopener noreferrer" href="{{this.payUrl}}">ادفع الآن</a> {{/if}}<a class="btn s" target="_blank" rel="noopener" href="{{site.whatsapp}}">{{@ctaShortAr}}</a>{{#if this.page}} <a class="btn s" href="/courses/{{this.page}}/">تفاصيل الدورة</a>{{/if}}</div></div>
 {{/each}}    </div>
   </section>
   <script type="application/json" id="courses-data">{{json courses.courses}}</script>
