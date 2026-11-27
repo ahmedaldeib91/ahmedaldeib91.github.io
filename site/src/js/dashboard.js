@@ -449,6 +449,7 @@
         : null,
       window.LmsAct ? window.LmsAct.notifications({ active: S.profile.status === 'active', courseTitle: function (id) { const c = courseById(id); return c ? c.title_ar : id; } }) : null,
       sectionMine(),
+      window.LmsAct ? window.LmsAct.certificates({ active: S.profile.status === 'active' }) : null,
       window.Exams ? window.Exams.section({ active: S.profile.status === 'active', courseTitle: function (id) { const c = courseById(id); return c ? c.title_ar : id; } }) : null,
       sectionAvail(), sectionInfo()));
     $('dash-jump').hidden = false;
@@ -906,6 +907,15 @@
     if (!S.profile) return;
     const ex = /^#(exam|attempt|result)=([0-9a-f-]{36})$/i.exec(window.location.hash);
     const sebRoute = window.location.hash === '#seb-info';
+    const certM = /^#cert=([0-9a-f-]{36})$/i.exec(window.location.hash);
+    if (certM && window.LmsAct) {
+      S.nav++;
+      S.view = 'cert';
+      $('dash-jump').hidden = true;
+      window.scrollTo(0, 0);
+      window.LmsAct.showCertificate(view, certM[1].toLowerCase());
+      return;
+    }
     if (S.view === 'exam' && !ex && !sebRoute && window.Exams) window.Exams.leave();
     if (sebRoute && window.Exams) {
       S.nav++;

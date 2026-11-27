@@ -11,6 +11,7 @@
 
   const P = window.Platform;
   if (!P) return;
+  const doc = document;
   const ui = P.ui;
   const h = ui.h;
   const clear = ui.clear;
@@ -308,5 +309,52 @@
     return sec;
   }
 
-  window.LmsAct = { assignments: assignments, discussions: discussions, notifications: notifications };
+  /* ================================================================== الشهادات (الترحيل 022) */
+  function certificates(ctx) {
+    if (!ctx || !ctx.active) return null;
+    const sec = h('section', { class: 'pf-block', id: 'sec-certs', 'aria-labelledby': 'h-certs', hidden: true }, h('h2', { id: 'h-certs', text: 'شهاداتي' }));
+    const body = h('div');
+    sec.appendChild(body);
+    P.rest.select('cert_certificates', { select: 'id,code,course_id,course_title_ar,issued_at,revoked_at', order: 'issued_at.desc', limit: '50' }).then(function (rows) {
+      if (!rows.length) return;
+      sec.hidden = false;
+      body.appendChild(h('ul', { class: 'pf-list' }, rows.map(function (c) {
+        return h('li', { class: 'pf-item' },
+          h('span', { class: 'pf-ico' }, ui.icon('check')),
+          h('div', { class: 'pf-ibody' }, h('h3', { dir: 'auto', text: c.course_title_ar }), h('small', { text: 'صدرت ' + dateOnly(c.issued_at) + ' · ' + c.code + (c.revoked_at ? ' · مُلغاة' : '') })),
+          c.revoked_at ? h('span', { class: 'st soon', text: 'مُلغاة' }) : h('a', { class: 'btn p', href: '#cert=' + c.id }, 'عرض وطباعة'));
+      })));
+    }).catch(function (err) { if (isSession(err)) sessionOut(); /* غير ذلك: لا قسم */ });
+    return sec;
+  }
+
+  async function showCertificate(root, id) {
+    clear(root);
+    root.appendChild(loading('جارٍ تحميل الشهادة…'));
+    let c;
+    try { c = (await P.rest.select('cert_certificates', { select: '*', id: 'eq.' + id, limit: '1' }))[0]; } catch (err) { if (isSession(err)) { sessionOut(); return; } clear(root); root.appendChild(failBox(errText(err), function () { showCertificate(root, id); })); return; }
+    clear(root);
+    root.appendChild(h('div', { class: 'pf-fade no-print' }, h('p', { class: 'pf-crumb' }, h('a', { class: 'btn s', href: '#' }, ui.icon('back'), 'العودة إلى لوحتي'))));
+    if (!c || c.revoked_at) { root.appendChild(h('div', { class: 'pf-empty' }, h('b', { text: 'الشهادة غير متاحة' }), h('p', { text: 'لم نجد هذه الشهادة، أو أنها أُلغيت.' }))); return; }
+    const url = window.location.origin + '/verify/?code=' + c.code;
+    const print = h('button', { type: 'button', class: 'btn p no-print' }, 'طباعة / حفظ PDF');
+    print.addEventListener('click', function () { window.print(); });
+    root.appendChild(h('div', { class: 'cert-sheet' },
+      h('div', { class: 'cert-in' },
+        h('div', { class: 'eyebrow', text: 'منصة م. أحمد الديب للتدريب' }),
+        h('h1', { text: 'شهادة إتمام دورة' }),
+        h('p', { class: 'cert-lead', text: 'تشهد المنصة بأن' }),
+        h('h2', { class: 'cert-name', dir: 'auto', text: c.holder_name }),
+        h('p', { class: 'cert-lead', text: 'قد أتمّ بنجاح دورة' }),
+        h('h3', { class: 'cert-course', dir: 'auto', text: c.course_title_ar }),
+        c.note ? h('p', { class: 'cert-note', dir: 'auto', text: c.note }) : null,
+        h('p', { class: 'cert-meta', text: 'تاريخ الإصدار: ' + dateOnly(c.issued_at) }),
+        h('p', { class: 'cert-meta ltr', dir: 'ltr', text: 'رمز التحقق: ' + c.code }),
+        h('p', { class: 'cert-meta', text: 'للتحقق من صحتها زر: ' }), h('p', { class: 'cert-meta ltr', dir: 'ltr', text: url }),
+        h('p', { class: 'cert-disc', text: 'هذه شهادة إتمام دورة تدريبية صادرة من المنصة، وليست شهادة صادرة عن معهد إدارة المشاريع PMI.' }))));
+    root.appendChild(h('div', { class: 'pf-act no-print' }, print));
+    doc.title = 'شهادة إتمام دورة | ' + c.course_title_ar;
+  }
+
+  window.LmsAct = { assignments: assignments, discussions: discussions, notifications: notifications, certificates: certificates, showCertificate: showCertificate };
 })();

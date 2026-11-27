@@ -392,6 +392,13 @@ async adopt(t) {
       const r = await authed('POST', '/rest/v1/rpc/' + fn, { query: query, body: args || {} });
       return r.json;
     },
+    /* استدعاء دالة عامة بلا جلسة (دور anon): للتحقق من الشهادات وحدها. الدالة نفسها تحدّد ما يُعاد */
+    async rpcPublic(fn, args) {
+      if (!/^[a-z_]+$/.test(fn || '')) throw new ApiError('other', MSG.other, 0, 'bad_fn');
+      const res = await request('POST', '/rest/v1/rpc/' + fn, { body: args || {} });
+      if (!res.ok) throw toError(res.status, res.json);
+      return res.json;
+    },
     /* (P4) صفحة من الصفوف مع العدد الكلي المطابق {rows, total} (total=null إن لم تصل ترويسة Content-Range) */
     async page(table, query) {
       if (!TABLE_RE.test(table)) throw new ApiError('other', MSG.other, 0, 'bad_table');

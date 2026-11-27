@@ -1,0 +1,18 @@
+<!--page: slug=verify; title=التحقق من شهادة | م. أحمد الديب; desc=تحقّق من صحة شهادة إتمام دورة صادرة من منصة م. أحمد الديب بإدخال رمز التحقق المطبوع عليها.; nav=none-->
+<link rel="stylesheet" href="{{root}}/assets/css/platform.css">
+<link rel="stylesheet" href="{{root}}/assets/css/platform.css">
+<link rel="stylesheet" href="{{root}}/assets/css/platform.css">
+<main class="page on" id="main" data-sb-url="{{site.supabase.url}}" data-sb-key="{{site.supabase.key}}">
+  <div class="phead"><div class="eyebrow rv">التحقق</div><h1 class="rv" style="margin-top:8px">التحقق من <em class="g">شهادة</em></h1>
+    <p class="sub rv">أدخل رمز التحقق المطبوع على الشهادة (يبدأ بـ AD-) لتتأكد من صحتها. هذه شهادات إتمام دورات من المنصة، وليست شهادات PMI.</p></div>
+  <section style="padding-top:20px">
+    <noscript><div class="callout">يحتاج التحقق إلى تفعيل JavaScript في المتصفح.</div></noscript>
+    <form class="pf-form" id="vf" novalidate style="max-width:520px">
+      <div class="pf-field"><label for="vcode">رمز التحقق</label><input class="pf-in ltr" id="vcode" type="text" inputmode="latin" autocomplete="off" maxlength="20" placeholder="AD-XXXXXXXXXX" dir="ltr"></div>
+      <div class="btns"><button class="btn p" id="vgo" type="submit">تحقّق</button></div>
+    </form>
+    <div id="vres" role="status" aria-live="polite" style="margin-top:26px"></div>
+  </section>
+  <script src="{{root}}/assets/js/platform-api.js" defer></script>
+  <script src="{{root}}/assets/js/verify.js" defer></script>
+</main>
