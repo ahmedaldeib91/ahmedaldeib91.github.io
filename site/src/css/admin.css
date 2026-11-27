@@ -402,3 +402,7 @@ th[aria-sort=ascending] .ad-sort,th[aria-sort=descending] .ad-sort{color:var(--t
 .pf-match{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .pf-mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
 @media (max-width:640px){.pf-mrow{grid-template-columns:1fr}}
+
+/* إدارة الحساب (المستخدمون) */
+.ad-acts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ad-c-acct code{font:600 16px/1.6 ui-monospace,Consolas,monospace;padding:4px 10px;border-radius:10px;background:var(--glass);border:1px solid var(--bd);user-select:all}

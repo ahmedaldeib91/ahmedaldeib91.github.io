@@ -21,16 +21,16 @@
 
   /* ================================================================== القائمة */
   async function renderList(root, token) {
-    const view = { q: '', status: 'all', sort: 'created', dir: 'desc', page: 1 };
+    const view = { q: '', status: 'all', role: 'all', sort: 'created', dir: 'desc', page: 1 };
     const csvBtn = A.btn('تصدير CSV', { icon: 'download', small: true, disabled: true });
     const refresh = A.btn('تحديث', { icon: 'refresh', small: true });
-    root.appendChild(A.head('المتدربون', 'ابحث في المتدربين وافتح صفحة كل متدرب لإدارة اشتراكاته وملاحظاتك عليه.', [csvBtn, refresh]));
+    root.appendChild(A.head('المستخدمون', 'كل الحسابات المسجلة (متدربون ومديرون): ابحث وافتح أي حساب لتعديل بياناته وإدارة اشتراكاته وكلمة مروره وصلاحياته.', [csvBtn, refresh]));
     const body = h('div');
     root.appendChild(body);
     let dir = null;
     let counts = {};
 
-    const trainees = function () { return dir.profiles.filter(function (p) { return p.role === 'trainee'; }); };
+    const trainees = function () { return dir.profiles; }; /* كل الحسابات المسجلة */
     const emailOf = function (p) { return dir.emails[p.id] ? dir.emails[p.id].email : ''; };
 
     const cmp = {
@@ -45,6 +45,7 @@
       const digits = A.latinDigits(view.q).replace(/\D/g, '');
       const rows = trainees().filter(function (p) {
         if (view.status !== 'all' && p.status !== view.status) return false;
+        if (view.role !== 'all' && p.role !== view.role) return false;
         if (!q) return true;
         const hay = A.normAr([p.full_name, emailOf(p), p.phone, p.country].join(' '));
         if (hay.indexOf(q) !== -1) return true;
@@ -58,13 +59,13 @@
 
     function exportCsv() {
       const rows = filtered();
-      const head = ['الاسم'].concat(dir.emailsOk ? ['البريد الإلكتروني'] : [], ['الهاتف', 'الدولة', 'الحالة', 'تاريخ التسجيل', 'آخر ظهور', 'الاشتراكات النشطة']);
+      const head = ['الاسم'].concat(dir.emailsOk ? ['البريد الإلكتروني'] : [], ['الدور', 'الهاتف', 'الدولة', 'الحالة', 'تاريخ التسجيل', 'آخر ظهور', 'الاشتراكات النشطة']);
       const lines = [head].concat(rows.map(function (p) {
         return [p.full_name || ''].concat(dir.emailsOk ? [emailOf(p)] : [], [
-          p.phone || '', p.country || '', (A.statusMap.profile[p.status] || [p.status])[0], p.created_at || '', p.last_seen_at || '', counts[p.id] || 0]);
+          p.role === 'admin' ? 'مدير' : 'متدرب', p.phone || '', p.country || '', (A.statusMap.profile[p.status] || [p.status])[0], p.created_at || '', p.last_seen_at || '', counts[p.id] || 0]);
       }));
-      A.download('trainees-' + new Date().toISOString().slice(0, 10) + '.csv', A.csvBuild(lines), 'text/csv');
-      A.toast('ok', 'تم تصدير ' + rows.length + ' متدربًا إلى ملف CSV.');
+      A.download('users-' + new Date().toISOString().slice(0, 10) + '.csv', A.csvBuild(lines), 'text/csv');
+      A.toast('ok', 'تم تصدير ' + rows.length + ' حسابًا إلى ملف CSV.');
     }
 
     function build() {
@@ -75,6 +76,7 @@
       const search = A.input({ type: 'search', max: 120, auto: 'off', placeholder: 'اسم، بريد، هاتف أو دولة' });
       search.value = view.q;
       const status = A.select([['all', 'كل الحالات'], ['active', 'نشط'], ['suspended', 'موقوف']], view.status);
+      const roleSel = A.select([['all', 'كل الأدوار'], ['trainee', 'متدرب'], ['admin', 'مدير']], view.role);
       const count = h('p', { class: 'ad-count-t', role: 'status' });
       const tableBox = h('div');
 
@@ -84,10 +86,10 @@
         const pages = Math.max(1, Math.ceil(total / PAGE));
         if (view.page > pages) view.page = pages;
         A.clear(tableBox);
-        count.textContent = total ? 'عدد النتائج: ' + A.num(total) + ' من ' + A.num(trainees().length) : 'لا نتائج مطابقة.';
+        count.textContent = total ? 'عدد النتائج: ' + A.num(total) + ' من ' + A.num(trainees().length) + ' حسابًا' : 'لا نتائج مطابقة.';
         if (!total) {
-          tableBox.appendChild(A.empty(trainees().length ? 'لا نتائج مطابقة' : 'لا يوجد متدربون بعد',
-            trainees().length ? 'جرّب كلمة بحث أخرى أو غيّر تصفية الحالة.' : 'سيظهر هنا كل من يسجّل حسابًا جديدًا في المنصة.'));
+          tableBox.appendChild(A.empty(trainees().length ? 'لا نتائج مطابقة' : 'لا يوجد مستخدمون بعد',
+            trainees().length ? 'جرّب كلمة بحث أخرى أو غيّر التصفية.' : 'سيظهر هنا كل من يسجّل حسابًا جديدًا في المنصة.'));
           return;
         }
         const slice = rows.slice((view.page - 1) * PAGE, view.page * PAGE);
@@ -95,6 +97,7 @@
           { key: 'name', label: 'المتدرب', sort: true, cls: 'ad-first', cell: function (p) {
             return h('div', null, h('a', { class: 'ad-name', href: '#trainees/' + p.id, text: nameOr(p) }), emailOf(p) ? h('small', { class: 'ad-ltr', text: emailOf(p) }) : null);
           } },
+          { key: 'role', label: 'الدور', cell: function (p) { return A.badge(p.role === 'admin' ? 'مدير' : 'متدرب', p.role === 'admin' ? 'info' : 'mut'); } },
           { key: 'phone', label: 'الهاتف', cell: function (p) { return p.phone ? h('span', { class: 'ad-ltr ad-nowrap', text: p.phone }) : '—'; } },
           { key: 'country', label: 'الدولة', cls: 'hide-md', cell: function (p) { return p.country || '—'; } },
           { key: 'status', label: 'الحالة', sort: true, cell: function (p) { return A.statusBadge('profile', p.status); } },
@@ -104,7 +107,7 @@
           { key: 'act', label: '', cls: 'ad-actcol', cell: function (p) { return A.link('فتح', '#trainees/' + p.id, { small: true }); } }
         ];
         tableBox.appendChild(A.dataTable(cols, slice, {
-          caption: 'قائمة المتدربين', sort: { key: view.sort, dir: view.dir },
+          caption: 'قائمة المستخدمين', sort: { key: view.sort, dir: view.dir },
           onSort: function (key) {
             if (view.sort === key) view.dir = view.dir === 'asc' ? 'desc' : 'asc'; else { view.sort = key; view.dir = key === 'name' || key === 'status' ? 'asc' : 'desc'; }
             view.page = 1;
@@ -118,14 +121,15 @@
 
       search.addEventListener('input', A.debounce(function () { view.q = search.value; view.page = 1; paint(); }, 160));
       status.addEventListener('change', function () { view.status = status.value; view.page = 1; paint(); });
-      body.appendChild(h('div', { class: 'ad-tools' }, A.field('بحث', search), A.field('الحالة', status, null, 'sm'), count));
+      roleSel.addEventListener('change', function () { view.role = roleSel.value; view.page = 1; paint(); });
+      body.appendChild(h('div', { class: 'ad-tools' }, A.field('بحث', search), A.field('الحالة', status, null, 'sm'), A.field('الدور', roleSel, null, 'sm'), count));
       body.appendChild(tableBox);
       paint();
     }
 
     async function load() {
       A.clear(body);
-      body.appendChild(A.loading('جارٍ تحميل المتدربين…'));
+      body.appendChild(A.loading('جارٍ تحميل المستخدمين…'));
       refresh.disabled = true;
       try { dir = await A.loadDirectory(); } catch (err) {
         refresh.disabled = false;
@@ -174,7 +178,7 @@
   }
 
   async function renderOne(root, token, id) {
-    root.appendChild(h('div', { class: 'ad-crumb' }, A.link('العودة إلى المتدربين', '#trainees', { icon: 'back', small: true })));
+    root.appendChild(h('div', { class: 'ad-crumb' }, A.link('العودة إلى المستخدمين', '#trainees', { icon: 'back', small: true })));
     const headBox = h('div');
     root.appendChild(headBox);
     const body = h('div');
@@ -206,8 +210,10 @@
       A.clear(headBox);
       const wa = A.waUrl(p.phone);
       const statusMsg = A.msgBox();
-      const toggle = isTrainee ? A.btn(p.status === 'active' ? 'إيقاف الحساب' : 'تفعيل الحساب', { small: true, kind: p.status === 'active' ? 'danger' : 'p', icon: p.status === 'active' ? 'lock' : 'check' }) : null;
-      headBox.appendChild(A.head(name, d.email && d.email.email ? d.email.email : (isTrainee ? 'حساب متدرب' : 'حساب مدرب'), [
+      const isSelf = p.id === A.S.uid;
+      const toggle = !isSelf ? A.btn(p.status === 'active' ? 'إيقاف الحساب' : 'تفعيل الحساب', { small: true, kind: p.status === 'active' ? 'danger' : 'p', icon: p.status === 'active' ? 'lock' : 'check' }) : null;
+      headBox.appendChild(A.head(name, d.email && d.email.email ? d.email.email : (isTrainee ? 'حساب متدرب' : 'حساب مدير'), [
+        isTrainee ? null : A.badge('مدير', 'info'),
         A.statusBadge('profile', p.status),
         wa ? A.ext(waLabel, wa, 'btn s sm') : null,
         toggle
@@ -239,8 +245,11 @@
       }
 
       A.clear(body);
-      if (!isTrainee) body.appendChild(h('p', { class: 'ad-note', text: 'هذا حساب مدرب. لا تُدار حسابات المدربين من هذه الصفحة، ويُمنح الدور أو يُسحب من قاعدة البيانات فقط.' }));
       body.appendChild(h('div', { class: 'ad-two' }, infoCard(d), isTrainee ? notesCard(d) : null));
+      if (A.userAccount) {
+        body.appendChild(A.userAccount.profileCard(d, id, function () { return reload(); }));
+        body.appendChild(A.userAccount.accountCard(d, id, function () { return reload(); }));
+      }
       if (isTrainee) body.appendChild(enrollCard(d));
       body.appendChild(attemptsCard(d));
       body.appendChild(auditCard(d));
@@ -263,7 +272,7 @@
       rows.forEach(function (r) { dl.appendChild(h('dt', { text: r[0] })); dl.appendChild(h('dd', null, r[1])); });
       const kids = [dl];
       if (!d.emailsOk) kids.push(h('p', { class: 'ad-note warn', text: 'البريد غير متاح: يلزم تطبيق الترحيل 006 (انظر قائمة المتدربين).' }));
-      return A.card('بيانات المتدرب', kids, 'ad-c-info');
+      return A.card(p.role === 'admin' ? 'بيانات الحساب' : 'بيانات المتدرب', kids, 'ad-c-info');
     }
 
     function notesCard(d) {
@@ -375,7 +384,7 @@
   }
 
   A.register('trainees', {
-    label: 'المتدربون',
+    label: 'المستخدمون',
     render: async function (root, args, token) {
       if (args[0]) await renderOne(root, token, args[0]); else await renderList(root, token);
     }
