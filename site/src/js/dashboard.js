@@ -697,6 +697,100 @@
     return h('div', null, form, resultSlot, histSlot);
   }
 
+  /* ---------- الدروس: وحدات ودروس مع متابعة الإتمام والاستئناف (الترحيل 016) ----------
+     الفيديو والملفات هي نفسها عناصر الدورة (videoItem/fileItem). التقدم يُحفظ عبر lms_save_progress فقط (إتمام الدرس لا يُلغى).
+     فتح الدرس يسجّله «آخر درس» فيُستأنف منه عند العودة. */
+  function lessonsPanel(c, data) {
+    const L = data.lms;
+    const byId = {};
+    data.items.forEach(function (i) { byId[i.id] = i; });
+    const prog = {};
+    L.progress.forEach(function (p) { prog[p.lesson_id] = p; });
+    const ordered = [];
+    L.modules.forEach(function (m) { L.lessons.filter(function (l) { return l.module_id === m.id; }).forEach(function (l) { ordered.push(l); }); });
+    const root = h('div');
+    const total = ordered.length;
+    const doneCount = function () { return ordered.filter(function (l) { return prog[l.id] && prog[l.id].completed; }).length; };
+    const fmtMin = function (s) { return s ? Math.max(1, Math.round(s / 60)) + ' د' : ''; };
+    const saveRpc = function (lesson, completed) {
+      const args = { p_lesson_id: lesson.id, p_position: 0 };
+      if (completed) args.p_completed = true;
+      return P.rest.rpc('lms_save_progress', args).then(function (r) {
+        const old = prog[lesson.id];
+        prog[lesson.id] = { lesson_id: lesson.id, completed: !!(r && r.completed) || !!(old && old.completed), updated_at: new Date().toISOString() };
+        return prog[lesson.id];
+      });
+    };
+    const lastViewed = function () {
+      const rows = Object.keys(prog).map(function (k) { return prog[k]; }).filter(function (p) { return ordered.some(function (l) { return l.id === p.lesson_id; }); });
+      rows.sort(function (a, b) { return String(b.updated_at || '').localeCompare(String(a.updated_at || '')); });
+      return rows.length ? ordered.filter(function (l) { return l.id === rows[0].lesson_id; })[0] : null;
+    };
+
+    function showList() {
+      clear(root);
+      const pc = total ? Math.round((doneCount() / total) * 100) : 0;
+      const bar = h('div', { class: 'bar', role: 'img', 'aria-label': 'تقدمك في الدروس ' + pc + '%' }, h('span'));
+      bar.firstChild.style.width = pc + '%';
+      const resume = lastViewed();
+      const next = resume ? (doneCount() === total ? ordered[0] : resume) : ordered[0];
+      root.appendChild(h('div', { class: 'pf-lprog' },
+        h('p', { class: 'pf-qmeta', role: 'status', text: 'أكملت ' + doneCount() + ' من ' + total + ' درسًا (' + pc + '%).' }), bar,
+        next ? h('button', { type: 'button', class: 'btn p', on: { click: function () { showLesson(next); } } }, resume && doneCount() < total ? 'تابع: ' + next.title_ar : 'ابدأ الدورة') : null));
+      L.modules.forEach(function (m) {
+        const ls = L.lessons.filter(function (l) { return l.module_id === m.id; });
+        if (!ls.length) return;
+        root.appendChild(h('section', { class: 'pf-lmod', 'aria-label': m.title_ar },
+          h('h3', { text: m.title_ar }),
+          m.description_ar ? h('p', { class: 'pf-note', dir: 'auto', text: m.description_ar }) : null,
+          h('ul', { class: 'pf-list' }, ls.map(function (l) {
+            const done = prog[l.id] && prog[l.id].completed;
+            return h('li', { class: 'pf-item' },
+              h('span', { class: 'pf-ico' }, icon(done ? 'check' : 'video')),
+              h('div', { class: 'pf-ibody' }, h('h3', { dir: 'auto', text: l.title_ar }), h('small', { text: [done ? 'مكتمل' : '', fmtMin(l.duration_seconds)].filter(Boolean).join(' · ') })),
+              h('button', { type: 'button', class: done ? 'btn s' : 'btn p', on: { click: function () { showLesson(l); } } }, done ? 'مراجعة' : 'افتح'));
+          }))));
+      });
+    }
+
+    function showLesson(l) {
+      clear(root);
+      saveRpc(l, false).catch(function (err) { if (isSession(err)) { wipe(); P.goLogin('expired'); } });
+      const idx = ordered.indexOf(l);
+      const out = h('div', { class: 'pf-msg', hidden: true });
+      const back = h('button', { type: 'button', class: 'btn s', on: { click: showList } }, icon('back'), 'كل الدروس');
+      const vid = l.video_item_id ? byId[l.video_item_id] : null;
+      const files = L.files.filter(function (f) { return f.lesson_id === l.id; }).sort(function (a, b) { return a.sort - b.sort; })
+        .map(function (f) { return byId[f.item_id]; }).filter(Boolean);
+      const mod = L.modules.filter(function (m) { return m.id === l.module_id; })[0];
+      const isDone = function () { return prog[l.id] && prog[l.id].completed; };
+      const doneBtn = h('button', { type: 'button', class: 'btn p' }, icon('check'), 'أكملت هذا الدرس');
+      const paintDone = function () { doneBtn.disabled = !!isDone(); doneBtn.lastChild.textContent = isDone() ? 'الدرس مكتمل' : 'أكملت هذا الدرس'; };
+      paintDone();
+      doneBtn.addEventListener('click', ui.guard(doneBtn, out, async function () {
+        ui.clearMsg(out);
+        try { await saveRpc(l, true); } catch (err) { failWith(err, out); return false; }
+        paintDone();
+        if (idx + 1 < total) ui.msg(out, 'ok', 'تم تسجيل إكمال الدرس. انتقل إلى الدرس التالي.');
+        else ui.msg(out, 'ok', 'أحسنت! أنهيت دروس هذه الدورة.');
+        return false;
+      }));
+      const nextBtn = idx + 1 < total ? h('button', { type: 'button', class: 'btn s', on: { click: function () { showLesson(ordered[idx + 1]); window.scrollTo(0, 0); } } }, 'الدرس التالي') : null;
+      const prevBtn = idx > 0 ? h('button', { type: 'button', class: 'btn s', on: { click: function () { showLesson(ordered[idx - 1]); window.scrollTo(0, 0); } } }, 'الدرس السابق') : null;
+      root.appendChild(h('div', { class: 'pf-fade' },
+        h('div', { class: 'pf-crumb' }, back),
+        h('div', { class: 'eyebrow', text: (mod ? mod.title_ar + ' · ' : '') + 'الدرس ' + (idx + 1) + ' من ' + total }),
+        h('h3', { dir: 'auto', text: l.title_ar, tabindex: '-1' }),
+        vid ? h('ul', { class: 'pf-list' }, videoItem(vid)) : null,
+        l.description_ar ? h('p', { class: 'pf-note', dir: 'auto', text: l.description_ar }) : null,
+        files.length ? h('section', { 'aria-label': 'ملفات الدرس' }, h('h3', { text: 'ملفات الدرس' }), h('ul', { class: 'pf-list' }, files.map(fileItem))) : null,
+        h('div', { class: 'pf-qact' }, doneBtn, prevBtn, nextBtn), out));
+    }
+
+    showList();
+    return root;
+  }
+
   function validQuestion(q) {
     return q && typeof q.id === 'string' && typeof q.question === 'string' && Array.isArray(q.options) && q.options.length >= 2 &&
       q.options.every(function (o) { return typeof o === 'string'; });
@@ -707,7 +801,21 @@
       P.rest.select('quiz_questions', { select: 'id,question,options,sort', course_id: 'eq.' + id, published: 'eq.true', order: 'sort.asc,created_at.asc' }),
       P.rest.select('quiz_attempts', { select: 'id,score,total,created_at', course_id: 'eq.' + id, user_id: 'eq.' + S.uid, order: 'created_at.desc', limit: '20' })
     ]);
-    return { items: r[0], questions: r[1].filter(validQuestion), attempts: r[2] };
+    /* الدروس اختيارية: إن لم يُطبَّق الترحيل 016 بعد أو فشل الجلب تبقى الدورة بتبويباتها القديمة */
+    let lms = { modules: [], lessons: [], files: [], progress: [] };
+    try {
+      const m = await Promise.all([
+        P.rest.select('lms_modules', { select: 'id,title_ar,description_ar,sort', course_id: 'eq.' + id, order: 'sort.asc,created_at.asc', limit: '500' }),
+        P.rest.select('lms_lessons', { select: 'id,module_id,title_ar,description_ar,video_item_id,duration_seconds,sort', course_id: 'eq.' + id, order: 'sort.asc,created_at.asc', limit: '2000' }),
+        P.rest.select('lms_progress', { select: 'lesson_id,completed,updated_at', course_id: 'eq.' + id, user_id: 'eq.' + S.uid, limit: '2000' })
+      ]);
+      lms = { modules: m[0], lessons: m[1], files: [], progress: m[2] };
+      if (lms.lessons.length) lms.files = await P.rest.select('lms_lesson_files', { select: 'lesson_id,item_id,sort', lesson_id: 'in.(' + lms.lessons.map(function (x) { return x.id; }).join(',') + ')', limit: '5000' });
+    } catch (err) {
+      if (isSession(err)) throw err;
+      lms = { modules: [], lessons: [], files: [], progress: [] };
+    }
+    return { items: r[0], questions: r[1].filter(validQuestion), attempts: r[2], lms: lms };
   }
 
   function tabButton(name, label, count, ic) {
@@ -720,11 +828,14 @@
   function renderCourseBody(body, c, data, tab) {
     const files = data.items.filter(function (i) { return i.kind === 'file'; });
     const videos = data.items.filter(function (i) { return i.kind === 'video'; });
+    const hasLessons = data.lms.lessons.length > 0;
     const tabsEl = h('div', { class: 'pf-tabs', role: 'tablist', 'aria-label': 'أقسام الدورة' },
+      hasLessons ? tabButton('lessons', 'الدروس', data.lms.lessons.length, 'book') : null,
       tabButton('files', 'ملفات الدورة', files.length, 'file'),
       tabButton('videos', 'الفيديوهات التعليمية', videos.length, 'video'),
       tabButton('quiz', 'الأسئلة المحاكية', data.questions.length, 'quiz'));
     body.appendChild(tabsEl);
+    if (hasLessons) body.appendChild(tabPanel('lessons', lessonsPanel(c, data)));
     body.appendChild(tabPanel('files', files.length
       ? h('ul', { class: 'pf-list' }, files.map(fileItem))
       : emptyBox('لا توجد ملفات منشورة بعد', 'سيضيف المدرب ملفات هذه الدورة قريبًا.')));
@@ -735,7 +846,7 @@
     const ctl = ui.tabs(tabsEl, {
       onSelect: function (name) { try { window.history.replaceState(null, '', '#course=' + c.id + '&tab=' + name); } catch (e) { /* تجاهل */ } }
     });
-    ctl.select(tab, false);
+    ctl.select(tab && (tab !== 'lessons' || hasLessons) ? tab : (hasLessons ? 'lessons' : 'files'), false);
   }
 
   async function showCourse(id, tab) {
@@ -797,8 +908,8 @@
       window.Exams.show(ex[1].toLowerCase(), ex[2]);
       return;
     }
-    const m = /^#course=([a-z0-9-]{1,40})(?:&tab=(files|videos|quiz))?$/.exec(window.location.hash);
-    if (m) showCourse(m[1], m[2] || 'files');
+    const m = /^#course=([a-z0-9-]{1,40})(?:&tab=(lessons|files|videos|quiz))?$/.exec(window.location.hash);
+    if (m) showCourse(m[1], m[2] || '');
     else if (S.view !== 'home') {
       showHome();
       let target = null;
