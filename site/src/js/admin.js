@@ -35,7 +35,7 @@
 
   const NAV = [
     ['stats', 'الإحصاءات', 'chart'],
-    ['trainees', 'المتدربون', 'users'],
+    ['trainees', 'المستخدمون', 'users'],
     ['subscribers', 'المشتركون', 'file'],
     ['courses', 'الدورات', 'book'],
     ['messages', 'الرسائل', 'mail'],

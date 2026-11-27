@@ -587,6 +587,31 @@ async adopt(t) {
     }
   };
 
+  /* ---------- 7ج) إدارة الحسابات (وظيفة admin-users، للمدير وحده) ----------
+     POST /functions/v1/admin-users بجلسة المدير؛ الأفعال: get | send_reset | set_password | confirm_email | set_email | ban | unban | set_role | delete_user.
+     لا ترمي أبدًا: {ok, status, error (رمز قصير), data}. لا تُعرض نصوص الخادم؛ الرموز تُترجم في الواجهة. */
+  const ADMIN_FN_PATH = '/functions/v1/admin-users';
+  const adminFn = {
+    async call(payload) {
+      const fail = function (error, status) { return { ok: false, status: status || 0, error: error, data: {} }; };
+      try {
+        const o = { body: payload, timeout: MAIL_TIMEOUT_MS, token: await accessToken() };
+        let res = await request('POST', ADMIN_FN_PATH, o);
+        if (res.status === 401) {
+          o.token = (await refreshSession(o.token)).access_token;
+          res = await request('POST', ADMIN_FN_PATH, o);
+        }
+        const j = res.json && typeof res.json === 'object' && !Array.isArray(res.json) ? res.json : {};
+        if (res.status >= 200 && res.status < 300 && j.ok === true) return { ok: true, status: res.status, error: '', data: j.data && typeof j.data === 'object' ? j.data : {} };
+        if (typeof j.error === 'string' && MAIL_CODE.test(j.error)) return fail(j.error, res.status);
+        return fail(res.status === 404 ? 'not_deployed' : mailCodeOf(res.status), res.status);
+      } catch (e) {
+        if (e instanceof ApiError) return fail(MAIL_KIND[e.kind] || 'server_error', e.status);
+        return fail('server_error', 0);
+      }
+    }
+  };
+
   /* ---------- 8) أدوات مشتركة ---------- */
   const COUNTRIES = ['السعودية', 'الإمارات', 'الكويت', 'قطر', 'البحرين', 'عُمان', 'اليمن', 'العراق', 'سوريا', 'لبنان', 'الأردن', 'فلسطين',
     'مصر', 'السودان', 'ليبيا', 'تونس', 'الجزائر', 'المغرب', 'موريتانيا', 'الصومال', 'جيبوتي', 'جزر القمر', 'أخرى'];
@@ -905,6 +930,7 @@ win.location.replace(base + '/account/' + (reason ? '?reason=' + encodeURICompon
     rest: Object.freeze(rest),
     storage: Object.freeze({ signedUrl: signedUrl, upload: upload, remove: removeObjects, publicUrl: publicUrl, publicPath: publicPath }),
     mail: Object.freeze(mail),
+    adminFn: Object.freeze(adminFn),
     COUNTRIES: COUNTRIES,
     ui: Object.freeze({ h: h, clear: clear, icon: icon, waIcon: waIcon, msg: msg, clearMsg: clearMsg, fieldError: fieldError, setBusy: setBusy, check: check, guard: guard, tabs: tabs, bindStrength: bindStrength, bindReveal: bindReveal }),
     v: Object.freeze(v),
