@@ -66,7 +66,16 @@
     const out = A.msgBox();
     const box = h('div');
 
-    panel.appendChild(h('div', { class: 'ad-qb-bar' }, A.link('سؤال جديد', QB.href(course, 'new'), { kind: 'p', small: true, icon: 'plus' }), refresh, clearBtn));
+    const ioBox = h('div');
+    const openIo = function (kind) {
+      const m = QB.mods.io;
+      A.clear(ioBox);
+      if (!m) { ioBox.appendChild(A.fail('تعذّر تحميل أداة الاستيراد والتصدير. حدّث الصفحة ثم أعد المحاولة.', null)); return; }
+      ioBox.appendChild(kind === 'import' ? m.importCard(course, { tax: tax, onDone: load }) : m.exportCard(course, { tax: tax }));
+    };
+    panel.appendChild(h('div', { class: 'ad-qb-bar' }, A.link('سؤال جديد', QB.href(course, 'new'), { kind: 'p', small: true, icon: 'plus' }),
+      A.btn('استيراد', { small: true, icon: 'plus', on: function () { openIo('import'); } }), A.btn('تصدير', { small: true, icon: 'file', on: function () { openIo('export'); } }), refresh, clearBtn));
+    panel.appendChild(ioBox);
     panel.appendChild(h('div', { class: 'ad-tools' },
       A.field('بحث', search, 'يطابق النص كما كُتب (دون توحيد الهمزات والتشكيل).'),
       A.field('الحالة', fStatus, null, 'sm'), A.field('النوع', fType, null, 'sm'), A.field('الصعوبة', fDiff, null, 'sm')));
