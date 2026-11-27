@@ -822,6 +822,9 @@
     return h('button', { type: 'button', role: 'tab', id: 'ctab-' + name, 'data-tab': name, 'aria-controls': 'cpanel-' + name, 'aria-selected': 'false', tabindex: '-1' },
       icon(ic), label, h('span', { class: 'pf-count', text: '(' + count + ')' }));
   }
+  function plainTab(name, label, ic) {
+    return h('button', { type: 'button', role: 'tab', id: 'ctab-' + name, 'data-tab': name, 'aria-controls': 'cpanel-' + name, 'aria-selected': 'false', tabindex: '-1' }, icon(ic), label);
+  }
   function tabPanel(name, content) {
     return h('div', { role: 'tabpanel', id: 'cpanel-' + name, 'aria-labelledby': 'ctab-' + name, hidden: true }, content);
   }
@@ -833,8 +836,12 @@
       hasLessons ? tabButton('lessons', 'الدروس', data.lms.lessons.length, 'book') : null,
       tabButton('files', 'ملفات الدورة', files.length, 'file'),
       tabButton('videos', 'الفيديوهات التعليمية', videos.length, 'video'),
-      tabButton('quiz', 'الأسئلة المحاكية', data.questions.length, 'quiz'));
+      tabButton('quiz', 'الأسئلة المحاكية', data.questions.length, 'quiz'),
+      window.LmsAct ? plainTab('assignments', 'الواجبات', 'file') : null,
+      window.LmsAct ? plainTab('discussions', 'المناقشات', 'user') : null);
     body.appendChild(tabsEl);
+    const holders = { assignments: h('div'), discussions: h('div') };
+    const mountedAct = {};
     if (hasLessons) body.appendChild(tabPanel('lessons', lessonsPanel(c, data)));
     body.appendChild(tabPanel('files', files.length
       ? h('ul', { class: 'pf-list' }, files.map(fileItem))
@@ -843,8 +850,15 @@
       ? h('ul', { class: 'pf-list' }, videos.map(videoItem))
       : emptyBox('لا توجد فيديوهات منشورة بعد', 'سيضيف المدرب الفيديوهات التعليمية لهذه الدورة قريبًا.')));
     body.appendChild(tabPanel('quiz', quizPanel(c, data)));
+    if (window.LmsAct) { body.appendChild(tabPanel('assignments', holders.assignments)); body.appendChild(tabPanel('discussions', holders.discussions)); }
     const ctl = ui.tabs(tabsEl, {
-      onSelect: function (name) { try { window.history.replaceState(null, '', '#course=' + c.id + '&tab=' + name); } catch (e) { /* تجاهل */ } }
+      onSelect: function (name) {
+        try { window.history.replaceState(null, '', '#course=' + c.id + '&tab=' + name); } catch (e) { /* تجاهل */ }
+        if (window.LmsAct && (name === 'assignments' || name === 'discussions') && !mountedAct[name]) {
+          mountedAct[name] = true;
+          holders[name].appendChild(name === 'assignments' ? window.LmsAct.assignments(c.id, S.uid) : window.LmsAct.discussions(c.id));
+        }
+      }
     });
     ctl.select(tab && (tab !== 'lessons' || hasLessons) ? tab : (hasLessons ? 'lessons' : 'files'), false);
   }
@@ -908,7 +922,7 @@
       window.Exams.show(ex[1].toLowerCase(), ex[2]);
       return;
     }
-    const m = /^#course=([a-z0-9-]{1,40})(?:&tab=(lessons|files|videos|quiz))?$/.exec(window.location.hash);
+    const m = /^#course=([a-z0-9-]{1,40})(?:&tab=(lessons|files|videos|quiz|assignments|discussions))?$/.exec(window.location.hash);
     if (m) showCourse(m[1], m[2] || '');
     else if (S.view !== 'home') {
       showHome();

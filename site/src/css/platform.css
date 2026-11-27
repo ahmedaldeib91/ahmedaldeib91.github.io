@@ -223,6 +223,8 @@ html:not([data-theme=light]) select.pf-in{color-scheme:dark}
 .pf-orditem .pf-ot{flex:1}.pf-ordbtns{display:flex;gap:6px}
 .pf-fillrow{line-height:2.6;font-size:17px}.pf-blank{display:inline-block;width:auto;min-width:120px;min-height:40px;padding:6px 12px;margin:0 6px;vertical-align:middle}
 .ex-essay{min-height:200px;resize:vertical}.pf-hint.err{color:var(--pf-err)}
+.pf-newthread{margin:0 0 18px}.pf-newthread summary{cursor:pointer;font-weight:600;margin-bottom:10px}
+.pf-posttext,.ex-expl{white-space:pre-wrap}.pf-afiles{margin:8px 0}
 .pf-opt{display:flex;gap:12px;align-items:flex-start;min-height:48px;padding:11px 14px;border-radius:14px;border:1px solid var(--bd);background:var(--glass);cursor:pointer;transition:border-color .2s,background .2s}
 .pf-opt:hover{border-color:var(--lav)}
 .pf-opt.on{border-color:var(--lav);background:rgba(155,107,255,.16)}
