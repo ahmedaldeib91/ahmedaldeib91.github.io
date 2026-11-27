@@ -447,7 +447,9 @@
       S.profile.status !== 'active'
         ? h('p', { class: 'pf-msg err pf-warn', role: 'status', text: 'حسابك موقوف حاليًا، فلا يظهر لك محتوى الدورات. تواصل مع المدرب لمعرفة السبب.' })
         : null,
-      sectionMine(), sectionAvail(), sectionInfo()));
+      sectionMine(),
+      window.Exams ? window.Exams.section({ active: S.profile.status === 'active', courseTitle: function (id) { const c = courseById(id); return c ? c.title_ar : id; } }) : null,
+      sectionAvail(), sectionInfo()));
     $('dash-jump').hidden = false;
   }
 
@@ -776,6 +778,16 @@
   /* ---------- المسارات ---------- */
   function route() {
     if (!S.profile) return;
+    const ex = /^#(exam|attempt|result)=([0-9a-f-]{36})$/i.exec(window.location.hash);
+    if (S.view === 'exam' && !ex && window.Exams) window.Exams.leave();
+    if (ex && window.Exams) {
+      S.nav++;
+      S.view = 'exam';
+      $('dash-jump').hidden = true;
+      window.scrollTo(0, 0);
+      window.Exams.show(ex[1].toLowerCase(), ex[2]);
+      return;
+    }
     const m = /^#course=([a-z0-9-]{1,40})(?:&tab=(files|videos|quiz))?$/.exec(window.location.hash);
     if (m) showCourse(m[1], m[2] || 'files');
     else if (S.view !== 'home') {
@@ -807,6 +819,7 @@
     view.appendChild(loadingBlock('جارٍ تحميل لوحتك…'));
     try { await loadAll(); } catch (err) { handleFatal(err); return; }
     renderHeader();
+    if (window.Exams) window.Exams.setCourseTitles(function (id) { const c = courseById(id); return c ? c.title_ar : id; });
     touchSeen();
     route();
     if (!S.view) showHome();
