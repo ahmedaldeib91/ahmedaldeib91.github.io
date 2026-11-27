@@ -374,9 +374,9 @@ async adopt(t) {
       const r = await authed('PATCH', '/rest/v1/' + table, { query: query, body: patch, headers: { Prefer: 'return=representation' } });
       return Array.isArray(r.json) ? r.json : [];
     },
-    /* (P4) إدراج أو تحديث بمفتاح تعارض واحد: onConflict اسم العمود الفريد */
+    /* (P4) إدراج أو تحديث بمفتاح تعارض: onConflict اسم العمود الفريد أو أعمدة مفصولة بفواصل (المفتاح المركّب). يقبل row كائنًا أو مصفوفة */
     async upsert(table, row, onConflict) {
-      if (!TABLE_RE.test(table) || !/^[a-z_]+$/.test(onConflict || '')) throw new ApiError('other', MSG.other, 0, 'bad_table');
+      if (!TABLE_RE.test(table) || !/^[a-z_]+(,[a-z_]+)*$/.test(onConflict || '')) throw new ApiError('other', MSG.other, 0, 'bad_table');
       const r = await authed('POST', '/rest/v1/' + table, { query: { on_conflict: onConflict }, body: row, headers: { Prefer: 'return=representation,resolution=merge-duplicates' } });
       return Array.isArray(r.json) ? r.json : [];
     },
