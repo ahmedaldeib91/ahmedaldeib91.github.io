@@ -241,6 +241,9 @@ html:not([data-theme=light]) select.pf-in{color-scheme:dark}
 .pf-result p{margin:0;color:#d9ccf0;font-size:15px}
 .pf-result .bar{margin:14px 0 4px;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
 .pf-result .btn{margin-top:14px}
+.pf-lprog{margin:6px 0 4px}.pf-lprog .btn{margin-top:14px}
+.pf-lmod{margin-top:30px}
+.pf-lmod h3{font-size:20px;margin-bottom:8px}
 .pf-hist{margin-top:34px}
 .pf-hist h3{font-size:20px;margin-bottom:8px}
 .pf-hist .tbl{max-width:none}

@@ -91,7 +91,7 @@
   }
 
   /* ================================================================== صفحة الدورة */
-  const HUB_TABS = ['subs', 'files', 'videos', 'questions', 'exams', 'groups'];
+  const HUB_TABS = ['subs', 'lessons', 'files', 'videos', 'questions', 'exams', 'groups'];
   const Q_SUBS = ['bank', 'folders', 'team', 'quick'];
   async function renderCourse(root, token, id, tabArg, subArg, extraArg) {
     const tab = HUB_TABS.indexOf(tabArg) !== -1 ? tabArg : 'subs';
@@ -658,7 +658,7 @@
       tabLabels.videos.textContent = '(' + D.items.filter(function (i) { return i.kind === 'video'; }).length + ')';
       if (tabLabels.quick) tabLabels.quick.textContent = '(' + D.questions.length + ')'; /* يوجد بعد فتح قسم الأسئلة */
     }
-    const MAIN = [['subs', 'الاشتراكات', 'userplus'], ['files', 'الملفات', 'file', true], ['videos', 'الفيديوهات', 'video', true],
+    const MAIN = [['subs', 'الاشتراكات', 'userplus'], ['lessons', 'الدروس', 'book'], ['files', 'الملفات', 'file', true], ['videos', 'الفيديوهات', 'video', true],
       ['questions', 'الأسئلة', 'quiz'], ['exams', 'الاختبارات', 'check'], ['groups', 'المجموعات', 'users']];
     const tabsEl = h('div', { class: 'pf-tabs ad-tabbar', role: 'tablist', 'aria-label': 'أقسام الدورة' },
       MAIN.map(function (t) { return tabButton('c', t[0], t[1], t[2], t[3]); }));
@@ -738,6 +738,11 @@
           lazy('groups', holders.groups, function () {
             if (!A.groups) throw new P.ApiError('other', 'تعذّر تحميل قسم المجموعات. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
             return A.groups.render(holders.groups, id, token, { group: subArg, section: extraArg });
+          });
+        } else if (name === 'lessons') {
+          lazy('lessons', holders.lessons, function () {
+            if (!A.lessons) throw new P.ApiError('other', 'تعذّر تحميل قسم الدروس. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
+            return A.lessons.render(holders.lessons, id, token);
           });
         } else if (name === 'subs') lazy('subs', holders.subs, function () { return A.enrollRender(holders.subs, [], token, { course: id }); });
         else if (name === 'exams') {
