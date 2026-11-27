@@ -608,6 +608,20 @@ begin
 end;
 $$;
 
+create or replace function private.ex_public_settings(s jsonb)
+returns jsonb
+language sql
+immutable
+set search_path = ''
+as $$
+  select jsonb_build_object('allow_back', coalesce((s ->> 'allow_back')::boolean, true),
+                            'allow_flag', coalesce((s ->> 'allow_flag')::boolean, true),
+                            'allow_whiteboard', coalesce((s ->> 'allow_whiteboard')::boolean, false),
+                            'allow_calculator', coalesce((s ->> 'allow_calculator')::boolean, false),
+                            'allow_translation', coalesce((s ->> 'allow_translation')::boolean, false),
+                            'title_ar', s ->> 'title_ar', 'exam_kind', s ->> 'exam_kind', 'security', s -> 'security');
+$$;
+
 -- ================================================================ 6. RPC exam_get_items
 create or replace function private.exam_get_items(p_attempt_id uuid, p_from integer default 1, p_count integer default 3)
 returns jsonb
@@ -620,6 +634,7 @@ declare
   a       public.ex_attempts;
   v_items jsonb;
   v_ans   integer;
+  v_set   jsonb;
 begin
   if p_from is null or p_from < 1 or p_count is null or p_count not between 1 and 10 then
     raise exception 'invalid range' using errcode = '22023';
@@ -630,11 +645,13 @@ begin
     return jsonb_build_object('closed', true, 'status', a.status, 'server_now', now());
   end if;
   update public.ex_attempts x set last_seen_at = now() where x.id = a.id;
+  select private.ex_public_settings(v.settings) into v_set from public.ex_exam_versions v where v.id = a.exam_version_id;
   select coalesce(jsonb_agg(private.ex_public_item(i) order by i.position), '[]'::jsonb) into v_items
     from public.ex_attempt_items i where i.attempt_id = a.id and i.position >= p_from and i.position < p_from + p_count;
   select count(*) into v_ans from public.ex_attempt_items i where i.attempt_id = a.id and i.response is not null;
   return jsonb_build_object('closed', false, 'status', a.status, 'items', v_items, 'item_count', a.item_count,
-                            'answered_count', v_ans, 'deadline_at', a.deadline_at, 'hard_deadline_at', a.hard_deadline_at, 'server_now', now());
+                            'answered_count', v_ans, 'deadline_at', a.deadline_at, 'hard_deadline_at', a.hard_deadline_at,
+                            'server_now', now(), 'settings', v_set);
 end;
 $$;
 
@@ -834,6 +851,7 @@ create or replace function public.exam_release_results(p_exam_id uuid)
 returns integer language sql volatile set search_path = '' as $$ select private.exam_release_results(p_exam_id); $$;
 
 revoke execute on function private.ex_opaque()                                         from public, anon, authenticated;
+revoke execute on function private.ex_public_settings(jsonb)                       from public, anon, authenticated;
 revoke execute on function private.ex_build_option_map(text, jsonb, boolean)           from public, anon, authenticated;
 revoke execute on function private.ex_check_response(text, jsonb, jsonb)               from public, anon, authenticated;
 revoke execute on function private.ex_grade(text, jsonb, jsonb, numeric)               from public, anon, authenticated;
