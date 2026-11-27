@@ -878,4 +878,33 @@ grant execute on function public.exam_attempt_result(uuid)                      
 grant execute on function public.exam_log_event(uuid, text, jsonb)                    to authenticated;
 grant execute on function public.exam_release_results(uuid)                           to authenticated;
 
+-- ================================================================ 13. RPC exam_my_attempts (the caller's own attempts)
+create or replace function private.exam_my_attempts(p_exam_id uuid default null)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_uid uuid := (select auth.uid());
+begin
+  if v_uid is null then
+    raise exception 'forbidden: sign-in required' using errcode = '42501';
+  end if;
+  return coalesce((
+    select jsonb_agg(private.ex_result_json(a) || jsonb_build_object('title_ar', e.title_ar, 'exam_kind', e.exam_kind, 'course_id', a.course_id)
+                     order by a.started_at desc)
+    from (select x.* from public.ex_attempts x where x.user_id = v_uid and (p_exam_id is null or x.exam_id = p_exam_id)
+          order by x.started_at desc limit 100) a
+    join public.ex_exams e on e.id = a.exam_id), '[]'::jsonb);
+end;
+$$;
+create or replace function public.exam_my_attempts(p_exam_id uuid default null)
+returns jsonb language sql stable set search_path = '' as $$ select private.exam_my_attempts(p_exam_id); $$;
+revoke execute on function private.exam_my_attempts(uuid) from public, anon, authenticated;
+revoke execute on function public.exam_my_attempts(uuid)  from public, anon, authenticated;
+grant execute on function private.exam_my_attempts(uuid) to authenticated;
+grant execute on function public.exam_my_attempts(uuid)  to authenticated;
+
 -- ================================================================ ROLLBACK (see docs/exams/rollback-014.sql)
