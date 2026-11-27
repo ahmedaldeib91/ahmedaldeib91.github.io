@@ -59,7 +59,7 @@
   const fmtClock = function (sec) { sec = Math.max(0, Math.floor(sec)); const hh = Math.floor(sec / 3600); const mm = Math.floor((sec % 3600) / 60); return (hh ? hh + ':' + pad2(mm) : pad2(mm)) + ':' + pad2(sec % 60); };
   const fail = function (text, retry) {
     const box = h('div', { class: 'pf-block' }, h('p', { class: 'pf-msg err', role: 'alert', text: text }));
-    if (retry) box.appendChild(h('button', { type: 'button', class: 'btn s', onclick: retry }, 'إعادة المحاولة'));
+    if (retry) box.appendChild(h('button', { type: 'button', class: 'btn s', on: { click: retry } }, 'إعادة المحاولة'));
     return box;
   };
   const backLink = function () { return h('p', null, h('a', { class: 'btn s', href: '#' }, 'العودة إلى لوحتي')); };
@@ -603,7 +603,7 @@
       if (sec.fullscreen_required) {
         const gate = h('div', { class: 'ex-gate', role: 'alertdialog', 'aria-label': 'ملء الشاشة مطلوب', hidden: true },
           h('div', null, h('p', { text: 'هذا الاختبار يتطلب وضع ملء الشاشة.' }),
-            h('button', { type: 'button', class: 'btn p', onclick: function () { if (doc.documentElement.requestFullscreen) doc.documentElement.requestFullscreen().catch(function () { /* تجاهل */ }); } }, 'الدخول في ملء الشاشة')));
+            h('button', { type: 'button', class: 'btn p', on: { click: function () { if (doc.documentElement.requestFullscreen) doc.documentElement.requestFullscreen().catch(function () { /* تجاهل */ }); } } }, 'الدخول في ملء الشاشة')));
         shell.appendChild(gate);
         const onFs = function () {
           const inFs = !!doc.fullscreenElement;
