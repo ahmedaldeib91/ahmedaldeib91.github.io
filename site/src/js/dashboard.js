@@ -953,6 +953,14 @@
     clear(view);
     view.appendChild(loadingBlock('جارٍ تحميل لوحتك…'));
     try { await loadAll(); } catch (err) { handleFatal(err); return; }
+    /* المدير يُوجَّه إلى لوحته مرة واحدة في الجلسة بعد الدخول (ويبقى رابط «لوحة المدرب» لمن أراد لوحة المتدرب) */
+    try {
+      if (S.profile.role === 'admin' && !window.location.hash && !window.sessionStorage.getItem('plat_landed')) {
+        window.sessionStorage.setItem('plat_landed', '1');
+        window.location.replace('/admin/');
+        return;
+      }
+    } catch (e) { /* التخزين محجوب: تبقى لوحة المتدرب */ }
     renderHeader();
     if (window.Exams) window.Exams.setCourseTitles(function (id) { const c = courseById(id); return c ? c.title_ar : id; });
     touchSeen();
