@@ -389,3 +389,16 @@ th[aria-sort=ascending] .ad-sort,th[aria-sort=descending] .ad-sort{color:var(--t
 .ad-qb-rule strong{display:block;margin:0 0 8px}
 .ad-qb-pick{min-width:min(560px,86vw)}
 .ad-qb-pick .pf-check{display:flex;margin:0 0 8px}
+
+/* أنواع الأسئلة (المرحلة A): الصور والمطابقة */
+.ad-qb-mrow{display:flex;align-items:center;gap:12px;padding:10px;margin:0 0 10px;border:1px solid var(--bd);border-radius:16px;background:var(--glass)}
+.ad-qb-mrow .ad-qb-obody{flex:1 1 auto;min-width:0}
+.ad-qb-thumb{flex:0 0 96px;width:96px;height:72px;object-fit:cover;border-radius:12px;background:#000;display:flex;align-items:center;justify-content:center;font-size:12px}
+.ad-qb-msec{margin:0 0 18px}
+.ad-qb-pairrow{display:flex;align-items:center;gap:8px;margin:6px 0}
+.ad-qb-pairrow .pf-in{flex:1 1 auto;min-width:0}
+.ad-qb-pvimgs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+.ad-qb-pvimg{max-width:100%;max-height:320px;border-radius:12px;border:1px solid var(--bd)}
+.pf-match{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pf-mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
+@media (max-width:640px){.pf-mrow{grid-template-columns:1fr}}

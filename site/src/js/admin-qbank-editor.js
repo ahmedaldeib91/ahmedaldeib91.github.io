@@ -35,6 +35,11 @@
   const snap = M.snap;
   const whole = M.whole;
   const buildRequest = M.buildRequest;
+  const SINGLE = M.SINGLE;
+  const MATCH_RANGE = M.MATCH_RANGE;
+  const MATCH_SCORING = M.MATCH_SCORING;
+  const MEDIA_MAX_BYTES = 10 * 1024 * 1024; /* حد دلو exam-media */
+  const MEDIA_MAX_COUNT = 10;
   const validate = M.validate;
 
   /* ================================================================== العرض */
@@ -199,9 +204,10 @@
     function setType(t) {
       if (t === s.type) return;
       s.type = t;
-      if (t === 'mcq_single') s.correct = s.correct.slice(0, 1);
-      while ((t === 'mcq_single' || t === 'multi_response') && s.options.length < 2) s.options.push(mkOpt(newOptId(s.options)));
+      if (SINGLE.indexOf(t) !== -1) s.correct = s.correct.slice(0, 1);
+      while ((SINGLE.indexOf(t) !== -1 || t === 'multi_response') && s.options.length < 2) s.options.push(mkOpt(newOptId(s.options)));
       paintTypeBox();
+      paintMedia();
       changed();
     }
 
@@ -331,11 +337,173 @@
       return box;
     }
 
+    /* ---------- مطابقة: عناصر (يسار) ← خيارات (يمين)، لكل عنصر مطابقة صحيحة واحدة ولا تتكرر ---------- */
+    const clip = function (t, n) { const a = Array.from(String(t || '').replace(/\s+/g, ' ').trim()); return a.length > n ? a.slice(0, n).join('') + '…' : a.join(''); };
+    function matchBlock() {
+      const box = h('div');
+      const pairSels = [];
+      const pairOpts = function () { return [['', '— اختر المطابقة الصحيحة —']].concat(s.right.map(function (r, j) { return [r.id, (j + 1) + '. ' + (clip(r.text, 40) || '…')]; })); };
+      const refreshPairs = function () { pairSels.forEach(function (x) { QB.setOptions(x.sel, pairOpts(), s.pairs[x.id] || ''); }); };
+      const rebuild = function (focusSel) { paintTypeBox(); changed(); if (focusSel) { const el = typeBox.querySelector(focusSel); if (el) el.focus(); } };
+      function itemRow(list, kind, o, i) {
+        const left = kind === 'left';
+        const pre = left ? 'lt' : 'rt';
+        const noun = left ? 'العنصر' : 'الخيار';
+        const rg = MATCH_RANGE[kind];
+        const txt = A.input({ max: MAX.opt, value: o.text, aria: 'نص ' + noun + ' ' + (i + 1), placeholder: 'نص ' + noun + ' ' + (i + 1) });
+        txt.setAttribute('dir', 'auto');
+        F[pre + '-' + i] = txt;
+        const err = h('p', { class: 'pf-ferr', id: txt.id + '-err', hidden: true });
+        txt.setAttribute('aria-describedby', err.id);
+        txt.addEventListener('input', function () { o.text = txt.value; if (!left) refreshPairs(); changed(); });
+        const kids = [txt, err];
+        if (left) {
+          const sel = A.select(pairOpts(), s.pairs[o.id] || '', { aria: 'المطابقة الصحيحة للعنصر ' + (i + 1) });
+          F['pair-' + i] = sel;
+          pairSels.push({ id: o.id, sel: sel });
+          const errp = h('p', { class: 'pf-ferr', id: sel.id + '-err', hidden: true });
+          sel.setAttribute('aria-describedby', errp.id);
+          sel.addEventListener('change', function () { if (sel.value) s.pairs[o.id] = sel.value; else delete s.pairs[o.id]; changed(); });
+          const ex = A.textarea({ max: MAX.optx, rows: 2, value: o.expl, placeholder: 'شرح هذه المطابقة (اختياري)', aria: 'شرح العنصر ' + (i + 1) });
+          ex.setAttribute('dir', 'auto');
+          F['ltx-' + i] = ex;
+          const errx = h('p', { class: 'pf-ferr', id: ex.id + '-err', hidden: true });
+          ex.setAttribute('aria-describedby', errx.id);
+          ex.addEventListener('input', function () { o.expl = ex.value; changed(); });
+          kids.push(h('div', { class: 'ad-qb-pairrow' }, h('span', { class: 'pf-hint', text: 'مطابقته:' }), sel), errp, ex, errx);
+        }
+        const move = function (d) { return function () { const j = i + d; if (j < 0 || j >= list.length) return; list.splice(j, 0, list.splice(i, 1)[0]); rebuild(); }; };
+        const up = A.ibtn('up', 'تحريك ' + noun + ' ' + (i + 1) + ' للأعلى', move(-1));
+        const down = A.ibtn('down', 'تحريك ' + noun + ' ' + (i + 1) + ' للأسفل', move(1));
+        up.disabled = i === 0;
+        down.disabled = i === list.length - 1;
+        const rm = A.ibtn('trash', 'حذف ' + noun + ' ' + (i + 1), function () {
+          list.splice(i, 1);
+          if (left) delete s.pairs[o.id]; else Object.keys(s.pairs).forEach(function (k) { if (s.pairs[k] === o.id) delete s.pairs[k]; });
+          rebuild();
+        }, 'danger');
+        rm.disabled = list.length <= rg[0];
+        return h('div', { class: 'ad-qb-opt' }, h('div', { class: 'ad-qb-obody' }, kids), h('div', { class: 'ad-qb-obtns' }, up, down, rm));
+      }
+      function section(kind, title, hint) {
+        const list = kind === 'left' ? s.left : s.right;
+        const rg = MATCH_RANGE[kind];
+        const sec = h('div', { class: 'ad-qb-msec ad-qb-msec-' + kind });
+        sec.appendChild(h('p', { class: 'ad-optlegend', text: title + ' (من ' + rg[0] + ' إلى ' + rg[1] + ')' }));
+        if (hint) sec.appendChild(h('p', { class: 'pf-hint', text: hint }));
+        sec.appendChild(h('div', { class: 'ad-qb-opts' }, list.map(function (o, i) { return itemRow(list, kind, o, i); })));
+        sec.appendChild(gerr(kind));
+        const add = A.btn(kind === 'left' ? 'إضافة عنصر' : 'إضافة خيار', { small: true, icon: 'plus', disabled: list.length >= rg[1] });
+        add.addEventListener('click', function () { list.push(mkOpt(newOptId(list))); rebuild('.ad-qb-msec-' + kind + ' .ad-qb-opt:last-child input[type="text"]'); });
+        sec.appendChild(h('div', { class: 'ad-act' }, add));
+        return sec;
+      }
+      box.appendChild(section('right', 'خيارات المطابقة (العمود الثاني)', 'يمكن أن تزيد الخيارات على العناصر لتكون مشتّتات لا تطابق أي عنصر.'));
+      box.appendChild(section('left', 'العناصر المراد مطابقتها (العمود الأول)', 'اختر لكل عنصر مطابقته الصحيحة من الخيارات أعلاه؛ لا يتكرر خيار لعنصرين.'));
+      const sc = A.select(MATCH_SCORING, s.scoring);
+      F.scoring = sc;
+      sc.addEventListener('change', function () { s.scoring = sc.value; changed(); });
+      box.appendChild(h('div', { class: 'ad-qb-multi' }, A.field('قاعدة التصحيح', sc, 'تُطبَّق عند تصحيح المحاولات في مرحلة لاحقة؛ تُحفظ الآن مع مفتاح الإجابة. يُخلط ترتيب العناصر والخيارات عند عرضها للمتدرب.')));
+      return box;
+    }
+
+    /* ---------- الصور المرفقة (دلو exam-media الخاص بالدورة) ----------
+       الصورة تُرفع إلى <الدورة>/<uuid>.<امتداد> وتُسجَّل في qb_media ثم يُحفظ معرّفها في payload.media مع السؤال.
+       «إزالة» تفصل الصورة عن هذا السؤال فقط (تبقى للإصدارات السابقة). لا تُشارك الصور بين الدورات. */
+    const MI = {}; /* معرّف ← صف qb_media */
+    const MU = {}; /* معرّف ← {url, alt} لمعاينة المحرر */
+    const mediaBox = h('div', { class: 'ad-qb-media' });
+    const mediaMsg = A.msgBox();
+    const mediaErr = gerr('media');
+    const mediaFile = h('input', { type: 'file', class: 'pf-in', id: A.nid('qbimg'), accept: 'image/png,image/jpeg,image/webp,image/gif' });
+    const mediaWrap = A.field('إضافة صورة', mediaFile, 'PNG أو JPG أو WEBP أو GIF حتى ١٠ ميغابايت (بحد أقصى ' + MEDIA_MAX_COUNT + ' صور لكل سؤال). تخص هذه الدورة وحدها.');
+    async function loadMedia(ids) {
+      const need = ids.filter(function (id) { return !MI[id]; });
+      if (need.length) {
+        const rows = await P.rest.select('qb_media', { select: 'id,storage_path,mime_type,alt_ar,width,height', course_id: 'eq.' + course, id: 'in.(' + need.join(',') + ')' });
+        rows.forEach(function (r) { MI[r.id] = r; });
+      }
+      await Promise.all(ids.map(async function (id) {
+        const r = MI[id];
+        if (!r || (MU[id] && MU[id].url)) return;
+        try { MU[id] = { url: await P.storage.signedUrl('exam-media', r.storage_path, 3600), alt: r.alt_ar || '' }; } catch (e) { MU[id] = { url: '', alt: r.alt_ar || '' }; }
+      }));
+    }
+    function paintMedia() {
+      A.clear(mediaBox);
+      if (!s.media.length) { mediaBox.appendChild(h('p', { class: 'pf-hint', text: s.type === 'graphic' ? 'لا توجد صور بعد. السؤال المصوّر يحتاج صورة واحدة على الأقل.' : 'لا توجد صور مرفقة (اختياري).' })); return; }
+      s.media.forEach(function (id, i) {
+        const info = MI[id];
+        const u = MU[id] && MU[id].url;
+        const img = u ? h('img', { class: 'ad-qb-thumb', src: u, alt: (info && info.alt_ar) || '', loading: 'lazy' }) : h('div', { class: 'ad-qb-thumb ad-muted', text: 'تعذّر عرض الصورة' });
+        const alt = A.input({ max: 1000, value: (info && info.alt_ar) || '', aria: 'النص البديل للصورة ' + (i + 1), placeholder: 'نص بديل يصف الصورة (لقارئ الشاشة)' });
+        alt.setAttribute('dir', 'auto');
+        alt.addEventListener('change', async function () {
+          if (!info) return;
+          try {
+            const up = await P.rest.update('qb_media', { id: 'eq.' + id, course_id: 'eq.' + course }, { alt_ar: alt.value.trim() || null });
+            if (!up.length) throw A.noRows();
+            info.alt_ar = alt.value.trim() || null;
+            if (MU[id]) MU[id].alt = info.alt_ar || '';
+            ui.clearMsg(mediaMsg);
+            paintPreview();
+          } catch (err) { if (A.isSession(err)) { A.lost('expired'); return; } QB.say(mediaMsg, err, 'save'); }
+        });
+        const move = function (d) { return function () { const j = i + d; if (j < 0 || j >= s.media.length) return; s.media.splice(j, 0, s.media.splice(i, 1)[0]); paintMedia(); changed(); }; };
+        const up2 = A.ibtn('up', 'تحريك الصورة ' + (i + 1) + ' للأعلى', move(-1));
+        const down2 = A.ibtn('down', 'تحريك الصورة ' + (i + 1) + ' للأسفل', move(1));
+        up2.disabled = i === 0;
+        down2.disabled = i === s.media.length - 1;
+        const rm = A.ibtn('trash', 'إزالة الصورة ' + (i + 1) + ' من هذا السؤال', function () { s.media.splice(i, 1); paintMedia(); changed(); }, 'danger');
+        mediaBox.appendChild(h('div', { class: 'ad-qb-mrow' }, img, h('div', { class: 'ad-qb-obody' }, alt), h('div', { class: 'ad-qb-obtns' }, up2, down2, rm)));
+      });
+    }
+    const imgSize = function (file) {
+      return new Promise(function (resolve) {
+        const url = URL.createObjectURL(file);
+        const im = new Image();
+        im.onload = function () { URL.revokeObjectURL(url); resolve({ width: im.naturalWidth || null, height: im.naturalHeight || null }); };
+        im.onerror = function () { URL.revokeObjectURL(url); resolve({ width: null, height: null }); };
+        im.src = url;
+      });
+    };
+    mediaFile.addEventListener('change', async function () {
+      const file = mediaFile.files && mediaFile.files[0];
+      if (!file) return;
+      ui.clearMsg(mediaMsg);
+      const chk = A.checkFile(file, { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' });
+      let bad = chk.error || '';
+      if (!bad && file.size > MEDIA_MAX_BYTES) bad = 'حجم الصورة (' + A.sizeText(file.size) + ') أكبر من الحد المسموح (١٠ ميغابايت).';
+      if (!bad && s.media.length >= MEDIA_MAX_COUNT) bad = 'الحد الأقصى ' + MEDIA_MAX_COUNT + ' صور لكل سؤال.';
+      if (bad) { ui.msg(mediaMsg, 'err', bad); mediaFile.value = ''; return; }
+      mediaFile.disabled = true;
+      ui.msg(mediaMsg, 'info', 'جارٍ رفع الصورة…');
+      const path = course + '/' + A.uuid() + '.' + chk.ext;
+      let uploaded = false;
+      try {
+        const dim = await imgSize(file);
+        await P.storage.upload('exam-media', path, file, { contentType: chk.contentType });
+        uploaded = true;
+        const rows = await P.rest.insert('qb_media', { course_id: course, storage_path: path, mime_type: chk.contentType, byte_size: file.size, width: dim.width, height: dim.height });
+        if (!rows.length) throw A.noRows();
+        MI[rows[0].id] = rows[0];
+        s.media.push(rows[0].id);
+        await loadMedia([rows[0].id]);
+        ui.msg(mediaMsg, 'ok', 'أُضيفت الصورة. اكتب نصًا بديلًا يصفها ثم احفظ السؤال.');
+        paintMedia();
+        changed();
+      } catch (err) {
+        if (uploaded) { try { await P.storage.remove('exam-media', [path]); } catch (e2) { /* تجاهل */ } }
+        if (A.isSession(err)) { A.lost('expired'); return; }
+        QB.say(mediaMsg, err, 'save');
+      } finally { mediaFile.value = ''; mediaFile.disabled = false; }
+    });
+
     function paintTypeBox() {
-      Object.keys(F).forEach(function (k) { if (/^(opt|optx)-\d+$|^(min|max|scoring|tfTrue|tfFalse|tfExplTrue|tfExplFalse)$/.test(k)) delete F[k]; });
-      ['options', 'correct', 'tf'].forEach(function (k) { delete G[k]; });
+      Object.keys(F).forEach(function (k) { if (/^(opt|optx|lt|ltx|rt|pair)-\d+$|^(min|max|scoring|tfTrue|tfFalse|tfExplTrue|tfExplFalse)$/.test(k)) delete F[k]; });
+      ['options', 'correct', 'tf', 'left', 'right'].forEach(function (k) { delete G[k]; });
       A.clear(typeBox);
-      typeBox.appendChild(s.type === 'true_false' ? tfBlock() : optsBlock());
+      typeBox.appendChild(s.type === 'true_false' ? tfBlock() : (s.type === 'matching' ? matchBlock() : optsBlock()));
       if (typeSel.value !== s.type) typeSel.value = s.type;
     }
 
@@ -412,7 +580,10 @@
     function paintPreview() {
       const p = { stem: { text: s.stem } };
       if (s.type === 'true_false') p.labels = { 'true': s.tfTrue.trim(), 'false': s.tfFalse.trim() };
-      else {
+      else if (s.type === 'matching') {
+        p.left = s.left.map(function (o) { return { id: o.id, text: o.text }; });
+        p.right = s.right.map(function (o) { return { id: o.id, text: o.text }; });
+      } else {
         p.options = s.options.map(function (o) { return { id: o.id, text: o.text }; });
         if (s.type === 'multi_response') {
           if (s.min.trim() !== '' && whole(s.min) >= 1) p.min_select = whole(s.min);
@@ -421,7 +592,7 @@
       }
       if (s.media.length) p.media = s.media;
       A.clear(pvBox);
-      pvBox.appendChild(QB.preview(s.type, p));
+      pvBox.appendChild(QB.preview(s.type, p, MU));
     }
 
     /* ---------- بقية الحقول ---------- */
@@ -454,7 +625,7 @@
       h('div', { class: 'ad-cols' }, typeField, A.field('لغة نص السؤال', langSel, 'العربية للنص العربي. نص إنجليزي ثانٍ غير مدعوم بعد.')),
       A.field('نص السؤال', stem, 'نص عادي: الأسطر الجديدة تُحفظ ولا يُفسَّر HTML.'), stemCount,
       typeBox,
-      s.media.length ? h('p', { class: 'ad-note', text: 'يرتبط هذا السؤال بـ ' + s.media.length + ' مرفق. تُحفظ المرفقات كما هي مع كل إصدار جديد ولا تُعدَّل من هذا المحرر. رفع المرفقات الجديدة غير مدعوم بعد.' }) : h('p', { class: 'pf-hint', text: 'المرفقات (الصور والملفات) غير مدعومة بعد في هذا المحرر.' })
+      h('b', { text: 'الصور المرفقة' }), mediaBox, mediaWrap, mediaMsg, mediaErr
     ]);
     const card2 = A.card('التصنيف والدرجة والوسوم', [
       h('div', { class: 'ad-cols' }, A.field('الصعوبة', diffSel), A.field('الدرجة', pointsIn, 'الدرجة التي يحصل عليها المتدرب عند الإجابة الصحيحة.'), A.field('الوزن', weightIn, 'يُستعمل في اختيار الأسئلة وحساب النتائج لاحقًا (من ٠ إلى ١٠٠).')),
@@ -514,7 +685,11 @@
     paintTypeBox();
     fillTax();
     paintTags();
+    paintMedia();
     paintPreview();
+    if (s.media.length) {
+      loadMedia(s.media).then(function () { if (alive()) { paintMedia(); paintPreview(); } }).catch(function () { /* المعاينة تعمل بلا صور */ });
+    }
 
     /* ---------- الحفظ ---------- */
     async function save(back) {

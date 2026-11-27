@@ -14,10 +14,17 @@
   if (!A || !A.qb) return;
   const QB = A.qb;
 
-  const SUPPORTED = ['mcq_single', 'multi_response', 'true_false'];
-  const RANGE = { mcq_single: [2, 10], multi_response: [2, 15] };
+  const SUPPORTED = ['mcq_single', 'multi_response', 'true_false', 'graphic', 'matching'];
+  const RANGE = { mcq_single: [2, 10], multi_response: [2, 15], graphic: [2, 10] };
+  const MATCH_RANGE = { left: [2, 10], right: [2, 12] };
+  const SINGLE = ['mcq_single', 'graphic']; /* أنواع الإجابة الواحدة من خيارات نصية */
   const MAX = { stem: 10000, opt: 2000, optx: 4000, fb: 4000, expl: 20000, ref: 2000, label: 200, tag: 80 };
   const LIM = { payload: 65536, key: 16384, req: 196608 };
+  const MATCH_SCORING = [
+    ['all_or_nothing', 'الكل أو لا شيء: درجة كاملة فقط عند مطابقة كل الأزواج صحيحة'],
+    ['partial', 'جزئي: درجة تتناسب مع عدد الأزواج الصحيحة'],
+    ['partial_penalty', 'جزئي مع خصم: يُخصم من الدرجة عن كل زوج خاطئ']
+  ];
   const SCORING = [
     ['all_or_nothing', 'الكل أو لا شيء: درجة كاملة فقط عند اختيار الإجابات الصحيحة كلها بلا زيادة'],
     ['partial', 'جزئي: درجة تتناسب مع عدد الإجابات الصحيحة المختارة'],
@@ -37,6 +44,7 @@
     return {
       type: 'mcq_single', stem: '', lang: 'ar', options: [mkOpt('a'), mkOpt('b')], correct: [],
       tf: '', tfTrue: '', tfFalse: '', tfExplTrue: '', tfExplFalse: '', min: '', max: '', scoring: 'all_or_nothing',
+      left: [mkOpt('l1'), mkOpt('l2')], right: [mkOpt('r1'), mkOpt('r2')], pairs: {},
       points: '1', weight: '1', difficulty: 'medium', dom: '', top: '', sub: '', tagIds: [],
       fbOk: '', fbBad: '', expl: '', ref: '', status: 'draft', media: []
     };
@@ -57,9 +65,14 @@
       s.tfFalse = typeof lb['false'] === 'string' ? lb['false'] : '';
       s.tfExplTrue = typeof oe['true'] === 'string' ? oe['true'] : '';
       s.tfExplFalse = typeof oe['false'] === 'string' ? oe['false'] : '';
+    } else if (s.type === 'matching') {
+      s.left = (Array.isArray(payload.left) ? payload.left : []).map(function (o) { return mkOpt(String(o.id), String(o.text), typeof oe[o.id] === 'string' ? oe[o.id] : ''); });
+      s.right = (Array.isArray(payload.right) ? payload.right : []).map(function (o) { return mkOpt(String(o.id), String(o.text)); });
+      s.pairs = key.pairs && typeof key.pairs === 'object' ? Object.assign({}, key.pairs) : {};
+      s.scoring = key.scoring || 'all_or_nothing';
     } else {
       s.options = (Array.isArray(payload.options) ? payload.options : []).map(function (o) { return mkOpt(String(o.id), String(o.text), typeof oe[o.id] === 'string' ? oe[o.id] : ''); });
-      s.correct = s.type === 'mcq_single' ? (typeof key.correct === 'string' ? [key.correct] : []) : (Array.isArray(key.correct) ? key.correct.map(String) : []);
+      s.correct = SINGLE.indexOf(s.type) !== -1 ? (typeof key.correct === 'string' ? [key.correct] : []) : (Array.isArray(key.correct) ? key.correct.map(String) : []);
       if (s.type === 'multi_response') {
         s.min = payload.min_select === undefined || payload.min_select === null ? '' : String(payload.min_select);
         s.max = payload.max_select === undefined || payload.max_select === null ? '' : String(payload.max_select);
@@ -84,7 +97,7 @@
   }
   function snap(s) {
     return JSON.stringify([s.type, s.stem, s.lang, s.options.map(function (o) { return [o.id, o.text, o.expl]; }), s.correct.slice().sort(), s.tf, s.tfTrue, s.tfFalse,
-      s.tfExplTrue, s.tfExplFalse, s.min, s.max, s.scoring, s.points, s.weight, s.difficulty, s.dom, s.top, s.sub, s.tagIds.slice().sort(), s.fbOk, s.fbBad, s.expl, s.ref, s.status]);
+      s.tfExplTrue, s.tfExplFalse, s.min, s.max, s.scoring, s.left.map(function (o) { return [o.id, o.text, o.expl]; }), s.right.map(function (o) { return [o.id, o.text]; }), s.pairs, s.media, s.points, s.weight, s.difficulty, s.dom, s.top, s.sub, s.tagIds.slice().sort(), s.fbOk, s.fbBad, s.expl, s.ref, s.status]);
   }
 
   /* ---------- أرقام ---------- */
@@ -111,10 +124,17 @@
       key.correct = s.tf;
       if (s.tfExplTrue.trim()) oe['true'] = s.tfExplTrue.trim();
       if (s.tfExplFalse.trim()) oe['false'] = s.tfExplFalse.trim();
+    } else if (s.type === 'matching') {
+      payload.left = s.left.map(function (o) { return { id: o.id, text: o.text.trim() }; });
+      payload.right = s.right.map(function (o) { return { id: o.id, text: o.text.trim() }; });
+      s.left.forEach(function (o) { if (o.expl.trim()) oe[o.id] = o.expl.trim(); });
+      key.pairs = {};
+      s.left.forEach(function (o) { key.pairs[o.id] = s.pairs[o.id]; });
+      key.scoring = s.scoring;
     } else {
       payload.options = s.options.map(function (o) { return { id: o.id, text: o.text.trim() }; });
       s.options.forEach(function (o) { if (o.expl.trim()) oe[o.id] = o.expl.trim(); });
-      if (s.type === 'mcq_single') key.correct = s.correct[0];
+      if (SINGLE.indexOf(s.type) !== -1) key.correct = s.correct[0];
       else {
         if (s.min.trim() !== '') payload.min_select = whole(s.min);
         if (s.max.trim() !== '') payload.max_select = whole(s.max);
@@ -133,6 +153,41 @@
     return req;
   }
 
+  /* مطابقة: عناصر اليمين واليسار، وزوج صحيح واحد لكل عنصر أيسر، ولا يتكرر عنصر أيمن (يطابق private.qb_validate_matching) */
+  function validateMatching(s, add) {
+    const lr = MATCH_RANGE.left;
+    const rr = MATCH_RANGE.right;
+    if (s.left.length < lr[0] || s.left.length > lr[1]) add('left', 'عدد العناصر المراد مطابقتها يجب أن يكون من ' + lr[0] + ' إلى ' + lr[1] + '.');
+    if (s.right.length < rr[0] || s.right.length > rr[1]) add('right', 'عدد خيارات المطابقة يجب أن يكون من ' + rr[0] + ' إلى ' + rr[1] + '.');
+    if (s.right.length < s.left.length) add('right', 'خيارات المطابقة يجب ألا تقل عن عدد العناصر المراد مطابقتها.');
+    const dup = function (list, prefix, noun) {
+      const seen = {};
+      list.forEach(function (o, i) {
+        const t = o.text.trim();
+        if (!t) add(prefix + '-' + i, 'اكتب نص ' + noun + ' ' + (i + 1) + '.');
+        else {
+          if (QB.len(t) > MAX.opt) add(prefix + '-' + i, 'نص ' + noun + ' ' + (i + 1) + ' طويل (الحد ' + A.num(MAX.opt) + ' حرف).');
+          const k = A.normAr(t);
+          if (seen[k] !== undefined) add(prefix + '-' + i, noun + ' ' + (i + 1) + ' يطابق ' + noun + ' ' + (seen[k] + 1) + ': يجب أن تكون مختلفة.');
+          else seen[k] = i;
+        }
+      });
+    };
+    dup(s.left, 'lt', 'العنصر');
+    dup(s.right, 'rt', 'الخيار');
+    s.left.forEach(function (o, i) { if (QB.len(o.expl.trim()) > MAX.optx) add('ltx-' + i, 'شرح العنصر ' + (i + 1) + ' طويل (الحد ' + A.num(MAX.optx) + ' حرف).'); });
+    const used = {};
+    const rightIds = {};
+    s.right.forEach(function (o) { rightIds[o.id] = true; });
+    s.left.forEach(function (o, i) {
+      const r = s.pairs[o.id];
+      if (!r || !rightIds[r]) add('pair-' + i, 'اختر المطابقة الصحيحة للعنصر ' + (i + 1) + '.');
+      else if (used[r]) add('pair-' + i, 'هذا الخيار مستعمل لعنصر آخر: لكل عنصر مطابقة مختلفة.');
+      else used[r] = true;
+    });
+    if (MATCH_SCORING.every(function (x) { return x[0] !== s.scoring; })) add('scoring', 'اختر قاعدة التصحيح.');
+  }
+
   /* ---------- التحقق (يطابق private.qb_validate_* والقيود) → [{f: الحقل, m: الرسالة}] ---------- */
   function validate(s, course, qid) {
     const errs = [];
@@ -142,7 +197,8 @@
     else if (QB.len(stem) > MAX.stem) add('stem', 'نص السؤال طويل جدًا (الحد ' + A.num(MAX.stem) + ' حرف).');
     if (SUPPORTED.indexOf(s.type) === -1) add('type', 'نوع السؤال غير مدعوم في هذا المحرر.');
 
-    if (s.type === 'mcq_single' || s.type === 'multi_response') {
+    if (s.type === 'graphic' && !s.media.length) add('media', 'أضف صورة واحدة على الأقل: السؤال المصوّر يحتاج صورة.');
+    if (s.type === 'mcq_single' || s.type === 'multi_response' || s.type === 'graphic') {
       const rg = RANGE[s.type];
       const n = s.options.length;
       if (n < rg[0] || n > rg[1]) add('options', 'عدد الخيارات يجب أن يكون من ' + rg[0] + ' إلى ' + rg[1] + '.');
@@ -159,7 +215,7 @@
         if (QB.len(o.expl.trim()) > MAX.optx) add('optx-' + i, 'شرح الخيار ' + (i + 1) + ' طويل (الحد ' + A.num(MAX.optx) + ' حرف).');
       });
       const c = s.correct.length;
-      if (s.type === 'mcq_single') {
+      if (SINGLE.indexOf(s.type) !== -1) {
         if (c !== 1) add('correct', 'حدّد الإجابة الصحيحة (واحدة فقط).');
       } else {
         if (c < 1) add('correct', 'حدّد إجابة صحيحة واحدة على الأقل.');
@@ -175,6 +231,8 @@
         if (c >= 1 && (c < lo || c > hi)) add('correct', 'عدد الإجابات الصحيحة (' + c + ') خارج المدى المسموح للاختيار (من ' + lo + ' إلى ' + hi + ').');
         if (SCORING.every(function (x) { return x[0] !== s.scoring; })) add('scoring', 'اختر قاعدة التصحيح.');
       }
+    } else if (s.type === 'matching') {
+      validateMatching(s, add);
     } else if (s.type === 'true_false') {
       if (s.tf !== 'true' && s.tf !== 'false') add('tf', 'حدّد الإجابة الصحيحة: صح أو خطأ.');
       if (QB.len(s.tfTrue.trim()) > MAX.label) add('tfTrue', 'نص خيار «صح» طويل (الحد ' + MAX.label + ' حرف).');
@@ -203,7 +261,7 @@
   }
 
   QB.model = {
-    SUPPORTED: SUPPORTED, RANGE: RANGE, MAX: MAX, LIM: LIM, SCORING: SCORING,
+    SUPPORTED: SUPPORTED, RANGE: RANGE, MATCH_RANGE: MATCH_RANGE, SINGLE: SINGLE, MAX: MAX, LIM: LIM, SCORING: SCORING, MATCH_SCORING: MATCH_SCORING,
     mkOpt: mkOpt, newOptId: newOptId, blank: blank, fromRows: fromRows, snap: snap,
     decimal: decimal, whole: whole, nz: nz, buildRequest: buildRequest, validate: validate
   };

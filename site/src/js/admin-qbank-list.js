@@ -124,9 +124,17 @@
       const edit = h('a', { class: 'ad-ibtn', href: QB.href(course, 'edit', row.id), 'aria-label': 'تعديل السؤال', title: 'تعديل' }, A.icon('pen'));
       const copy = h('a', { class: 'ad-ibtn', href: QB.href(course, 'copy', row.id), 'aria-label': 'نسخ السؤال إلى سؤال جديد', title: 'نسخ' }, QB.icon('copy'));
       const prev = A.ibtn('eye', 'معاينة السؤال كما يراه المتدرب', function () {
+        const holder = h('div', null, QB.preview(v.type_code, v.payload));
         QB.modal('معاينة السؤال', h('div', null,
           h('p', { class: 'ad-sub', text: 'هكذا يراه المتدرب: بلا إجابة صحيحة ولا شرح. معاينة فقط ولا يُحفظ شيء.' }),
-          QB.preview(v.type_code, v.payload)));
+          holder));
+        if (v.payload && Array.isArray(v.payload.media) && v.payload.media.length) {
+          QB.mediaUrls(course, v.payload.media).then(function (urls) {
+            if (!holder.isConnected) return;
+            A.clear(holder);
+            holder.appendChild(QB.preview(v.type_code, v.payload, urls));
+          }).catch(function () { /* تبقى المعاينة بلا صور */ });
+        }
       });
       const tog = A.ibtn(sBtn ? 'archive' : 'check', sBtn ? 'تعطيل السؤال' : 'تفعيل السؤال', null);
       tog.addEventListener('click', QB.run(tog, out, 'row', async function () {

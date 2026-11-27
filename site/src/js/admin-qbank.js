@@ -255,11 +255,34 @@
   /* ---------- معاينة السؤال كما يراه المتدرب ----------
      تُبنى من الحمولة العامة (payload) وحدها: لا مفتاح ولا شرح ولا أي علامة على الإجابة الصحيحة. التصحيح غير مفعّل هنا.
      النص نص عادي (الأسطر تُحفظ بـ white-space:pre-line في CSS) ولا يُفسَّر HTML أبدًا. */
-  QB.preview = function (type, payload) {
+  QB.preview = function (type, payload, urls) {
     payload = payload && typeof payload === 'object' ? payload : {};
     const stem = payload.stem && typeof payload.stem.text === 'string' ? payload.stem.text : '';
     const multi = type === 'multi_response';
     const nm = A.nid('qbpv');
+    /* الصور: تُعرض إن توفّرت روابطها الموقّعة (urls: معرّف ← {url, alt})؛ وإلا يُذكر عددها فقط */
+    const ids = Array.isArray(payload.media) ? payload.media : [];
+    const shown = ids.filter(function (id) { return urls && urls[id] && urls[id].url; });
+    const figs = shown.length ? h('div', { class: 'ad-qb-pvimgs' }, shown.map(function (id) {
+      return h('img', { class: 'ad-qb-pvimg', src: urls[id].url, alt: urls[id].alt || '', loading: 'lazy' });
+    })) : null;
+    const hidden = ids.length - shown.length;
+    const mediaNote = hidden > 0 ? h('p', { class: 'pf-hint', text: 'يحتوي السؤال على ' + hidden + ' مرفق لا يُعرض في هذه المعاينة.' }) : null;
+    if (type === 'matching') {
+      const right = Array.isArray(payload.right) ? payload.right : [];
+      const left = Array.isArray(payload.left) ? payload.left : [];
+      const rows = left.map(function (it, i) {
+        const sid = nm + '-m' + i;
+        const sel = h('select', { class: 'pf-in', id: sid, 'aria-label': 'مطابقة العنصر ' + (i + 1) },
+          [h('option', { value: '', text: '— اختر —' })].concat(right.map(function (r) { return h('option', { value: String(r.id), text: String(r.text || '—') }); })));
+        return h('li', { class: 'pf-mrow' }, h('label', { for: sid, class: 'pf-mtext', dir: 'auto', text: String(it.text || '—') }), sel);
+      });
+      return h('div', { class: 'ad-qb-pv' },
+        h('ol', { class: 'pf-qlist' }, h('li', { class: 'pf-q' }, h('fieldset', null,
+          h('legend', null, h('span', { class: 'qn', text: '1' }), h('span', { class: 'pf-qtext', dir: 'auto', text: stem || '—' })),
+          figs, h('p', { class: 'pf-hint', text: 'طابق كل عنصر بالخيار المناسب.' }), h('ol', { class: 'pf-match' }, rows)))),
+        mediaNote);
+    }
     let items = [];
     if (type === 'true_false') {
       const lb = payload.labels && typeof payload.labels === 'object' ? payload.labels : {};
@@ -288,12 +311,22 @@
       else if (hasMx) t = 'اختر ' + mx + ' إجابات على الأكثر.';
       hint = h('p', { class: 'pf-hint', text: t });
     }
-    const media = Array.isArray(payload.media) ? payload.media.length : 0;
     return h('div', { class: 'ad-qb-pv' },
       h('ol', { class: 'pf-qlist' }, h('li', { class: 'pf-q' }, h('fieldset', null,
         h('legend', null, h('span', { class: 'qn', text: '1' }), h('span', { class: 'pf-qtext', dir: 'auto', text: stem || '—' })),
-        hint, opts))),
-      media ? h('p', { class: 'pf-hint', text: 'يحتوي السؤال على ' + media + ' مرفق لا يُعرض في المعاينة.' }) : null);
+        figs, hint, opts))),
+      mediaNote);
+  };
+
+  /* روابط موقّعة (ساعة) لصور سؤال من دلو exam-media: معرّف ← {url, alt}. لا تُحفظ ولا تُسجَّل */
+  QB.mediaUrls = async function (course, ids) {
+    const out = {};
+    if (!ids.length) return out;
+    const rows = await P.rest.select('qb_media', { select: 'id,storage_path,alt_ar', course_id: 'eq.' + course, id: 'in.(' + ids.join(',') + ')' });
+    await Promise.all(rows.map(async function (r) {
+      try { out[r.id] = { url: await P.storage.signedUrl('exam-media', r.storage_path, 3600), alt: r.alt_ar || '' }; } catch (e) { /* بلا صورة */ }
+    }));
+    return out;
   };
 
   /* ---------- القسم ---------- */
