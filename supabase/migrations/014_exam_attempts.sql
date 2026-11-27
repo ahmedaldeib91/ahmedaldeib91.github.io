@@ -228,8 +228,9 @@ end;
 $$;
 
 -- auto grader: REAL-id response vs key. Returns the score for the question (0..points).
--- multi_response / matching scoring: all_or_nothing = full only when exact; partial = proportional but 0 as soon
--- as a wrong pick exists; partial_penalty = (right - wrong) / total, floor 0.
+-- scoring: all_or_nothing = full only when exact; partial = proportional to the right picks (multi_response: 0 as soon
+-- as a wrong pick exists, so choosing everything never pays; matching: right pairs / total); partial_penalty =
+-- (right - wrong) / total, floor 0.
 create or replace function private.ex_grade(p_type text, p_resp jsonb, p_key jsonb, p_points numeric)
 returns numeric
 language plpgsql
@@ -267,7 +268,7 @@ begin
     return 0;
   end if;
   r := case v_scoring
-         when 'partial' then case when v_wrong = 0 then v_right::numeric / v_total else 0 end
+         when 'partial' then case when p_type = 'matching' or v_wrong = 0 then v_right::numeric / v_total else 0 end
          when 'partial_penalty' then greatest(0, (v_right - v_wrong)::numeric / v_total)
          else case when v_right = v_total and v_wrong = 0 then 1 else 0 end
        end;
