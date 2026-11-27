@@ -626,7 +626,7 @@ async adopt(t) {
     } else if (host === 'youtu.be') {
       if ((m = /^\/([A-Za-z0-9_-]{11})\/?$/.exec(path))) yt = m[1];
     }
-    if (/^[A-Za-z0-9_-]{11}$/.test(yt)) return { src: 'https://www.youtube-nocookie.com/embed/' + yt + '?rel=0' };
+    if (/^[A-Za-z0-9_-]{11}$/.test(yt)) return { src: 'https://www.youtube-nocookie.com/embed/' + yt + '?rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&fs=1' };
     if (host === 'player.vimeo.com' || host === 'vimeo.com') {
       m = host === 'vimeo.com' ? /^\/(\d{5,12})(?:\/([A-Za-z0-9]{6,20}))?\/?$/.exec(path) : /^\/video\/(\d{5,12})\/?$/.exec(path);
       if (m) {

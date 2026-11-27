@@ -528,14 +528,17 @@
       box.appendChild(h('div', { class: 'pf-frame' }, h('iframe', {
         src: emb.src, title: it.title, loading: 'lazy',
         sandbox: 'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox',
-        allow: 'encrypted-media; picture-in-picture; fullscreen',
+        allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen',
+        allowfullscreen: '',
         referrerpolicy: 'strict-origin-when-cross-origin'
       })));
     }
-    if (ext) {
+    /* الفيديو المضمَّن يُشغَّل داخل المنصة بكامل خياراته (سرعة وجودة وترجمة وملء الشاشة وصورة داخل صورة) بلا رابط خارجي؛
+       الرابط الخارجي يظهر فقط للمضيفات غير المدعومة للتضمين */
+    if (ext && !emb) {
       box.appendChild(h('a', { class: 'pf-vlink', href: ext, target: '_blank', rel: 'noopener noreferrer' },
-        icon('external'), emb ? 'فتح الفيديو في تبويب جديد' : 'فتح الفيديو', ' ', h('span', { class: 'pf-vhost', text: hostOf(ext) })));
-    } else if (it.storage_path) {
+        icon('external'), 'فتح الفيديو', ' ', h('span', { class: 'pf-vhost', text: hostOf(ext) })));
+    } else if (!ext && it.storage_path) {
       box.appendChild(openButton(it, note));
       box.appendChild(note);
     } else if (!emb) {
