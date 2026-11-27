@@ -447,6 +447,7 @@
       S.profile.status !== 'active'
         ? h('p', { class: 'pf-msg err pf-warn', role: 'status', text: 'حسابك موقوف حاليًا، فلا يظهر لك محتوى الدورات. تواصل مع المدرب لمعرفة السبب.' })
         : null,
+      window.LmsAct ? window.LmsAct.notifications({ active: S.profile.status === 'active', courseTitle: function (id) { const c = courseById(id); return c ? c.title_ar : id; } }) : null,
       sectionMine(),
       window.Exams ? window.Exams.section({ active: S.profile.status === 'active', courseTitle: function (id) { const c = courseById(id); return c ? c.title_ar : id; } }) : null,
       sectionAvail(), sectionInfo()));

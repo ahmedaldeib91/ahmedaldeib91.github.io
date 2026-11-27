@@ -255,5 +255,58 @@
     return root;
   }
 
-  window.LmsAct = { assignments: assignments, discussions: discussions };
+  /* ================================================================== الإشعارات والتذكيرات (الترحيل 021) */
+  function notifications(ctx) {
+    if (!ctx || !ctx.active) return null;
+    const sec = h('section', { class: 'pf-block', id: 'sec-notif', 'aria-labelledby': 'h-notif', hidden: true }, h('h2', { id: 'h-notif', text: 'إشعاراتي وتذكيراتي' }));
+    const body = h('div');
+    sec.appendChild(body);
+    const title = function (id) { return ctx.courseTitle ? ctx.courseTitle(id) : id; };
+    const KIND = { assignment_new: 'واجب', assignment_graded: 'تصحيح', assignment_returned: 'تعديل مطلوب', exam_graded: 'اختبار', discussion_reply: 'مناقشة', announcement: 'إعلان' };
+    function paint(d) {
+      clear(body);
+      const up = d.upcoming || [];
+      const items = d.items || [];
+      if (!up.length && !items.length) { sec.hidden = true; return; }
+      sec.hidden = false;
+      if (up.length) {
+        body.appendChild(h('h3', { text: 'تذكيرات الأسبوع القادم' }));
+        body.appendChild(h('ul', { class: 'pf-list' }, up.map(function (u) {
+          const loc = u.kind === 'session' && u.location ? P.safeUrl(u.location) : null;
+          const sub = [P.fmtDate(u.at), u.course_id ? title(u.course_id) : '', u.kind === 'session' && u.group ? u.group : '', u.kind === 'session' && u.location && !loc ? u.location : ''].filter(Boolean).join(' · ');
+          return h('li', { class: 'pf-item' },
+            h('span', { class: 'pf-ico' }, ui.icon(u.kind === 'session' ? 'video' : 'file')),
+            h('div', { class: 'pf-ibody' }, h('h3', { dir: 'auto', text: (u.kind === 'session' ? 'جلسة: ' : 'موعد تسليم: ') + u.title }), h('small', { dir: 'auto', text: sub })),
+            loc && /^https?:\/\//i.test(loc) ? h('a', { class: 'btn p', href: loc, target: '_blank', rel: 'noopener noreferrer' }, 'رابط الجلسة') : null,
+            u.link ? h('a', { class: 'btn s', href: u.link }, 'فتح') : null);
+        })));
+      }
+      if (items.length) {
+        const head = h('div', { class: 'pf-act' }, h('h3', { text: 'الإشعارات' + (d.unread ? ' (' + d.unread + ' جديد)' : '') }));
+        if (d.unread) {
+          const all = h('button', { type: 'button', class: 'btn s sm' }, 'تعليم الكل كمقروء');
+          all.addEventListener('click', function () { rpc('ntf_mark_all_read').then(load, function () { /* تجاهل */ }); });
+          head.appendChild(all);
+        }
+        body.appendChild(head);
+        body.appendChild(h('ul', { class: 'pf-list' }, items.map(function (n) {
+          const a = h('a', { class: 'btn ' + (n.read ? 's' : 'p'), href: n.link || '#' }, 'فتح');
+          a.addEventListener('click', function () { if (!n.read) rpc('ntf_mark_read', { p_ids: [n.id] }).catch(function () { /* تجاهل */ }); });
+          return h('li', { class: 'pf-item' },
+            h('div', { class: 'pf-ibody' }, h('h3', { dir: 'auto', text: n.title }), h('small', { dir: 'auto', text: [KIND[n.kind] || '', n.body || '', P.fmtDate(n.created_at), n.course_id ? title(n.course_id) : ''].filter(Boolean).join(' · ') })),
+            n.read ? null : h('span', { class: 'st ok', text: 'جديد' }), a);
+        })));
+      }
+    }
+    function load() {
+      return rpc('ntf_list', { p_limit: 15 }).then(paint).catch(function (err) {
+        if (isSession(err)) { sessionOut(); return; }
+        sec.hidden = true; /* الخدمة غير مفعّلة بعد أو خطأ عابر: لا نُظهر قسمًا مكسورًا في الرئيسية */
+      });
+    }
+    load();
+    return sec;
+  }
+
+  window.LmsAct = { assignments: assignments, discussions: discussions, notifications: notifications };
 })();

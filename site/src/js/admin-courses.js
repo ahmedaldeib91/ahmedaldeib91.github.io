@@ -666,8 +666,36 @@
     HUB_TABS.forEach(function (n) { holders[n] = h('div'); });
     holders.files.appendChild(panels.files.el);
     holders.videos.appendChild(panels.videos.el);
+    /* ---------- إعلان لمشتركي الدورة: إشعار داخلي في لوحة كل مشترك نشط (الترحيل 021) ---------- */
+    function announceCard() {
+      const tt = A.input({ max: 200, value: '', aria: 'عنوان الإعلان', placeholder: 'عنوان الإعلان' });
+      const tb = A.textarea({ rows: 3, max: 600, value: '' });
+      tb.setAttribute('dir', 'auto');
+      const out = A.msgBox();
+      const btn = A.btn('إرسال الإعلان', { kind: 'p', small: true, type: 'submit' });
+      const form = h('form', { class: 'pf-form', novalidate: true, method: 'post', action: '/admin/' },
+        A.field('العنوان *', tt), A.field('النص (اختياري)', tb, 'يصل كإشعار داخلي لكل مشترك نشط في «' + course.title_ar + '» ويظهر في رئيسية لوحته.'),
+        h('div', { class: 'ad-act' }, btn, out));
+      form.addEventListener('submit', A.run(btn, out, async function () {
+        ui.clearMsg(out);
+        if (!tt.value.trim()) { ui.msg(out, 'err', 'اكتب عنوان الإعلان.'); tt.focus(); return; }
+        const ok = await A.confirm({ title: 'إرسال الإعلان؟', message: 'سيصل إشعار لكل المشتركين النشطين في هذه الدورة ولا يمكن سحبه.', ok: 'إرسال' });
+        if (!ok) return;
+        try {
+          const r = await P.rest.rpc('ntf_broadcast', { p_course_id: id, p_title: tt.value.trim(), p_body: tb.value.trim() || null });
+          tt.value = ''; tb.value = '';
+          ui.msg(out, 'ok', 'أُرسل الإعلان إلى ' + A.num(r && r.sent || 0) + ' مشترك.');
+        } catch (err) {
+          if (A.isSession(err)) { A.lost('expired'); return; }
+          ui.msg(out, 'err', err && err.kind === 'rate' ? P.MSG.rate : (err && err.code === '42501' ? P.MSG.forbidden : 'تعذّر إرسال الإعلان. تحقق من العنوان والنص ثم أعد المحاولة.'));
+        }
+      }));
+      return A.card('إعلان لمشتركي الدورة', form);
+    }
+
     A.clear(body);
     body.appendChild(settingsCard());
+    body.appendChild(announceCard());
     body.appendChild(tabsEl);
     HUB_TABS.forEach(function (n) { body.appendChild(h('div', { role: 'tabpanel', id: 'cpanel-' + n, 'aria-labelledby': 'ctab-' + n, hidden: true }, holders[n])); });
     panels.files.paint();
