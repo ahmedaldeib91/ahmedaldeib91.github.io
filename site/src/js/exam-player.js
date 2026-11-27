@@ -42,6 +42,7 @@
     const c = err.code || '';
     if (err.kind === 'network' || err.kind === 'config' || err.kind === 'server') return err.message;
     if (err.kind === 'session') return P.MSG.session;
+    if (c === 'SB001') return SEB_MSG;
     if (c === '55000') return ctx === 'start' ? 'لا يمكن بدء الاختبار الآن (قد يكون أُغلق أو استنفدت محاولاتك أو لا يُستأنف). حدّث القائمة.' : 'حالة المحاولة لا تسمح بهذا الإجراء.';
     if (c === '42501' || err.kind === 'forbidden') return 'لا تملك صلاحية هذا الاختبار، أو أن المحاولة لم تعد موجودة.';
     if (c === '22023') return 'إجابة غير صالحة.';
@@ -62,6 +63,50 @@
     return box;
   };
   const backLink = function () { return h('p', null, h('a', { class: 'btn s', href: '#' }, 'العودة إلى لوحتي')); };
+
+  /* ---------- Safe Exam Browser: بصمات المتصفح من واجهة SEB (لا تظهر خارجه) ---------- */
+  function readSeb() {
+    return new Promise(function (resolve) {
+      const api = window.SafeExamBrowser;
+      const sec = api && api.security;
+      if (!sec) { resolve(null); return; }
+      let done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        const c = typeof sec.configKey === 'string' ? sec.configKey.toLowerCase() : '';
+        const b = typeof sec.browserExamKey === 'string' ? sec.browserExamKey.toLowerCase() : '';
+        resolve(c || b ? { config_key: c, browser_exam_key: b } : null);
+      }
+      if (typeof sec.updateKeys === 'function') { try { sec.updateKeys(finish); } catch (e) { finish(); } setTimeout(finish, 2500); } else finish();
+    });
+  }
+  const sebArgs = function (proof) { return proof ? { p_seb: proof } : {}; };
+  const SEB_MSG = 'هذا الاختبار يعمل فقط داخل Safe Exam Browser بإعداد المدرّب. افتح ملف الإعداد (.seb) الذي زوّدك به المدرّب ثم ادخل لوحتك من داخل SEB.';
+  function sebConfigXml() {
+    const url = window.location.origin + '/dashboard/';
+    const esc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+    return '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n' +
+      '  <key>startURL</key><string>' + esc(url) + '</string>\n' +
+      '  <key>sendBrowserExamKey</key><true/>\n' +
+      '  <key>allowQuit</key><true/>\n' +
+      '  <key>showTaskBar</key><true/>\n' +
+      '  <key>enableBrowserWindowToolbar</key><false/>\n' +
+      '  <key>allowSpellCheck</key><false/>\n' +
+      '  <key>enableJavaScript</key><true/>\n' +
+      '  <key>URLFilterEnable</key><false/>\n' +
+      '</dict>\n</plist>\n';
+  }
+  function downloadSebConfig() {
+    const blob = new Blob([sebConfigXml()], { type: 'application/x-seb' });
+    const a = doc.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'exam.seb';
+    doc.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
 
   /* نافذة تأكيد بسيطة (dialog أصلي: حبس تركيز وESC) */
   function confirmDialog(title, message, okLabel) {
@@ -149,7 +194,8 @@
       out.hidden = true;
       if (e.in_progress) { window.location.hash = '#attempt=' + e.in_progress; return; }
       try {
-        const r = await rpc('exam_start_attempt', { p_exam_id: id });
+        const proof = await readSeb();
+        const r = await rpc('exam_start_attempt', Object.assign({ p_exam_id: id }, sebArgs(proof)));
         syncClock(r.server_now);
         const sec = r.settings && r.settings.security;
         if (sec && sec.fullscreen_required && doc.documentElement.requestFullscreen) { try { await doc.documentElement.requestFullscreen(); } catch (x) { /* تُطلب لاحقًا */ } }
@@ -172,6 +218,7 @@
       e.open_at ? h('p', { class: 'pf-last', text: 'يفتح: ' + P.fmtDate(e.open_at) }) : null,
       e.close_at ? h('p', { class: 'pf-last', text: 'يُغلق: ' + P.fmtDate(e.close_at) }) : null,
       e.reason && !e.in_progress ? h('p', { class: 'pf-msg err', role: 'status', text: REASON[e.reason] }) : null,
+      e.require_seb ? h('p', { class: 'pf-msg', role: 'note' }, 'يتطلب هذا الاختبار Safe Exam Browser. ', h('a', { href: 'https://safeexambrowser.org/download_en.html', target: '_blank', rel: 'noopener noreferrer', text: 'تنزيل SEB' }), ' · ', h('a', { href: '#seb-info', text: 'ملف الإعداد وبصمة متصفحك' })) : null,
       h('ul', { class: 'ex-rules' },
         h('li', { text: 'تُحفظ إجاباتك تلقائيًا أثناء الإجابة، ويمكنك العودة لمتابعة المحاولة إن انقطع الاتصال.' }),
         h('li', { text: 'عند انتهاء الوقت تُسلَّم المحاولة تلقائيًا بما أجبتَ.' }),
@@ -201,7 +248,8 @@
     root.appendChild(h('p', { class: 'pf-loading', role: 'status', text: 'جارٍ فتح المحاولة…' }));
     const T = { id: id, items: {}, cur: 1, n: 0, answered: 0, settings: {}, deadline: null, hard: null, saveTimers: {}, pending: {}, warnings: 0, closing: false, lastErr: '' };
     let first;
-    try { first = await rpc('exam_get_items', { p_attempt_id: id, p_from: 1, p_count: 5 }); } catch (err) {
+    const sebProof = await readSeb();
+    try { first = await rpc('exam_get_items', Object.assign({ p_attempt_id: id, p_from: 1, p_count: 5 }, sebArgs(sebProof))); } catch (err) {
       if (token !== nav) return;
       if (isSession(err)) { fatal(err); return; }
       clear(root); root.appendChild(fail(errText(err), function () { showAttempt(id); })); root.appendChild(backLink());
@@ -252,7 +300,7 @@
     async function ensure(pos) {
       if (T.items[pos]) return true;
       try {
-        const r = await rpc('exam_get_items', { p_attempt_id: id, p_from: pos, p_count: 5 });
+        const r = await rpc('exam_get_items', Object.assign({ p_attempt_id: id, p_from: pos, p_count: 5 }, sebArgs(sebProof)));
         syncClock(r.server_now);
         if (r.closed) { closeNow(); return false; }
         (r.items || []).forEach(function (it) { if (!T.items[it.position]) T.items[it.position] = it; });
@@ -581,9 +629,45 @@
       it.explanation ? h('div', { class: 'ex-expl' }, h('b', { text: 'الشرح: ' }), it.explanation) : null));
   }
 
+  /* ================================================================== صفحة SEB: بصمات المتصفح + ملف الإعداد */
+  async function showSebInfo() {
+    const token = ++nav;
+    const root = view();
+    clear(root);
+    doc.title = 'Safe Exam Browser | لوحة المتدرب';
+    root.appendChild(h('div', { class: 'pf-fade' }, backLink()));
+    const box = h('section', { class: 'pf-block' }, h('h1', { text: 'Safe Exam Browser' }));
+    root.appendChild(box);
+    const proof = await readSeb();
+    if (token !== nav) return;
+    const copyBtn = function (txt) {
+      const b = h('button', { type: 'button', class: 'btn s', text: 'نسخ' });
+      b.addEventListener('click', function () { try { navigator.clipboard.writeText(txt); b.textContent = 'تم النسخ'; } catch (x) { b.textContent = 'تعذّر النسخ'; } });
+      return b;
+    };
+    if (proof) {
+      box.appendChild(h('p', { class: 'pf-msg', role: 'status', text: 'أنت داخل Safe Exam Browser. هذه بصمات هذه الجلسة لعنوان لوحتك:' }));
+      [['مفتاح الإعداد (Config Key)', proof.config_key], ['مفتاح المتصفح (Browser Exam Key)', proof.browser_exam_key]].forEach(function (r) {
+        if (!r[1]) return;
+        box.appendChild(h('p', null, h('b', { text: r[0] + ': ' }), h('code', { dir: 'ltr', text: r[1] }), ' ', copyBtn(r[1])));
+      });
+      box.appendChild(h('p', { class: 'pf-hint', text: 'يلصق المدرّب إحدى البصمتين في إعدادات الأمن للاختبار. تتغير البصمة إذا غُيّر ملف الإعداد.' }));
+    } else {
+      box.appendChild(h('p', { class: 'pf-msg', role: 'status', text: 'لا يبدو أنك داخل Safe Exam Browser. نزّل SEB ثم افتح ملف الإعداد أدناه من خلاله، وادخل هذه الصفحة من داخله لقراءة البصمات.' }));
+    }
+    box.appendChild(h('ol', { class: 'ex-rules' },
+      h('li', null, h('a', { href: 'https://safeexambrowser.org/download_en.html', target: '_blank', rel: 'noopener noreferrer', text: 'نزّل Safe Exam Browser وثبّته' }), '.'),
+      h('li', { text: 'نزّل ملف الإعداد أدناه وافتحه (نقر مزدوج) ليشغّل SEB على لوحتك.' }),
+      h('li', { text: 'من داخل SEB افتح هذه الصفحة (#seb-info) لتظهر البصمات.' })));
+    const dl = h('button', { type: 'button', class: 'btn p', text: 'تنزيل ملف الإعداد (exam.seb)' });
+    dl.addEventListener('click', downloadSebConfig);
+    box.appendChild(h('div', { class: 'pf-act' }, dl));
+  }
+
   /* ================================================================== واجهة عامة */
   function show(kind, id) {
     leave();
+    if (kind === 'seb') { showSebInfo(); return; }
     if (!UUID.test(id || '')) { clear(view()); view().appendChild(fail('رابط غير صحيح.')); view().appendChild(backLink()); return; }
     if (kind === 'exam') showIntro(id); else if (kind === 'attempt') showAttempt(id); else showResult(id);
   }

@@ -779,7 +779,16 @@
   function route() {
     if (!S.profile) return;
     const ex = /^#(exam|attempt|result)=([0-9a-f-]{36})$/i.exec(window.location.hash);
-    if (S.view === 'exam' && !ex && window.Exams) window.Exams.leave();
+    const sebRoute = window.location.hash === '#seb-info';
+    if (S.view === 'exam' && !ex && !sebRoute && window.Exams) window.Exams.leave();
+    if (sebRoute && window.Exams) {
+      S.nav++;
+      S.view = 'exam';
+      $('dash-jump').hidden = true;
+      window.scrollTo(0, 0);
+      window.Exams.show('seb', null);
+      return;
+    }
     if (ex && window.Exams) {
       S.nav++;
       S.view = 'exam';

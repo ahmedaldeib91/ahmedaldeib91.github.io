@@ -179,9 +179,13 @@
     const sMark = A.checkbox('علامة مائية باسم المتدرب', !!sec.watermark);
     f.sWarn = A.input({ type: 'number', min: 0, maxv: 50, step: 1, inputmode: 'numeric', value: sec.max_warnings != null ? sec.max_warnings : 3 });
     f.sExceed = A.select(EX.ON_EXCEED, sec.on_exceed || 'log');
+    const sSeb = A.checkbox('اشتراط Safe Exam Browser', !!sec.require_seb, 'لا يبدأ المتدرب ولا تُعرض له الأسئلة إلا من داخل SEB ببصمة مطابقة.');
+    f.sKeys = A.textarea({ rows: 3, max: 800, dir: 'ltr', value: Array.isArray(sec.seb_keys) ? sec.seb_keys.join('\n') : '', placeholder: 'بصمة واحدة في كل سطر (64 حرفًا سداسيًا)' });
     const security = A.card('الأمن', [
       h('div', { class: 'ad-tools' }, sMon.el, sFull.el, sMark.el),
-      h('div', { class: 'ad-tools' }, A.field('الحد الأقصى للتحذيرات', f.sWarn, '٠–٥٠.'), A.field('عند تجاوز الحد', f.sExceed, 'غير «تسجيل فقط» يتطلب تفعيل المراقبة.'))
+      h('div', { class: 'ad-tools' }, A.field('الحد الأقصى للتحذيرات', f.sWarn, '٠–٥٠.'), A.field('عند تجاوز الحد', f.sExceed, 'غير «تسجيل فقط» يتطلب تفعيل المراقبة.')),
+      h('div', { class: 'ad-tools' }, sSeb.el),
+      A.field('بصمات SEB المسموحة', f.sKeys, 'افتح ملف إعداد SEB ثم صفحة ‎/dashboard/#seb-info‎ من داخله، وانسخ بصمة «مفتاح الإعداد» أو «مفتاح المتصفح». حتى عشر بصمات.')
     ]);
 
     /* ---------- الأسئلة الثابتة ---------- */
@@ -363,6 +367,10 @@
       const warns = optInt(f.sWarn.value);
       if (warns === null || Number.isNaN(warns) || warns < 0 || warns > 50) return fail('الحد الأقصى للتحذيرات عدد صحيح من ٠ إلى ٥٠.', f.sWarn);
       if ((sFull.input.checked || f.sExceed.value !== 'log') && !sMon.input.checked) return fail('إلزام ملء الشاشة أو إجراء غير «التسجيل فقط» يتطلب تفعيل المراقبة.', sMon.input);
+      const sebKeys = String(f.sKeys.value || '').split(/[\s,;]+/).map(function (k) { return k.trim().toLowerCase(); }).filter(Boolean);
+      if (sebKeys.some(function (k) { return !/^[0-9a-f]{64}$/.test(k); })) return fail('كل بصمة SEB يجب أن تكون 64 حرفًا سداسيًا (0-9 وa-f).', f.sKeys);
+      if (sebKeys.length > 10) return fail('الحد الأقصى عشر بصمات SEB.', f.sKeys);
+      if (sSeb.input.checked && !sebKeys.length) return fail('اشتراط SEB يتطلب بصمة واحدة على الأقل.', f.sKeys);
       const rp = rulePayload();
       if (rp.error) return fail(rp.error, null);
       const its = [];
@@ -381,7 +389,7 @@
         review_policy: f.review.value, result_policy: f.result.value, feedback_policy: f.feedback.value, explanation_policy: f.explanation.value,
         allow_whiteboard: cb.allow_whiteboard.input.checked, allow_calculator: cb.allow_calculator.input.checked, allow_translation: cb.allow_translation.input.checked,
         timeout_policy: f.timeout.value, resume_policy: f.resume.value,
-        security: { monitoring: sMon.input.checked, max_warnings: warns, on_exceed: f.sExceed.value, fullscreen_required: sFull.input.checked, watermark: sMark.input.checked },
+        security: { monitoring: sMon.input.checked, max_warnings: warns, on_exceed: f.sExceed.value, fullscreen_required: sFull.input.checked, watermark: sMark.input.checked, require_seb: sSeb.input.checked, seb_keys: sebKeys },
         items: its, rules: rp.rules
       };
       if (ex) p.exam_id = ex.id; else p.course_id = course;
