@@ -309,7 +309,7 @@
   };
   A.statusMap = {
     profile: { active: ['نشط', 'ok'], suspended: ['موقوف', 'err'] },
-    enrollment: { active: ['نشط', 'ok'], revoked: ['ملغى', 'mut'] },
+    enrollment: { active: ['نشط', 'ok'], revoked: ['ملغى', 'mut'], pending: ['معلّق', 'warn'], suspended: ['موقوف', 'err'], expired: ['منتهٍ', 'mut'], upcoming: ['لم يبدأ', 'info'] },
     message: { new: ['جديدة', 'warn'], read: ['مقروءة', 'info'], archived: ['مؤرشفة', 'mut'] }
   };
   A.statusBadge = function (group, value) {
@@ -564,11 +564,16 @@
   A.loadDirectory = async function () {
     const r = await Promise.all([
       A.all('profiles', { select: 'id,full_name,phone,country,role,status,created_at,last_seen_at', order: 'created_at.desc,id.asc' }),
-      A.all('enrollments', { select: 'id,user_id,course_id,status,granted_by,granted_at,revoked_at', order: 'granted_at.desc,id.asc' }),
+      A.settle(A.all('enrollments', { select: 'id,user_id,course_id,status,granted_by,granted_at,revoked_at,starts_at,expires_at,kind,cancel_reason', order: 'granted_at.desc,id.asc' })).then(async function (x) {
+        if (x.ok) return { rows: x.v, ext: true };
+        if (A.isSession(x.e)) throw x.e;
+        /* الترحيل 023 غير مطبَّق: الأعمدة الجديدة غير موجودة، نرجع إلى الأعمدة القديمة */
+        return { rows: await A.all('enrollments', { select: 'id,user_id,course_id,status,granted_by,granted_at,revoked_at', order: 'granted_at.desc,id.asc' }), ext: false };
+      }),
       A.loadCourses(true),
       A.settle(A.loadEmails())
     ]);
-    const dir = { profiles: r[0], enrollments: r[1], byId: {}, emails: {}, emailsOk: false };
+    const dir = { profiles: r[0], enrollments: r[1].rows, ext: r[1].ext, byId: {}, emails: {}, emailsOk: false };
     r[0].forEach(function (p) { dir.byId[p.id] = p; });
     if (r[3].ok) { dir.emails = r[3].v; dir.emailsOk = true; } else if (A.isSession(r[3].e)) throw r[3].e;
     S.dir = dir;
@@ -661,13 +666,19 @@
     };
     const cur = await P.rest.select('enrollments', { select: 'id,status', user_id: 'eq.' + userId, course_id: 'eq.' + courseId });
     if (cur.length && cur[0].status === 'active') return 'exists';
+    const extra = {};
+    if (o && o.opts && A.S.dir && A.S.dir.ext) {
+      if (o.opts.kind) extra.kind = o.opts.kind;
+      if (o.opts.starts_at) extra.starts_at = o.opts.starts_at;
+      if (o.opts.expires_at) extra.expires_at = o.opts.expires_at;
+    }
     if (cur.length) {
-      const up = await P.rest.update('enrollments', { id: 'eq.' + cur[0].id }, { status: 'active' });
+      const up = await P.rest.update('enrollments', { id: 'eq.' + cur[0].id }, Object.assign({ status: 'active' }, extra));
       if (!up.length) throw A.noRows();
       return welcomed('reactivated');
     }
     try {
-      const rows = await P.rest.insert('enrollments', { user_id: userId, course_id: courseId, status: 'active' });
+      const rows = await P.rest.insert('enrollments', Object.assign({ user_id: userId, course_id: courseId, status: 'active' }, extra));
       if (!rows.length) throw A.noRows();
     } catch (err) {
       if (err instanceof P.ApiError && err.code === '23505') return 'exists'; /* سباق مع تبويب آخر */
@@ -675,8 +686,25 @@
     }
     return welcomed('added');
   };
-  A.revokeEnrollment = async function (id) {
-    const rows = await P.rest.update('enrollments', { id: 'eq.' + id }, { status: 'revoked' });
+  /* حالة العرض: الحالة المخزّنة + المحسوبة من التواريخ: active مع expires_at منقضٍ = expired، ومع starts_at مستقبلي = upcoming */
+  A.enrState = function (e) {
+    if (e.status === 'active') {
+      const now = Date.now();
+      if (e.expires_at && Date.parse(e.expires_at) <= now) return 'expired';
+      if (e.starts_at && Date.parse(e.starts_at) > now) return 'upcoming';
+    }
+    return e.status;
+  };
+  /* تعديل اشتراك (حالة/تواريخ/نوع/سبب إلغاء). الحقول الجديدة تتطلب الترحيل 023 (A.S.dir.ext) */
+  A.updateEnrollment = async function (id, patch) {
+    const rows = await P.rest.update('enrollments', { id: 'eq.' + id }, patch);
+    if (!rows.length) throw A.noRows();
+    return rows[0];
+  };
+  A.revokeEnrollment = async function (id, reason) {
+    const patch = { status: 'revoked' };
+    if (reason && A.S.dir && A.S.dir.ext) patch.cancel_reason = reason;
+    const rows = await P.rest.update('enrollments', { id: 'eq.' + id }, patch);
     if (!rows.length) throw A.noRows();
   };
 
@@ -684,9 +712,10 @@
   A.AUDIT = {
     'enrollment.granted': 'منح اشتراك', 'enrollment.revoked': 'إلغاء اشتراك', 'enrollment.reactivated': 'إعادة تفعيل اشتراك',
     'enrollment.deleted': 'حذف اشتراك', 'enrollment.updated': 'تعديل اشتراك',
+    'enrollment.suspended': 'إيقاف اشتراك', 'enrollment.pending': 'تعليق اشتراك', 'enrollment.approved': 'قبول طلب اشتراك', 'enrollment.extended': 'تمديد اشتراك',
     'profile.status_changed': 'تغيير حالة الحساب', 'profile.role_changed': 'تغيير دور الحساب'
   };
-  const WORDS = { active: 'نشط', revoked: 'ملغى', suspended: 'موقوف', trainee: 'متدرب', admin: 'مدرب' };
+  const WORDS = { active: 'نشط', revoked: 'ملغى', suspended: 'موقوف', pending: 'معلّق', trainee: 'متدرب', admin: 'مدرب' };
   const word = function (v) { return Object.prototype.hasOwnProperty.call(WORDS, v) ? WORDS[v] : String(v == null ? '' : v).slice(0, 40); };
   A.auditTitle = function (e) { return Object.prototype.hasOwnProperty.call(A.AUDIT, e.action) ? A.AUDIT[e.action] : String(e.action || '').slice(0, 60); };
   A.auditIds = function (e) { /* معرّفات المستخدمين المذكورة في الإدخال (لجلب أسمائهم) */
