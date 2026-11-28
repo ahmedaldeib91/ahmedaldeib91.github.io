@@ -52,7 +52,8 @@
       "watermark": "PMI-RMP®",
       "bentoNo": "03",
       "bentoTitleAr": "إدارة المخاطر",
-      "bentoSubEn": "Risk Management"
+      "bentoSubEn": "Risk Management",
+      "page": "pmi-rmp"
     },
     {
       "id": "pmi-acp",
@@ -68,7 +69,8 @@
       "watermark": "PMI-ACP®",
       "bentoNo": "04",
       "bentoTitleAr": "المشاريع الرشيقة",
-      "bentoSubEn": "Agile"
+      "bentoSubEn": "Agile",
+      "page": "pmi-acp"
     },
     {
       "id": "pmi-cp",
@@ -84,7 +86,8 @@
       "watermark": "PMI-CP™",
       "bentoNo": "05",
       "bentoTitleAr": "مشاريع البناء",
-      "bentoSubEn": "Construction"
+      "bentoSubEn": "Construction",
+      "page": "pmi-cp"
     },
     {
       "id": "pmi-pmocp",
@@ -100,7 +103,8 @@
       "watermark": "PMI-PMOCP™",
       "bentoNo": "06",
       "bentoTitleAr": "مكاتب المشاريع",
-      "bentoSubEn": "PMO"
+      "bentoSubEn": "PMO",
+      "page": "pmi-pmocp"
     }
   ]
 }

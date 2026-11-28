@@ -16,7 +16,8 @@
     <div class="dcard tilt reveal"><b>تحليل الأعمال</b><small>Business Analysis</small></div>
   </div>
 
-  <section>
+  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#suitability">هل تناسبك؟</a><a class="btn s" href="#careers">المسارات</a><a class="btn s" href="#exam">الاختبار</a><a class="btn s" href="#steps">الخطوات</a><a class="btn s" href="#fees">الرسوم</a><a class="btn s" href="#content">المحتوى</a><a class="btn s" href="#faqs">أسئلة شائعة</a><a class="btn p" href="/account/">سجّل الآن</a></nav>
+  <section id="fees">
     <div class="eyebrow reveal">PMI exam fees</div><h2 class="reveal">رسوم الاختبار</h2>
     <div class="tbl reveal">
       <div class="tr th"><span>نوع الرسوم</span><span>القيمة</span></div>
@@ -26,7 +27,7 @@
     <div class="callout reveal" style="max-width:640px">ملاحظة: لا يُطلب دفع رسوم الاختبار إلا بعد قبول طلب التقديم، وعندما تصبح مستعداً لحجز موعد الاختبار.</div>
   </section>
 
-  <section style="padding-top:20px">
+  <section id="suitability" style="padding-top:20px">
     <h2 class="reveal">هل شهادة CAPM مناسبة لك؟</h2>
     <p class="sub reveal">تُصنّف شهادة CAPM في المرتبة الأولى ضمن قائمة «أكثر 9 شهادات مهنية طلباً» وفقاً لمؤسسة Entrepreneur Media, Inc.</p>
     <p class="sub reveal" style="margin-top:12px">يمكن أن يساعدك الحصول على شهادة CAPM في تطوير مسارك المهني من خلال:</p>
@@ -37,7 +38,7 @@
     </div>
   </section>
 
-  <section style="padding-top:20px">
+  <section id="careers" style="padding-top:20px">
     <h2 class="reveal">المسارات الوظيفية المحتملة لحاملي شهادة CAPM</h2>
     <p class="sub reveal">يمكن أن تؤهلك شهادة CAPM للعمل في مجموعة متنوعة من الوظائف المرتبطة بإدارة المشاريع، ومنها:</p>
     <div class="dgrid">
@@ -50,7 +51,7 @@
     </div>
   </section>
 
-  <section style="padding-top:20px">
+  <section id="figures" style="padding-top:20px">
     <div class="eyebrow reveal">أرقام ومؤشرات</div>
     <div class="dstats">
       <div class="dstat tilt reveal"><div class="big">1.7M+</div><b>أكثر من 1.7 مليون</b><p>حاصل على شهادات PMI حول العالم، مما يجعل PMI المؤسسة الرائدة في هذا المجال منذ عام 1969.</p></div>
@@ -58,7 +59,7 @@
     </div>
   </section>
 
-  <section style="padding-top:20px">
+  <section id="exam" style="padding-top:20px">
     <h2 class="reveal">معلومات عن الاختبار</h2>
     <div class="facts" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:16px">
       <div class="fact reveal"><b>150</b><span>عدد الأسئلة</span></div>
@@ -68,7 +69,7 @@
     <div class="lchips reveal"><span>الإنجليزية (English)</span><span>العربية (Arabic)</span><span>البرتغالية البرازيلية (Brazilian Portuguese)</span><span>الفرنسية (French)</span><span>الألمانية (German)</span><span>الإيطالية (Italian)</span><span>اليابانية (Japanese)</span><span>الإسبانية (Spanish)</span><span>الكورية (Korean)</span><span>الصينية المبسطة (Chinese Simplified)</span><span>الصينية التقليدية (Chinese Traditional)</span></div>
   </section>
 
-  <section style="padding-top:20px">
+  <section id="steps" style="padding-top:20px">
     <div class="eyebrow reveal">Roadmap</div><h2 class="reveal">خطوات الحصول على شهادة CAPM</h2>
     <div style="margin-top:24px">
       <div class="step reveal"><div class="sn">01</div><div>
@@ -150,5 +151,15 @@
     </div>
   </section>
 
+  <section id="overview" style="padding-top:20px"><div class="eyebrow reveal">نظرة عامة</div><h2 class="reveal">عن الدورة</h2><p class="sub reveal">{{coursedetails.capm.overview}}</p></section>
+  <section id="audience" style="padding-top:20px"><h2 class="reveal">الفئة المستهدفة</h2><ul class="reveal">{{#each coursedetails.capm.audience}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="eligibility" style="padding-top:20px"><h2 class="reveal">شروط الأهلية</h2><ul class="reveal">{{#each coursedetails.capm.eligibility}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="objectives" style="padding-top:20px"><h2 class="reveal">أهداف التعلم</h2><ul class="reveal">{{#each coursedetails.capm.objectives}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="content" style="padding-top:20px"><h2 class="reveal">محتوى الدورة</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.capm.content}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p></div>{{/each}}</div></section>
+  <section id="methodology" style="padding-top:20px"><h2 class="reveal">منهجية التدريب</h2><p class="sub reveal">{{coursedetails.capm.methodology}}</p></section>
+  <section id="resources" style="padding-top:20px"><h2 class="reveal">المصادر التعليمية</h2><ul class="reveal">{{#each coursedetails.capm.resources}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="practice" style="padding-top:20px"><h2 class="reveal">الاختبارات والتدريب</h2><p class="sub reveal">{{coursedetails.capm.practice}}</p></section>
+  <section id="faqs" style="padding-top:20px"><h2 class="reveal">أسئلة شائعة</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.capm.faqs}}<div class="card reveal"><h3>{{this.q}}</h3><p>{{this.a}}</p></div>{{/each}}</div></section>
+  <section id="enroll" style="padding-top:20px"><div class="cta reveal"><h2>سجّل في الدورة</h2><p class="sub" style="margin:0 auto 22px">أنشئ حسابك أو تواصل معنا لتأكيد الدفعة القادمة.</p><div class="btns" style="justify-content:center"><a class="btn p" href="{{root}}/account/">ابدأ رحلتك</a><a class="btn s" href="{{site.whatsapp}}" target="_blank" rel="noopener">تواصل عبر واتساب</a></div></div></section>
   <div class="cta reveal"><h2>ابدأ مسارك نحو شهادة CAPM</h2><p class="sub" style="margin:0 auto 22px">احجز مقعدك في الدورة بالدفع الإلكتروني، أو استفسر أولًا عبر واتساب.</p><a class="btn p" href="https://mypay.ly/payment-link/share/SMbdb6etCewWkMHpzFfsOo3Yp4xQtdpjqqhxsNYqztjwDR2jq2iYmB6rwD7Z" target="_blank" rel="noopener noreferrer">ادفع الآن واحجز مقعدك</a> <a class="btn s" href="{{site.whatsapp}}" target="_blank" rel="noopener">استفسر عبر واتساب</a></div>
 </main>

@@ -109,3 +109,8 @@ html[data-theme=light] .ddm{background:rgba(255,255,255,.97);box-shadow:0 14px 4
   .dd:hover>.ddm,.dd:focus-within>.ddm{display:none}
   .dd.open>.ddm{display:flex;position:absolute;inset-inline:10px;top:auto}
 }
+main section[id]{scroll-margin-top:110px}
+.ddm a{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.ddm a em{font:600 11.5px/20px var(--fn);padding:0 8px;border-radius:99px;font-style:normal;white-space:nowrap}
+.ddm a em.ok{background:#1f9d5a33;color:#5fe0a0}
+.ddm a em.soon{border:1px solid var(--bd);color:var(--mut)}
