@@ -137,7 +137,7 @@
     const sec = A.sections[r.name];
     const root = $('ad-view');
     const token = ++S.nav;
-    markNav(r.name === 'courses' && r.args[1] === 'questions' ? 'qbank' : r.name === 'courses' && r.args[1] === 'exams' ? 'exams' : (HIDDEN[r.name] && r.name !== 'qbank' && r.name !== 'exams' ? HIDDEN[r.name] : r.name));
+    markNav(r.name === 'courses' && r.args[1] === 'questions' ? 'qbank' : r.name === 'courses' && r.args[1] === 'exams' ? 'exams' : (NAV.some(function (n) { return n[0] === r.name; }) ? r.name : (HIDDEN[r.name] || r.name)));
     A.clear(root);
     if (!sec) { root.appendChild(A.fail('تعذّر تحميل هذا القسم. حدّث الصفحة ثم أعد المحاولة.')); return; }
     document.title = sec.label + ' | لوحة المدرب';
