@@ -362,7 +362,7 @@ function loadPages(origin) {
     if (!NAV_RE.test(fields.nav)) fail(`قيمة nav غير صالحة: ${fields.nav}`, where, 'المسموح: أحرف لاتينية صغيرة وأرقام وشرطة (-)');
 
     const isHome = slug === 'index';
-    const outFile = isHome ? path.join(DIST_DIR, 'index.html') : path.join(DIST_DIR, ...slug.split('/'), 'index.html');
+    const outFile = isHome ? path.join(DIST_DIR, 'index.html') : slug === '404' ? path.join(DIST_DIR, '404.html') : path.join(DIST_DIR, ...slug.split('/'), 'index.html'); /* 404: يخدمها GitHub Pages لأي رابط غير موجود */
     const urlPath = isHome ? '/' : `/${slug}/`;
     if (seen.has(urlPath)) fail(`صفحتان لهما الرابط نفسه ${urlPath}`, `الأولى: ${rel(seen.get(urlPath))}`, `الثانية: ${rel(file)}`);
     seen.set(urlPath, file);
@@ -664,7 +664,7 @@ function wipeDist() {
 }
 
 function sitemapXml(pages, origin) {
-  const urls = pages.map((p) => `  <url><loc>${escapeXml(origin + p.urlPath)}</loc></url>`).join('\n');
+  const urls = pages.filter((p) => p.slug !== '404').map((p) => `  <url><loc>${escapeXml(origin + p.urlPath)}</loc></url>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 const robotsTxt = (origin) => `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;

@@ -114,3 +114,16 @@ main section[id]{scroll-margin-top:110px}
 .ddm a em{font:600 11.5px/20px var(--fn);padding:0 8px;border-radius:99px;font-style:normal;white-space:nowrap}
 .ddm a em.ok{background:#1f9d5a33;color:#5fe0a0}
 .ddm a em.soon{border:1px solid var(--bd);color:var(--mut)}
+
+/* الفوتر: 5 مجموعات + عمود الهوية */
+.fgrid{grid-template-columns:1.3fr repeat(5,1fr)}
+.fsoc{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.fsoc a{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--bd);background:var(--glass)}
+.fsoc a .si{margin:0}
+@media(max-width:1100px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+
+/* تقييم النجوم (5 نجوم، التعبئة بنسبة مئوية) */
+.stars{position:relative;display:inline-block;direction:ltr;font-size:18px;line-height:1;letter-spacing:2px;color:#ffffff30;white-space:nowrap;vertical-align:middle}
+html[data-theme=light] .stars{color:#00000026}
+.stars:before,.stars i:before{content:"★★★★★"}
+.stars i{position:absolute;inset:0 auto 0 0;overflow:hidden;color:#f5b301}
+.rate{display:flex;align-items:center;gap:8px;margin:6px 0}.rate small{color:var(--mut)}

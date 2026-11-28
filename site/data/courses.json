@@ -20,7 +20,10 @@
       "bentoTitleAr": "مساعد معتمد في إدارة المشاريع",
       "bentoSubEn": "CAPM® · Certified Associate in Project Management",
       "bentoVariant": "capm",
-      "summaryAr": "دورة CAPM® مدخل مثالي لمن يبدأ مسار إدارة المشاريع، وتغطي المفاهيم والمصطلحات الأساسية المطلوبة للاختبار."
+      "summaryAr": "دورة CAPM® مدخل مثالي لمن يبدأ مسار إدارة المشاريع، وتغطي المفاهيم والمصطلحات الأساسية المطلوبة للاختبار.",
+      "rating": "4.7",
+      "ratingPct": "94",
+      "ratingCount": "84"
     },
     {
       "id": "pmp",
@@ -38,7 +41,10 @@
       "bentoNo": "01",
       "bentoTitleAr": "محترف إدارة المشاريع",
       "bentoSubEn": "PMP® · Project Management Professional",
-      "summaryAr": "تؤهلك دورة PMP® لاجتياز اختبار محترف إدارة المشاريع من PMI عبر فهم عميق للأفراد والعمليات وبيئة الأعمال، بأساليب تنبؤية ورشيقة وهجينة."
+      "summaryAr": "تؤهلك دورة PMP® لاجتياز اختبار محترف إدارة المشاريع من PMI عبر فهم عميق للأفراد والعمليات وبيئة الأعمال، بأساليب تنبؤية ورشيقة وهجينة.",
+      "rating": "4.8",
+      "ratingPct": "96",
+      "ratingCount": "126"
     },
     {
       "id": "pmi-rmp",

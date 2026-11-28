@@ -12,7 +12,7 @@
     <div class="ovis rv" style="min-height:360px"><div class="glowball"></div><img src="/assets/badges/badge-pmp.png" alt="PMP®" style="width:min(300px,70vw);position:relative;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 30px 60px #9B6BFF88)"></div>
   </div>
 
-  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#suitability">هل تناسبك؟</a><a class="btn s" href="#exam">الاختبار</a><a class="btn s" href="#steps">الخطوات</a><a class="btn s" href="#fees">الرسوم</a><a class="btn s" href="#content">المحتوى</a><a class="btn s" href="#faqs">أسئلة شائعة</a><a class="btn p" href="/account/">سجّل الآن</a></nav>
+  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#suitability">هل تناسبك؟</a><a class="btn s" href="#exam">الاختبار</a><a class="btn s" href="#steps">الخطوات</a><a class="btn s" href="#fees">الرسوم</a><a class="btn s" href="#content">المحتوى</a><a class="btn s" href="#faqs">أسئلة شائعة</a><a class="btn s" href="#reviews">آراء المتدربين</a><a class="btn p" href="/account/">سجّل الآن</a></nav>
   <section id="fees" style="padding-top:20px">
     <div class="eyebrow reveal en2" style="direction:ltr">Exam Fees</div><h2 class="reveal">أولاً: رسوم الاختبار</h2>
     <div class="tbl reveal">
@@ -139,7 +139,7 @@
     </div>
   </section>
 
-  <section id="overview" style="padding-top:20px"><div class="eyebrow reveal">نظرة عامة</div><h2 class="reveal">عن الدورة</h2><p class="sub reveal">{{coursedetails.pmp.overview}}</p></section>
+  <section id="overview" style="padding-top:20px"><div class="eyebrow reveal">نظرة عامة</div><h2 class="reveal">عن الدورة</h2><p class="rate reveal"><span class="stars" role="img" aria-label="تقييم الدورة {{courses.courses.1.rating}} من 5"><i style="width:{{courses.courses.1.ratingPct}}%"></i></span> <b>{{courses.courses.1.rating}}</b> <small>({{courses.courses.1.ratingCount}} تقييم)</small></p><p class="sub reveal">{{coursedetails.pmp.overview}}</p></section>
   <section id="audience" style="padding-top:20px"><h2 class="reveal">الفئة المستهدفة</h2><ul class="reveal">{{#each coursedetails.pmp.audience}}<li>{{this.t}}</li>{{/each}}</ul></section>
   <section id="eligibility" style="padding-top:20px"><h2 class="reveal">شروط الأهلية</h2><ul class="reveal">{{#each coursedetails.pmp.eligibility}}<li>{{this.t}}</li>{{/each}}</ul></section>
   <section id="objectives" style="padding-top:20px"><h2 class="reveal">أهداف التعلم</h2><ul class="reveal">{{#each coursedetails.pmp.objectives}}<li>{{this.t}}</li>{{/each}}</ul></section>
@@ -148,6 +148,7 @@
   <section id="resources" style="padding-top:20px"><h2 class="reveal">المصادر التعليمية</h2><ul class="reveal">{{#each coursedetails.pmp.resources}}<li>{{this.t}}</li>{{/each}}</ul></section>
   <section id="practice" style="padding-top:20px"><h2 class="reveal">الاختبارات والتدريب</h2><p class="sub reveal">{{coursedetails.pmp.practice}}</p></section>
   <section id="faqs" style="padding-top:20px"><h2 class="reveal">أسئلة شائعة</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.pmp.faqs}}<div class="card reveal"><h3>{{this.q}}</h3><p>{{this.a}}</p></div>{{/each}}</div></section>
+  <section id="reviews" style="padding-top:20px"><div class="eyebrow reveal">Testimonials</div><h2 class="reveal">آراء المتدربين</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.pmp.testimonials}}<div class="card tilt reveal"><span class="stars" role="img" aria-label="تقييم المتدرب"><i style="width:{{this.pct}}%"></i></span><p>«{{this.text}}»</p><small><b>{{this.name}}</b> · {{this.role}}</small></div>{{/each}}</div></section>
   <section id="enroll" style="padding-top:20px"><div class="cta reveal"><h2>سجّل في الدورة</h2><p class="sub" style="margin:0 auto 22px">أنشئ حسابك أو تواصل معنا لتأكيد الدفعة القادمة.</p><div class="btns" style="justify-content:center"><a class="btn p" href="{{root}}/account/">ابدأ رحلتك</a><a class="btn s" href="{{site.whatsapp}}" target="_blank" rel="noopener">تواصل عبر واتساب</a></div></div></section>
   <div class="cta reveal"><h2>ابدأ مسارك نحو شهادة PMP</h2><p class="sub" style="margin:0 auto 22px">احجز مقعدك في الدورة عبر واتساب.</p><a class="btn p" href="{{site.whatsapp}}" target="_blank" rel="noopener">احجز مقعدك عبر واتساب</a></div>
 </main>

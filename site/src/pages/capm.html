@@ -16,7 +16,7 @@
     <div class="dcard tilt reveal"><b>تحليل الأعمال</b><small>Business Analysis</small></div>
   </div>
 
-  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#suitability">هل تناسبك؟</a><a class="btn s" href="#careers">المسارات</a><a class="btn s" href="#exam">الاختبار</a><a class="btn s" href="#steps">الخطوات</a><a class="btn s" href="#fees">الرسوم</a><a class="btn s" href="#content">المحتوى</a><a class="btn s" href="#faqs">أسئلة شائعة</a><a class="btn p" href="/account/">سجّل الآن</a></nav>
+  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#suitability">هل تناسبك؟</a><a class="btn s" href="#careers">المسارات</a><a class="btn s" href="#exam">الاختبار</a><a class="btn s" href="#steps">الخطوات</a><a class="btn s" href="#fees">الرسوم</a><a class="btn s" href="#content">المحتوى</a><a class="btn s" href="#faqs">أسئلة شائعة</a><a class="btn s" href="#reviews">آراء المتدربين</a><a class="btn p" href="/account/">سجّل الآن</a></nav>
   <section id="fees">
     <div class="eyebrow reveal">PMI exam fees</div><h2 class="reveal">رسوم الاختبار</h2>
     <div class="tbl reveal">
@@ -151,7 +151,7 @@
     </div>
   </section>
 
-  <section id="overview" style="padding-top:20px"><div class="eyebrow reveal">نظرة عامة</div><h2 class="reveal">عن الدورة</h2><p class="sub reveal">{{coursedetails.capm.overview}}</p></section>
+  <section id="overview" style="padding-top:20px"><div class="eyebrow reveal">نظرة عامة</div><h2 class="reveal">عن الدورة</h2><p class="rate reveal"><span class="stars" role="img" aria-label="تقييم الدورة {{courses.courses.0.rating}} من 5"><i style="width:{{courses.courses.0.ratingPct}}%"></i></span> <b>{{courses.courses.0.rating}}</b> <small>({{courses.courses.0.ratingCount}} تقييم)</small></p><p class="sub reveal">{{coursedetails.capm.overview}}</p></section>
   <section id="audience" style="padding-top:20px"><h2 class="reveal">الفئة المستهدفة</h2><ul class="reveal">{{#each coursedetails.capm.audience}}<li>{{this.t}}</li>{{/each}}</ul></section>
   <section id="eligibility" style="padding-top:20px"><h2 class="reveal">شروط الأهلية</h2><ul class="reveal">{{#each coursedetails.capm.eligibility}}<li>{{this.t}}</li>{{/each}}</ul></section>
   <section id="objectives" style="padding-top:20px"><h2 class="reveal">أهداف التعلم</h2><ul class="reveal">{{#each coursedetails.capm.objectives}}<li>{{this.t}}</li>{{/each}}</ul></section>
@@ -160,6 +160,7 @@
   <section id="resources" style="padding-top:20px"><h2 class="reveal">المصادر التعليمية</h2><ul class="reveal">{{#each coursedetails.capm.resources}}<li>{{this.t}}</li>{{/each}}</ul></section>
   <section id="practice" style="padding-top:20px"><h2 class="reveal">الاختبارات والتدريب</h2><p class="sub reveal">{{coursedetails.capm.practice}}</p></section>
   <section id="faqs" style="padding-top:20px"><h2 class="reveal">أسئلة شائعة</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.capm.faqs}}<div class="card reveal"><h3>{{this.q}}</h3><p>{{this.a}}</p></div>{{/each}}</div></section>
+  <section id="reviews" style="padding-top:20px"><div class="eyebrow reveal">Testimonials</div><h2 class="reveal">آراء المتدربين</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.capm.testimonials}}<div class="card tilt reveal"><span class="stars" role="img" aria-label="تقييم المتدرب"><i style="width:{{this.pct}}%"></i></span><p>«{{this.text}}»</p><small><b>{{this.name}}</b> · {{this.role}}</small></div>{{/each}}</div></section>
   <section id="enroll" style="padding-top:20px"><div class="cta reveal"><h2>سجّل في الدورة</h2><p class="sub" style="margin:0 auto 22px">أنشئ حسابك أو تواصل معنا لتأكيد الدفعة القادمة.</p><div class="btns" style="justify-content:center"><a class="btn p" href="{{root}}/account/">ابدأ رحلتك</a><a class="btn s" href="{{site.whatsapp}}" target="_blank" rel="noopener">تواصل عبر واتساب</a></div></div></section>
   <div class="cta reveal"><h2>ابدأ مسارك نحو شهادة CAPM</h2><p class="sub" style="margin:0 auto 22px">احجز مقعدك في الدورة بالدفع الإلكتروني، أو استفسر أولًا عبر واتساب.</p><a class="btn p" href="https://mypay.ly/payment-link/share/SMbdb6etCewWkMHpzFfsOo3Yp4xQtdpjqqhxsNYqztjwDR2jq2iYmB6rwD7Z" target="_blank" rel="noopener noreferrer">ادفع الآن واحجز مقعدك</a> <a class="btn s" href="{{site.whatsapp}}" target="_blank" rel="noopener">استفسر عبر واتساب</a></div>
 </main>
