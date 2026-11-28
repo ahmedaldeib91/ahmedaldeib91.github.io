@@ -622,6 +622,7 @@ function renderPage(page, data, partials) {
       title: page.title,
       desc: page.desc,
       canonical: page.canonical,
+      origin: page.canonical.slice(0, page.canonical.length - page.urlPath.length),
       slug: page.slug,
       nav: page.nav,
       url: page.urlPath
@@ -664,7 +665,7 @@ function wipeDist() {
 }
 
 function sitemapXml(pages, origin) {
-  const urls = pages.filter((p) => p.slug !== '404').map((p) => `  <url><loc>${escapeXml(origin + p.urlPath)}</loc></url>`).join('\n');
+  const urls = pages.filter((p) => p.slug !== '404' && !/name="robots"[^>]*noindex/i.test(p.html || '')).map((p) => `  <url><loc>${escapeXml(origin + p.urlPath)}</loc></url>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 const robotsTxt = (origin) => `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`;
