@@ -415,3 +415,17 @@ th[aria-sort=ascending] .ad-sort,th[aria-sort=descending] .ad-sort{color:var(--t
 .ad-err{color:#d6455d}
 .ad-essay{white-space:pre-wrap;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--glass);margin:6px 0}
 .ad-qstem{white-space:pre-line;font-weight:600}
+
+/* ---------- أقسام القائمة الجانبية (10 أقسام قابلة للطي) ---------- */
+.ad-grp{margin-bottom:4px}
+.ad-grp>summary{display:flex;align-items:center;gap:10px;min-height:46px;padding:8px 14px;border-radius:14px;cursor:pointer;list-style:none;color:var(--tx);font:700 15px/1.4 var(--fd);transition:background .2s}
+.ad-grp>summary::-webkit-details-marker{display:none}
+.ad-grp>summary:hover{background:var(--glass)}
+.ad-grp>summary:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.ad-grp>summary:after{content:"";margin-inline-start:auto;width:8px;height:8px;border:solid var(--mut);border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .2s}
+.ad-grp[open]>summary:after{transform:rotate(-135deg)}
+.ad-grp ul{padding-inline-start:14px;margin-top:2px}
+.ad-grp a{min-height:40px;font-size:14px}
+.ad-soon{display:flex;align-items:center;gap:8px;min-height:40px;padding:6px 14px;border-radius:14px;color:var(--mut);opacity:.65;font:500 14px/1.4 var(--fd);cursor:not-allowed}
+.ad-soon-b{margin-inline-start:auto;padding:0 8px;border-radius:99px;border:1px solid var(--bd);font:600 11.5px/20px var(--fn);white-space:nowrap}
+@media(max-width:959px){.ad-nav ul{display:grid;grid-template-columns:minmax(0,1fr);padding-inline-start:0}.ad-nav .ad-grp a{flex-direction:row;justify-content:flex-start;min-height:44px;padding:6px 14px;text-align:start;font-size:14px}}
