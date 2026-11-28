@@ -45,12 +45,22 @@
   /* destination page -> [image in /assets/badges, Arabic title, class of the image: pn = pulsing badge, pl = white card] */
 var PAGES = {};
 PAGES[BASE + '/'] = ['nav-home.png', 'الرئيسية', 'pn'];
-PAGES[BASE + '/about/'] = ['nav-about.png', 'عن الموقع', 'pn'];
-PAGES[BASE + '/pmi/'] = ['pmi-logo.jpg', 'معهد إدارة المشاريع PMI', 'pl'];
-PAGES[BASE + '/trainer/'] = ['nav-trainer.png', 'م. أحمد الديب', 'pn'];
+PAGES[BASE + '/about/'] = ['nav-about.png', 'عن المنصة', 'pn'];
+PAGES[BASE + '/trainer/'] = ['nav-trainer.png', 'نبذة عن المدرب', 'pn'];
+PAGES[BASE + '/pmi/'] = ['nav-pmi.png', 'تعرّف على معهد إدارة المشاريع', 'pn'];
 PAGES[BASE + '/courses/'] = ['nav-courses.png', 'الدورات', 'pn'];
-PAGES[BASE + '/courses/capm/'] = ['badge-capm.webp', 'CAPM®', 'pn'];
+PAGES[BASE + '/courses/available/'] = ['nav-courses.png', 'الدورات المتاحة', 'pn'];
+PAGES[BASE + '/courses/upcoming/'] = ['nav-courses.png', 'الدورات المستقبلية', 'pn'];
 PAGES[BASE + '/courses/pmp/'] = ['badge-pmp.png', 'PMP®', 'pn'];
+PAGES[BASE + '/courses/capm/'] = ['badge-capm.webp', 'CAPM®', 'pn'];
+PAGES[BASE + '/courses/pmi-rmp/'] = ['badge-rmp.webp', 'PMI-RMP®', 'pn'];
+PAGES[BASE + '/courses/pmi-acp/'] = ['badge-acp.png', 'PMI-ACP®', 'pn'];
+PAGES[BASE + '/courses/pmi-cp/'] = ['badge-cp.png', 'PMI-CP™', 'pn'];
+PAGES[BASE + '/courses/pmi-pmocp/'] = ['badge-pmocp.png', 'PMI-PMOCP™', 'pn'];
+PAGES[BASE + '/assessment/individual/'] = ['nav-assessment.png', 'تقييم نضج الأفراد', 'pn'];
+PAGES[BASE + '/assessment/organizational/'] = ['nav-assessment.png', 'تقييم نضج المؤسسات', 'pn'];
+PAGES[BASE + '/knowledge/'] = ['nav-knowledge.png', 'مركز المعرفة', 'pn'];
+PAGES[BASE + '/knowledge/resources/'] = ['nav-resources.png', 'الموارد التعليمية', 'pn'];
 PAGES[BASE + '/blog/'] = ['nav-blog.png', 'المدونة', 'pn'];
 PAGES[BASE + '/faq/'] = ['nav-faq.png', 'الأسئلة الشائعة', 'pn'];
 PAGES[BASE + '/contact/'] = ['nav-contact.png', 'تواصل معنا', 'pn'];

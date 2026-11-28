@@ -1,0 +1,8 @@
+<!--page: slug=courses/upcoming; title=الدورات المستقبلية | م. أحمد الديب; desc=برامج لم يبدأ التسجيل فيها بعد، يمكنك تسجيل اهتمامك بها.; nav=courses-->
+<main class="page on" id="main">
+  <div class="phead"><div class="eyebrow rv">Upcoming Courses</div><h1 class="rv" style="margin-top:8px">الدورات المستقبلية</h1><p class="sub rv">برامج لم يبدأ التسجيل فيها بعد، يمكنك تسجيل اهتمامك بها.</p>
+    <div class="btns rv"><a class="btn s" href="{{root}}/pmi/">تعرّف على معهد إدارة المشاريع</a></div></div>
+  <section style="padding-top:30px"><div class="grid g3">
+{{#each courses.courses}}{{#ifeq this.status "soon"}}<div class="card tilt reveal"><img src="{{root}}/assets/badges/{{this.badge}}" alt="" style="height:64px;margin-bottom:10px"><h3>{{this.titleAr}}</h3><small class="en2" style="direction:ltr;display:block">{{this.subtitleEn}}</small><p>{{this.summaryAr}}</p><p><span class="chip"><i></i> {{@statusAr}}</span></p>{{#if this.eta}}<p>الموعد المتوقع: {{this.eta}}</p>{{/if}}<p class="btns" style="margin-top:14px">{{#if this.page}}<a class="btn s" href="{{root}}/courses/{{this.page}}/">تفاصيل الدورة</a>{{/if}}<a class="btn p" href="{{site.whatsapp}}" target="_blank" rel="noopener">{{@ctaShortAr}}</a></p></div>{{/ifeq}}{{/each}}
+  </div></section>
+</main>
