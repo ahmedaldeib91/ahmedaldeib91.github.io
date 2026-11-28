@@ -90,3 +90,22 @@ html[lang=en] .en2{display:none!important}
 @keyframes mq{to{transform:translateX(-50%)}}
 @keyframes pop{50%{transform:scale(1.09)}}
 @keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(7);opacity:0}}
+
+/* قوائم منسدلة في الهيدر (Phase 1): تعمل بالتمرير/التركيز على سطح المكتب وبالنقر على الجوال */
+nav{display:flex;flex-wrap:wrap;gap:2px 4px}
+.dd{position:relative}
+.ddb{position:relative;padding:10px 15px;font:500 15px var(--fd);color:var(--mut);background:none;border:0;border-radius:14px;cursor:pointer;transition:.25s;white-space:nowrap}
+.ddb:after{content:"";display:inline-block;width:6px;height:6px;margin-inline-start:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:translateY(-2px) rotate(45deg)}
+.ddb:hover,.dd:focus-within>.ddb{color:#fff;background:var(--glass)}
+.ddb[aria-current=page],nav a[aria-current=page]{color:#fff;background:linear-gradient(135deg,#5B2D8F,#3a1a6e);box-shadow:inset 0 0 0 1px #ffffff22}
+.ddm{position:absolute;inset-inline-start:0;top:100%;min-width:210px;padding:8px;margin-top:6px;display:none;flex-direction:column;gap:2px;border-radius:16px;background:rgba(14,8,30,.96);backdrop-filter:blur(18px);border:1px solid var(--bd);box-shadow:0 18px 50px #0009;z-index:70}
+html[data-theme=light] .ddm{background:rgba(255,255,255,.97);box-shadow:0 14px 40px #2A115733}
+.ddm a{text-align:start;display:block}
+.dd.open>.ddm,.dd:hover>.ddm,.dd:focus-within>.ddm{display:flex}
+@media(max-width:959px){
+  nav{display:flex;flex-wrap:wrap;justify-content:center}
+  nav a,.ddb{padding:9px 10px;font-size:13px}
+  .dd{position:static}
+  .dd:hover>.ddm,.dd:focus-within>.ddm{display:none}
+  .dd.open>.ddm{display:flex;position:absolute;inset-inline:10px;top:auto}
+}
