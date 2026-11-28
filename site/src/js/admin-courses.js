@@ -91,7 +91,7 @@
   }
 
   /* ================================================================== صفحة الدورة */
-  const HUB_TABS = ['subs', 'lessons', 'files', 'videos', 'questions', 'exams', 'grading', 'assignments', 'discussions', 'groups'];
+  const HUB_TABS = ['subs', 'lessons', 'files', 'videos', 'questions', 'exams', 'grading', 'assignments', 'discussions', 'certificates', 'groups'];
   const Q_SUBS = ['bank', 'folders', 'team', 'quick'];
   async function renderCourse(root, token, id, tabArg, subArg, extraArg) {
     const tab = HUB_TABS.indexOf(tabArg) !== -1 ? tabArg : 'subs';
@@ -659,7 +659,7 @@
       if (tabLabels.quick) tabLabels.quick.textContent = '(' + D.questions.length + ')'; /* يوجد بعد فتح قسم الأسئلة */
     }
     const MAIN = [['subs', 'الاشتراكات', 'userplus'], ['lessons', 'الدروس', 'book'], ['files', 'الملفات', 'file', true], ['videos', 'الفيديوهات', 'video', true],
-      ['questions', 'الأسئلة', 'quiz'], ['exams', 'الاختبارات', 'check'], ['grading', 'التصحيح', 'pen'], ['assignments', 'الواجبات', 'file'], ['discussions', 'المناقشات', 'users'], ['groups', 'المجموعات', 'users']];
+      ['questions', 'الأسئلة', 'quiz'], ['exams', 'الاختبارات', 'check'], ['grading', 'التصحيح', 'pen'], ['assignments', 'الواجبات', 'file'], ['discussions', 'المناقشات', 'users'], ['certificates', 'الشهادات', 'check'], ['groups', 'المجموعات', 'users']];
     const tabsEl = h('div', { class: 'pf-tabs ad-tabbar', role: 'tablist', 'aria-label': 'أقسام الدورة' },
       MAIN.map(function (t) { return tabButton('c', t[0], t[1], t[2], t[3]); }));
     const holders = {};
@@ -766,6 +766,11 @@
           lazy('groups', holders.groups, function () {
             if (!A.groups) throw new P.ApiError('other', 'تعذّر تحميل قسم المجموعات. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
             return A.groups.render(holders.groups, id, token, { group: subArg, section: extraArg });
+          });
+        } else if (name === 'certificates') {
+          lazy('certificates', holders.certificates, function () {
+            if (!A.certificates) throw new P.ApiError('other', 'تعذّر تحميل قسم الشهادات. حدّث الصفحة ثم أعد المحاولة.', 0, 'module');
+            return A.certificates.render(holders.certificates, id, token);
           });
         } else if (name === 'assignments' || name === 'discussions') {
           lazy(name, holders[name], function () {
