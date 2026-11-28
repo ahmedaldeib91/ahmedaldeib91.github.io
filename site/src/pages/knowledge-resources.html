@@ -1,0 +1,11 @@
+<!--page: slug=knowledge/resources; title=الموارد التعليمية | م. أحمد الديب; desc=الموارد التعليمية: نماذج وقوالب وأسئلة تدريب مجانية وملخصات سريعة وروابط مفيدة.; nav=knowledge-->
+<main class="page on" id="main">
+  <div class="phead"><div class="eyebrow rv">Learning Resources</div><h1 class="rv" style="margin-top:8px">الموارد <em class="g">التعليمية</em></h1>
+    <p class="sub rv">نماذج وقوالب وأسئلة تدريب مجانية وملخصات سريعة وروابط تهمك.</p>
+    <div class="btns rv"><a class="btn s" href="{{root}}/knowledge/">مركز المعرفة</a></div></div>
+  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#templates">نماذج وقوالب</a><a class="btn s" href="#practice">أسئلة تدريب مجانية</a><a class="btn s" href="#summaries">ملخصات سريعة</a><a class="btn s" href="#links">روابط تهمك</a></nav>
+  <section id="templates" style="padding-top:30px"><div class="eyebrow reveal">Templates</div><h2 class="reveal">نماذج وقوالب</h2><div class="grid g3">{{#each knowledge.templates}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p><p style="margin-top:14px"><span class="chip"><i></i> قريبًا</span></p></div>{{/each}}</div></section>
+  <section id="practice" style="padding-top:30px"><div class="eyebrow reveal">Free Practice</div><h2 class="reveal">أسئلة تدريب مجانية</h2><div class="grid g3">{{#each knowledge.practice}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p><p style="margin-top:14px"><span class="chip"><i></i> قريبًا</span></p></div>{{/each}}</div></section>
+  <section id="summaries" style="padding-top:30px"><div class="eyebrow reveal">Quick Summaries</div><h2 class="reveal">ملخصات سريعة</h2><div class="grid g3">{{#each knowledge.summaries}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p><p style="margin-top:14px"><span class="chip"><i></i> قريبًا</span></p></div>{{/each}}</div></section>
+  <section id="links" style="padding-top:30px"><div class="eyebrow reveal">Useful Links</div><h2 class="reveal">روابط تهمك</h2><div class="grid g3">{{#each knowledge.links}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p><p style="margin-top:14px"><a class="btn s" href="{{this.url}}">فتح الرابط</a></p></div>{{/each}}</div></section>
+</main>

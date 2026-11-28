@@ -1,12 +1,10 @@
-<!--page: slug=knowledge; title=مركز المعرفة | م. أحمد الديب; desc=مركز المعرفة: مقالات المدونة وإجابات الأسئلة الشائعة حول شهادات PMI وإدارة المشاريع في مكان واحد.; nav=knowledge-->
+<!--page: slug=knowledge; title=مركز المعرفة | م. أحمد الديب; desc=مركز المعرفة: المدونة والمقالات والأدلة والمراجع والمصطلحات المهنية في إدارة المشاريع وشهادات PMI.; nav=knowledge-->
 <main class="page on" id="main">
   <div class="phead"><div class="eyebrow rv">مركز المعرفة</div><h1 class="rv" style="margin-top:8px">كل ما تحتاج <em class="g">معرفته</em></h1>
-    <p class="sub rv">مقالات وإجابات مختارة تساعدك قبل التقديم على شهادات PMI وأثناء الإعداد لها وبعدها.</p></div>
-  <section style="padding-top:30px">
-    <div class="grid g3">
-      <div class="card tilt reveal"><h3>المدونة</h3><p>مقالات عملية في إدارة المشاريع والتحضير للشهادات واتجاهات المهنة.</p><p style="margin-top:16px"><a class="btn p" href="/blog/">تصفّح المدونة</a></p></div>
-      <div class="card tilt reveal"><h3>الأسئلة الشائعة</h3><p>إجابات عن التقديم والأهلية، والاختبار وإجراءاته، وما بعد اجتياز الشهادة.</p><p style="margin-top:16px"><a class="btn p" href="/faq/">اقرأ الأسئلة الشائعة</a></p></div>
-      <div class="card tilt reveal"><h3>شهادات PMI</h3><p>تعرّف على معهد PMI وشهاداته المهنية: PMP وCAPM وPMI-RMP وغيرها.</p><p style="margin-top:16px"><a class="btn p" href="/pmi/">عن شهادات PMI</a></p></div>
-    </div>
-  </section>
+    <p class="sub rv">المدونة والأدلة والمصطلحات المهنية في إدارة المشاريع وشهادات PMI في مكان واحد.</p>
+    <div class="btns rv"><a class="btn s" href="{{root}}/knowledge/resources/">الموارد التعليمية</a></div></div>
+  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#blog">المدونة والمقالات</a><a class="btn s" href="#guides">الأدلة والمراجع</a><a class="btn s" href="#glossary">المصطلحات المهنية</a></nav>
+  <section id="blog" style="padding-top:30px"><div class="eyebrow reveal">Blog &amp; Articles</div><h2 class="reveal">المدونة والمقالات</h2><p class="sub reveal">مقالات عملية في إدارة المشاريع والتحضير للشهادات واتجاهات المهنة.</p><p class="reveal" style="margin-top:16px"><a class="btn p" href="{{root}}/blog/">تصفّح المدونة</a></p></section>
+  <section id="guides" style="padding-top:30px"><div class="eyebrow reveal">Guides &amp; References</div><h2 class="reveal">الأدلة والمراجع</h2><div class="grid g3">{{#each knowledge.guides}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p><p style="margin-top:14px"><span class="chip"><i></i> قريبًا</span></p></div>{{/each}}</div></section>
+  <section id="glossary" style="padding-top:30px"><div class="eyebrow reveal">Project Management Glossary</div><h2 class="reveal">المصطلحات المهنية</h2><div class="grid g3">{{#each knowledge.glossary}}<div class="card tilt reveal"><h3>{{this.ar}}</h3><small class="en2" style="direction:ltr;display:block">{{this.en}}</small><p>{{this.d}}</p></div>{{/each}}</div></section>
 </main>

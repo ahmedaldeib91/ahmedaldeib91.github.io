@@ -6,6 +6,8 @@
 <title>{{title}}</title>
 <meta name="description" content="{{desc}}">
 <link rel="canonical" href="{{canonical}}">
+<meta property="og:type" content="website"><meta property="og:site_name" content="{{site.name}} | {{site.arabicName}}"><meta property="og:locale" content="ar_AR"><meta property="og:title" content="{{title}}"><meta property="og:description" content="{{desc}}"><meta property="og:url" content="{{canonical}}"><meta property="og:image" content="{{origin}}{{root}}/assets/badges/trainer.jpg">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="{{title}}"><meta name="twitter:description" content="{{desc}}"><meta name="twitter:image" content="{{origin}}{{root}}/assets/badges/trainer.jpg"><meta name="theme-color" content="#1a0b3a">
 <script>/* theme before first paint (no flash); main.js uses the same rule */
 try{document.documentElement.dataset.theme=localStorage.getItem('theme')==='light'?'light':'dark'}catch(e){document.documentElement.dataset.theme='dark'}</script>
 
@@ -83,5 +85,6 @@ o.observe(d,{childList:true,subtree:true});
 <script src="{{root}}/assets/js/main.js" defer></script>
 <script src="{{root}}/assets/js/transition.js" defer></script>
 <script src="{{root}}/assets/js/platform-nav.js" defer></script>
+<script src="{{root}}/assets/js/nav-menu.js" defer></script>
 </head>
 <body data-page="{{nav}}" data-base-path="{{root}}">

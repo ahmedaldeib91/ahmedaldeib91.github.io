@@ -1,0 +1,12 @@
+<!--page: slug=assessment/organizational; title=تقييم نضج إدارة المشاريع للمؤسسات | م. أحمد الديب; desc=تقييم نضج إدارة المشاريع للمؤسسات: التعريف والأهداف والمجالات ومنهجية التقييم ومستويات النضج والمخرجات.; nav=assessment-->
+<main class="page on" id="main">
+  <div class="phead"><div class="eyebrow rv">Organizational Assessment</div><h1 class="rv" style="margin-top:8px">تقييم نضج إدارة المشاريع للمؤسسات</h1><p class="sub rv">{{assessment.org.intro}}</p>
+    <div class="btns rv"><a class="btn p" href="{{root}}/contact/">طلب تقييم أو استشارة</a><a class="btn s" href="{{root}}/assessment/individual/">تقييم الأفراد</a></div></div>
+  <section id="goals" style="padding-top:20px"><h2 class="reveal">أهداف التقييم</h2><ul class="reveal">{{#each assessment.org.goals}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="domains" style="padding-top:20px"><h2 class="reveal">مجالات التقييم</h2><div class="grid g3" style="margin-top:20px">{{#each assessment.org.domains}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p></div>{{/each}}</div></section>
+  <section id="method" style="padding-top:20px"><h2 class="reveal">منهجية التقييم</h2><p class="sub reveal">{{assessment.org.method}}</p></section>
+  <section id="levels" style="padding-top:20px"><h2 class="reveal">مستويات النضج</h2><p class="sub reveal">إطار مبدئي من المنصة لتوصيف المستويات، وليس نموذجًا دوليًا معتمدًا.</p><div class="grid g3" style="margin-top:20px">{{#each assessment.org.levels}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p></div>{{/each}}</div></section>
+  <section id="how" style="padding-top:20px"><h2 class="reveal">كيف يتم التقييم</h2><ol class="reveal">{{#each assessment.org.how}}<li>{{this.t}}</li>{{/each}}</ol></section>
+  <section id="outputs" style="padding-top:20px"><h2 class="reveal">المخرجات</h2><ul class="reveal">{{#each assessment.org.outputs}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section style="padding-top:10px"><div class="cta reveal" style="margin:30px 0 10px"><h2>حسّن نضج مؤسستك</h2><p class="sub" style="margin:0 auto 22px">أرسل طلب تقييم أو استشارة وسنتواصل معك لتحديد النطاق.</p><a class="btn p" href="{{root}}/contact/">طلب تقييم أو استشارة</a></div></section>
+</main>

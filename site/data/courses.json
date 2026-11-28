@@ -19,7 +19,11 @@
       "bentoNo": "02",
       "bentoTitleAr": "مساعد معتمد في إدارة المشاريع",
       "bentoSubEn": "CAPM® · Certified Associate in Project Management",
-      "bentoVariant": "capm"
+      "bentoVariant": "capm",
+      "summaryAr": "دورة CAPM® مدخل مثالي لمن يبدأ مسار إدارة المشاريع، وتغطي المفاهيم والمصطلحات الأساسية المطلوبة للاختبار.",
+      "rating": "4.7",
+      "ratingPct": "94",
+      "ratingCount": "84"
     },
     {
       "id": "pmp",
@@ -36,7 +40,11 @@
       "watermark": "PMP®",
       "bentoNo": "01",
       "bentoTitleAr": "محترف إدارة المشاريع",
-      "bentoSubEn": "PMP® · Project Management Professional"
+      "bentoSubEn": "PMP® · Project Management Professional",
+      "summaryAr": "تؤهلك دورة PMP® لاجتياز اختبار محترف إدارة المشاريع من PMI عبر فهم عميق للأفراد والعمليات وبيئة الأعمال، بأساليب تنبؤية ورشيقة وهجينة.",
+      "rating": "4.8",
+      "ratingPct": "96",
+      "ratingCount": "126"
     },
     {
       "id": "pmi-rmp",
@@ -52,7 +60,9 @@
       "watermark": "PMI-RMP®",
       "bentoNo": "03",
       "bentoTitleAr": "إدارة المخاطر",
-      "bentoSubEn": "Risk Management"
+      "bentoSubEn": "Risk Management",
+      "page": "pmi-rmp",
+      "summaryAr": "تركّز دورة PMI-RMP® على إدارة مخاطر المشاريع: تحديدها وتحليلها والاستجابة لها ومراقبتها، وفق اختبار محترف إدارة المخاطر من PMI."
     },
     {
       "id": "pmi-acp",
@@ -68,7 +78,9 @@
       "watermark": "PMI-ACP®",
       "bentoNo": "04",
       "bentoTitleAr": "المشاريع الرشيقة",
-      "bentoSubEn": "Agile"
+      "bentoSubEn": "Agile",
+      "page": "pmi-acp",
+      "summaryAr": "تغطي دورة PMI-ACP® المنهجيات الرشيقة (Scrum وKanban وXP وغيرها) والعقلية الرشيقة وفق اختبار PMI."
     },
     {
       "id": "pmi-cp",
@@ -84,7 +96,9 @@
       "watermark": "PMI-CP™",
       "bentoNo": "05",
       "bentoTitleAr": "مشاريع البناء",
-      "bentoSubEn": "Construction"
+      "bentoSubEn": "Construction",
+      "page": "pmi-cp",
+      "summaryAr": "تُعنى دورة PMI-CP™ بإدارة الإنشاءات والمشاريع الإنشائية، وتغطي المخاطر والعقود والجدولة والتكلفة في بيئة الإنشاء."
     },
     {
       "id": "pmi-pmocp",
@@ -100,7 +114,9 @@
       "watermark": "PMI-PMOCP™",
       "bentoNo": "06",
       "bentoTitleAr": "مكاتب المشاريع",
-      "bentoSubEn": "PMO"
+      "bentoSubEn": "PMO",
+      "page": "pmi-pmocp",
+      "summaryAr": "تركّز دورة PMI-PMOCP™ على تأسيس وإدارة مكاتب إدارة المشاريع PMO والحوكمة وربط المشاريع بالاستراتيجية."
     }
   ]
 }

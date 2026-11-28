@@ -1,0 +1,17 @@
+<!--page: slug=courses/pmi-rmp; title=دورة محترف إدارة المخاطر PMI-RMP® | م. أحمد الديب; desc=دورة محترف إدارة المخاطر PMI-RMP®: نظرة عامة وأهداف التعلم ومحتوى الدورة ومنهجية التدريب والتسجيل.; nav=courses-->
+<main class="page on" id="main">
+  <div class="hero" style="min-height:auto"><div><div class="chip rv"><i></i> {{courses.courses.2.categoryAr}} · قريبًا</div><h1 class="rv">{{courses.courses.2.titleAr}}<span class="en">{{courses.courses.2.titleEn}}</span></h1>
+    <div class="btns rv"><a class="btn p" href="{{root}}/account/">سجّل اهتمامك</a><a class="btn s" href="{{root}}/courses/">كل الدورات</a></div></div>
+    <div class="ovis rv" style="min-height:300px"><div class="glowball"></div><img src="{{root}}/assets/badges/{{courses.courses.2.badge}}" alt="{{courses.courses.2.code}}" style="width:min(260px,70vw);position:relative"></div></div>
+  <nav class="btns" aria-label="أقسام الصفحة" style="justify-content:center;margin:6px 0 0"><a class="btn s" href="#objectives">الأهداف</a><a class="btn s" href="#content">المحتوى</a><a class="btn s" href="#methodology">المنهجية</a><a class="btn s" href="#faqs">أسئلة شائعة</a></nav>
+  <section id="overview" style="padding-top:20px"><div class="eyebrow reveal">نظرة عامة</div><h2 class="reveal">عن الدورة</h2><p class="sub reveal">{{coursedetails.pmi_rmp.overview}}</p></section>
+  <section id="audience" style="padding-top:20px"><h2 class="reveal">الفئة المستهدفة</h2><ul class="reveal">{{#each coursedetails.pmi_rmp.audience}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="eligibility" style="padding-top:20px"><h2 class="reveal">شروط الأهلية</h2><ul class="reveal">{{#each coursedetails.pmi_rmp.eligibility}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="objectives" style="padding-top:20px"><h2 class="reveal">أهداف التعلم</h2><ul class="reveal">{{#each coursedetails.pmi_rmp.objectives}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="content" style="padding-top:20px"><h2 class="reveal">محتوى الدورة</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.pmi_rmp.content}}<div class="card tilt reveal"><h3>{{this.t}}</h3><p>{{this.d}}</p></div>{{/each}}</div></section>
+  <section id="methodology" style="padding-top:20px"><h2 class="reveal">منهجية التدريب</h2><p class="sub reveal">{{coursedetails.pmi_rmp.methodology}}</p></section>
+  <section id="resources" style="padding-top:20px"><h2 class="reveal">المصادر التعليمية</h2><ul class="reveal">{{#each coursedetails.pmi_rmp.resources}}<li>{{this.t}}</li>{{/each}}</ul></section>
+  <section id="practice" style="padding-top:20px"><h2 class="reveal">الاختبارات والتدريب</h2><p class="sub reveal">{{coursedetails.pmi_rmp.practice}}</p></section>
+  <section id="faqs" style="padding-top:20px"><h2 class="reveal">أسئلة شائعة</h2><div class="grid g3" style="margin-top:20px">{{#each coursedetails.pmi_rmp.faqs}}<div class="card reveal"><h3>{{this.q}}</h3><p>{{this.a}}</p></div>{{/each}}</div></section>
+  <section id="enroll" style="padding-top:20px"><div class="cta reveal"><h2>سجّل في الدورة</h2><p class="sub" style="margin:0 auto 22px">أنشئ حسابك أو تواصل معنا لتأكيد الدفعة القادمة.</p><div class="btns" style="justify-content:center"><a class="btn p" href="{{root}}/account/">ابدأ رحلتك</a><a class="btn s" href="{{site.whatsapp}}" target="_blank" rel="noopener">تواصل عبر واتساب</a></div></div></section>
+</main>
