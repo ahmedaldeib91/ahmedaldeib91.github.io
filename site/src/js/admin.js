@@ -11,7 +11,7 @@
      (وكذلك عند الخروج من تبويب آخر أو عودة الصفحة من الذاكرة السريعة بلا جلسة).
 
    التوجيه (hash): #stats #trainees #trainees/<uuid> #enrollments #subscribers #courses #courses/<id>[/videos|/questions] #messages[/<uuid>]
-   #blog #blog/new #blog/<uuid> #settings #qbank[/<course>/questions|taxonomy|staff|new|edit/<uuid>|copy/<uuid>] (انظر admin-qbank.js)
+   #learning #reports #certs #blog #blog/new #blog/<uuid> #settings #qbank[/<course>/questions|taxonomy|staff|new|edit/<uuid>|copy/<uuid>] (انظر admin-qbank.js)
    #exams[/<course>/list|new|edit/<uuid>] (انظر admin-exams.js).
    قائمة الأقسام روابط <nav aria-label> مع aria-current="page" (والتبويبات الداخلية
    في الدورات بـ ARIA tablist)، وبعد كل انتقال يُنقل التركيز إلى عنوان القسم ويُعلَن للقارئ الشاشي.
@@ -33,15 +33,21 @@
   const h = ui.h;
   const S = A.S;
 
-  const NAV = [
-    ['stats', 'الإحصاءات', 'chart'],
-    ['trainees', 'المستخدمون', 'users'],
-    ['subscribers', 'المشتركون', 'file'],
-    ['courses', 'الدورات', 'book'],
-    ['messages', 'الرسائل', 'mail'],
-    ['blog', 'المدونة', 'pen'],
-    ['settings', 'الإعدادات', 'gear']
+  /* 10 أقسام بالترتيب المعتمد. عنصر: [الوسم, الاسم] ← رابط حقيقي، وبلا وسم (null) ← مؤجَّل بشارة «قريبًا» دون أي منطق خلفي */
+  const GROUPS = [
+    ['dash', 'لوحة المعلومات', 'chart', [['stats', 'مؤشرات الأداء والنشاط'], [null, 'الطلبات والمدفوعات المعلقة']]],
+    ['users', 'إدارة المستخدمين', 'users', [['trainees', 'المستخدمون والملفات'], ['subscribers', 'المشتركون'], [null, 'الأدوار والصلاحيات']]],
+    ['courses', 'إدارة الدورات', 'book', [['courses', 'كل الدورات (إنشاء وتعديل وأرشفة)'], ['lessons', 'الدروس والوحدات'], ['cfiles', 'الملفات والموارد'], ['cvideos', 'الفيديوهات'], ['groups', 'المجموعات'], [null, 'التصنيفات والأرشفة']]],
+    ['quiz', 'الاختبارات وبنك الأسئلة', 'pen', [['qbank', 'بنك الأسئلة'], ['qfolders', 'المجلدات والتصنيفات'], ['qteam', 'فريق البنك'], ['exams', 'الاختبارات والمحاولات والنتائج'], ['grading', 'التصحيح والمراجعة'], [null, 'تحليل الأسئلة والاختبارات']]],
+    ['learn', 'إدارة التعلم', 'refresh', [['learning', 'التقدم والإكمال وأهلية الشهادات'], ['assignments', 'الواجبات والدرجات'], ['discussions', 'المناقشات'], [null, 'الحضور ومسارات التعلم']]],
+    ['reports', 'التقارير والتحليلات', 'chart', [['reports', 'تقارير الدورات والمتدربين والتصدير'], [null, 'التقرير المالي والمخصصة']]],
+    ['pay', 'المدفوعات والتسجيل', 'archive', [['enrollments', 'الاشتراكات والتسجيل بالدورات'], [null, 'طلبات التسجيل وسجلات الدفع والاسترداد']]],
+    ['comm', 'التواصل', 'mail', [['messages', 'صندوق الرسائل'], ['blog', 'المدونة'], [null, 'الإعلانات وقوالب البريد وسجل التواصل']]],
+    ['cert', 'الشهادات', 'inbox', [['certs', 'السجل والتحقق والملغاة'], ['certissue', 'الإصدار والإلغاء'], [null, 'قوالب الشهادات']]],
+    ['set', 'إعدادات المنصة', 'gear', [['settings', 'الإعدادات العامة'], [null, 'الهوية والأمان والتكاملات والبريد'], [null, 'النسخ الاحتياطي وسجل التدقيق ومراقبة النظام']]]
   ];
+  const NAV = [];
+  GROUPS.forEach(function (g) { g[3].forEach(function (it) { if (it[0] && !NAV.some(function (n) { return n[0] === it[0]; })) NAV.push(it); }); });
   /* أقسام بلا عنصر في القائمة: صارت داخل مركز الدورة، وتبقى مساراتها صالحة (المحررات وتحويل الروابط القديمة) */
   const HIDDEN = { qbank: 'courses', exams: 'courses', enrollments: 'courses' };
   let first = true;
@@ -99,15 +105,20 @@
   function buildNav() {
     const nav = $('ad-nav');
     A.clear(nav);
-    nav.appendChild(h('ul', null, NAV.map(function (n) {
-      return h('li', null, h('a', { href: '#' + n[0], 'data-sec': n[0] },
-        A.icon(n[2]), h('span', { class: 'ad-navt', text: n[1] }),
-        n[0] === 'messages' ? h('span', { class: 'ad-count', id: 'ad-badge', hidden: true }) : null));
-    })));
+    GROUPS.forEach(function (g) {
+      const list = h('ul', null, g[3].map(function (it) {
+        if (!it[0]) return h('li', null, h('span', { class: 'ad-soon', 'aria-disabled': 'true' }, h('span', { class: 'ad-navt', text: it[1] }), h('span', { class: 'ad-soon-b', text: 'قريبًا' })));
+        return h('li', null, h('a', { href: '#' + it[0], 'data-sec': it[0] },
+          h('span', { class: 'ad-navt', text: it[1] }),
+          it[0] === 'messages' ? h('span', { class: 'ad-count', id: 'ad-badge', hidden: true }) : null));
+      }));
+      nav.appendChild(h('details', { class: 'ad-grp', 'data-g': g[0] }, h('summary', null, A.icon(g[2]), h('span', { class: 'ad-navt', text: g[1] })), list));
+    });
   }
   function markNav(name) {
+    let done = false;
     Array.prototype.forEach.call($('ad-nav').querySelectorAll('a'), function (a) {
-      if (a.getAttribute('data-sec') === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      if (!done && a.getAttribute('data-sec') === name) { a.setAttribute('aria-current', 'page'); done = true; a.closest('details').open = true; } else a.removeAttribute('aria-current');
     });
   }
 
@@ -126,7 +137,7 @@
     const sec = A.sections[r.name];
     const root = $('ad-view');
     const token = ++S.nav;
-    markNav(HIDDEN[r.name] || r.name);
+    markNav(r.name === 'courses' && r.args[1] === 'questions' ? 'qbank' : r.name === 'courses' && r.args[1] === 'exams' ? 'exams' : (HIDDEN[r.name] && r.name !== 'qbank' && r.name !== 'exams' ? HIDDEN[r.name] : r.name));
     A.clear(root);
     if (!sec) { root.appendChild(A.fail('تعذّر تحميل هذا القسم. حدّث الصفحة ثم أعد المحاولة.')); return; }
     document.title = sec.label + ' | لوحة المدرب';
